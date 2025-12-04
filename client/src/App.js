@@ -6,20 +6,12 @@
 // ==================== React & Router Imports ====================
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-
-// ==================== Styles ====================
-import './App.css';
-
-// ==================== Public Pages ====================
-import Welcome from './components/Welcome';
-import DoctorPage from './components/DoctorPage';
-import ZordonPage from './components/ZordonPage';
-
-// ==================== Authentication Pages ====================
-import Login from './components/Login';
-import Register from './components/Register';
-
-// ==================== Protected Pages ====================
+import { useState } from 'react';
+import Login from './components/Login.jsx';
+import Register from './components/Register.jsx';
+import Welcome from './components/Welcome.jsx';
+import DoctorPage from './components/DoctorPage.jsx';
+import ZordonPage from './components/ZordonPage.jsx';
 import RangerDashboard from './components/RangerDashboard';
 import Appointments from './components/Appointments';
 import Calendar from './components/Calendar';
