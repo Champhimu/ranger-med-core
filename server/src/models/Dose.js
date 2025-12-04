@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 const doseSchema = new mongoose.Schema({
-  capsuleId: mongoose.Schema.Types.ObjectId,
-  userId: mongoose.Schema.Types.ObjectId,
+  capsuleId: { type: mongoose.Schema.Types.ObjectId, ref: "Capsule", required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   date: String,  // 2025-01-10
   time: String,  // 08:00 or 20:00
   status: {
