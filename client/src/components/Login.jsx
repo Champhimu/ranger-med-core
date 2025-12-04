@@ -23,7 +23,11 @@ function Login({ onLoginSuccess, onRegister }) {
       setIsMorphing(true)
       setTimeout(() => {
         alert(`OVERDRIVE ACCELERATE! ${currentRanger.name} - KICK INTO OVERDRIVE!`)
-        onLoginSuccess?.()
+        onLoginSuccess?.({ 
+          rangerId: selectedRanger, 
+          rangerName: currentRanger.name,
+          rangerColor: currentRanger.color 
+        })
       }, 2000)
     } else {
       alert('Please enter both Ranger Signal ID and Tracker Access Code')
@@ -84,16 +88,24 @@ function Login({ onLoginSuccess, onRegister }) {
           <Heartbeat delay={0.5} />
         </div>
         <div className="vital-stats">
-          {[
-            ['RANGER', currentRanger.name.toUpperCase()],
-            ['VEHICLE', currentRanger.power.toUpperCase()],
-            ['OVERDRIVE ENERGY', '100%']
-          ].map(([label, value]) => (
-            <div key={label} className="stat-item">
-              <span className="stat-label">{label}</span>
-              <span className="stat-value">{value}</span>
-            </div>
-          ))}
+          <div className="stat-item">
+            <span className="stat-label">RANGER</span>
+            <span className="stat-value" style={{ color: currentRanger.color, textShadow: `0 0 8px ${currentRanger.color}` }}>
+              {currentRanger.name.toUpperCase()}
+            </span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">VEHICLE</span>
+            <span className="stat-value" style={{ color: currentRanger.color, textShadow: `0 0 8px ${currentRanger.color}` }}>
+              {currentRanger.power.toUpperCase()}
+            </span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">OVERDRIVE ENERGY</span>
+            <span className="stat-value" style={{ color: currentRanger.color, textShadow: `0 0 8px ${currentRanger.color}` }}>
+              100%
+            </span>
+          </div>
         </div>
       </div>
 
@@ -128,7 +140,7 @@ function Login({ onLoginSuccess, onRegister }) {
           <p className="login-subtitle">COMMAND CENTER</p>
           <div className="ranger-info">
             <span style={{ color: currentRanger.color }}>{currentRanger.name}</span>
-            <span className="zord-name">{`// ${currentRanger.power}`}</span>
+            <span className="zord-name">// {currentRanger.power}</span>
           </div>
         </div>
 
@@ -153,9 +165,9 @@ function Login({ onLoginSuccess, onRegister }) {
 
           <div className="register-link">
             <span>New Ranger? </span>
-            <button type="button" className="link-button" onClick={(e) => { e.preventDefault(); onRegister?.(); }}>
+            <a href="#" onClick={(e) => { e.preventDefault(); onRegister?.(); }}>
               REGISTER HERE
-            </button>
+            </a>
           </div>
         </form>
         <div className="panel-glow"></div>
