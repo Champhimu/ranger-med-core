@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'r
 import { useState } from 'react';
 import Login from './components/Login';
 import Register from './components/Register';
+import Welcome from './components/Welcome';
+import DoctorPage from './components/DoctorPage';
+import ZordonPage from './components/ZordonPage';
 
 function LoginPage({ onLoginSuccess, showRegister, onRegister, onBackToLogin }) {
   const navigate = useNavigate();
@@ -39,6 +42,7 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
+          <Route path="/" element={<Welcome />} />
           <Route 
             path="/login" 
             element={
@@ -50,6 +54,9 @@ function App() {
               />
             } 
           />
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/doctor" element={<DoctorPage />} />
+          <Route path="/zordon" element={<ZordonPage />} />
           <Route 
             path="/dashboard" 
             element={
@@ -65,7 +72,7 @@ function App() {
                   fontFamily: 'Arial, sans-serif'
                 }}>
                   <h1 style={{ fontSize: '3rem', textShadow: '0 0 20px #00ffff', marginBottom: '1rem' }}>
-                    🚀 RANGER MED-CORE DASHBOARD 🚀
+                    🚀 MORPHSYNC MED-STATION DASHBOARD 🚀
                   </h1>
                   <p style={{ fontSize: '1.5rem', textShadow: '0 0 10px #00ffff' }}>
                     Welcome, Ranger! You are now logged in.
@@ -79,7 +86,6 @@ function App() {
               )
             } 
           />
-          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
     </Router>
