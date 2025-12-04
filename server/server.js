@@ -7,9 +7,9 @@ import connectDB from "./src/config/db.js";
 
 // Routes
 import authRoutes from "./src/routes/auth.routes.js";
-// import capsuleRoutes from "./routes/capsule.routes.js";
-// import symptomRoutes from "./routes/symptom.routes.js";
-// import aiRoutes from "./routes/ai.routes.js";
+import capsuleRoutes from "./src/routes/capsule.routes.js";
+// import symptomRoutes from "./src/routes/symptom.routes.js";
+// import aiRoutes from "./src/routes/ai.routes.js";
 
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
@@ -18,7 +18,7 @@ app.use(express.json());
 connectDB();
 
 app.use("/api/auth", authRoutes);
-// app.use("/api/capsules", capsuleRoutes);
+app.use("/api/capsules", capsuleRoutes);
 // app.use("/api/symptoms", symptomRoutes);
 // app.use("/api/ai", aiRoutes);
 
