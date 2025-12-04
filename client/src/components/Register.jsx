@@ -109,15 +109,21 @@ function Register({ onBack }) {
         <div className="vital-stats">
           <div className="stat-item">
             <span className="stat-label">NETWORK</span>
-            <span className="stat-value">SECURE</span>
+            <span className="stat-value" style={{ color: currentRanger.color, textShadow: `0 0 8px ${currentRanger.color}` }}>
+              SECURE
+            </span>
           </div>
           <div className="stat-item">
             <span className="stat-label">ENCRYPTION</span>
-            <span className="stat-value">ACTIVE</span>
+            <span className="stat-value" style={{ color: currentRanger.color, textShadow: `0 0 8px ${currentRanger.color}` }}>
+              ACTIVE
+            </span>
           </div>
           <div className="stat-item">
             <span className="stat-label">STATUS</span>
-            <span className="stat-value">READY</span>
+            <span className="stat-value" style={{ color: currentRanger.color, textShadow: `0 0 8px ${currentRanger.color}` }}>
+              READY
+            </span>
           </div>
         </div>
       </div>
@@ -129,9 +135,11 @@ function Register({ onBack }) {
             <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(0,255,255,0.1)" strokeWidth="8" />
             <circle className="power-progress" cx="60" cy="60" r="54" fill="none" stroke="var(--ranger-glow)" strokeWidth="8" strokeDasharray="339.292" strokeDashoffset="0" />
           </svg>
-          <div className="power-text">100%</div>
+          <div className="power-text" style={{ color: currentRanger.color, textShadow: `0 0 10px ${currentRanger.color}` }}>100%</div>
         </div>
-        <div className="power-label">{currentRanger?.power.toUpperCase()} CORE</div>
+        <div className="power-label" style={{ color: currentRanger.color, textShadow: `0 0 10px ${currentRanger.color}` }}>
+          {currentRanger?.power.toUpperCase()} CORE
+        </div>
       </div>
 
       <div className="register-panel">
@@ -145,7 +153,7 @@ function Register({ onBack }) {
           <p className="register-subtitle">OPERATOR REGISTRATION</p>
           <div className="ranger-info" style={{ color: currentRanger?.color }}>
             <span>{currentRanger?.name}</span>
-            <span className="vehicle-name">{`// ${currentRanger?.vehicle}`}</span>
+            <span className="vehicle-name">// {currentRanger?.vehicle}</span>
           </div>
         </div>
 
@@ -223,7 +231,7 @@ function Register({ onBack }) {
 
         <div className="back-link">
           <span>Already registered?</span>
-          <button type="button" className="link-button" onClick={(e) => { e.preventDefault(); onBack?.(); }}>RETURN TO LOGIN</button>
+          <a href="#" onClick={(e) => { e.preventDefault(); onBack?.(); }}>RETURN TO LOGIN</a>
         </div>
       </div>
 
