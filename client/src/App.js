@@ -1,11 +1,11 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import Login from './components/Login';
-import Register from './components/Register';
-import Welcome from './components/Welcome';
-import DoctorPage from './components/DoctorPage';
-import ZordonPage from './components/ZordonPage';
+import Login from './components/Login.jsx';
+import Register from './components/Register.jsx';
+import Welcome from './components/Welcome.jsx';
+import DoctorPage from './components/DoctorPage.jsx';
+import ZordonPage from './components/ZordonPage.jsx';
 
 function LoginPage({ onLoginSuccess, showRegister, onRegister, onBackToLogin }) {
   const navigate = useNavigate();
@@ -72,7 +72,7 @@ function App() {
                   fontFamily: 'Arial, sans-serif'
                 }}>
                   <h1 style={{ fontSize: '3rem', textShadow: '0 0 20px #00ffff', marginBottom: '1rem' }}>
-                    🚀 MORPHSYNC MED-STATION DASHBOARD 🚀
+                    🤖 MORPHSYNC MED-STATION DASHBOARD 🚀
                   </h1>
                   <p style={{ fontSize: '1.5rem', textShadow: '0 0 10px #00ffff' }}>
                     Welcome, Ranger! You are now logged in.
