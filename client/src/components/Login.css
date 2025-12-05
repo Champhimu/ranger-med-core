@@ -17,25 +17,14 @@
 
 /* Backgrounds */
 .space-background { position: absolute; inset: 0; background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); z-index: 1; }
-.stars, .stars2, .stars3 { 
-  position: absolute; 
-  inset: 0; 
-  background-image: 
-    radial-gradient(2px 2px at 20px 30px, white, rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 60px 70px, white, rgba(0,0,0,0)),
-    radial-gradient(1px 1px at 50px 50px, white, rgba(0,0,0,0)),
-    radial-gradient(1px 1px at 130px 80px, white, rgba(0,0,0,0)),
-    radial-gradient(2px 2px at 90px 10px, white, rgba(0,0,0,0));
-  background-repeat: repeat;
-  background-size: 200px 200px;
-}
+.stars, .stars2, .stars3 { position: absolute; inset: 0; }
 .stars { animation: animStar 100s linear infinite; }
 .stars2 { animation: animStar 150s linear infinite; opacity: 0.5; }
 .stars3 { animation: animStar 200s linear infinite; opacity: 0.3; }
 @keyframes animStar { to { transform: translateY(-2000px); }}
 
 /* Helmets */
-.helmet-background { position: absolute; inset: 0; overflow: hidden; z-index: 2; opacity: 0.4; pointer-events: none; }
+.helmet-background { position: absolute; inset: 0; overflow: hidden; z-index: 2; opacity: 0.15; pointer-events: none; }
 .helmet { position: absolute; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle at center, var(--ranger-glow) 0%, var(--ranger-glow) 40%, transparent 70%); box-shadow: 0 0 100px var(--ranger-glow), inset 0 0 80px var(--ranger-glow); animation: rotateHelmet 30s linear infinite; }
 .helmet::before { content: ''; position: absolute; top: 15%; left: 15%; width: 70%; height: 40%; background: var(--ranger-glow); border-radius: 50% 50% 45% 45%; box-shadow: 0 0 60px var(--ranger-glow), inset 0 0 40px rgba(0, 0, 0, 0.6); clip-path: polygon(15% 0%, 85% 0%, 100% 40%, 95% 100%, 5% 100%, 0% 40%); }
 .helmet::after { content: ''; position: absolute; top: 30%; left: 30%; width: 40%; height: 30%; background: radial-gradient(ellipse, rgba(0, 0, 0, 0.9) 20%, var(--ranger-glow) 50%, transparent 70%); border-radius: 50%; box-shadow: 0 0 40px var(--ranger-glow), inset 0 0 20px rgba(0, 0, 0, 0.8); }
@@ -53,15 +42,15 @@
 @keyframes pulse { 0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.05); }}
 
 /* Header */
-.power-rangers-header { position: absolute; top: 1.5%; left: 50%; transform: translateX(-50%); text-align: center; z-index: 25; }
-.pr-logo { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-.pr-power { font-size: 38px; letter-spacing: 10px; font-weight: 900; color: #00ffff; text-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.8), 0 0 60px rgba(0, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 1); }
-.pr-rangers { font-size: 42px; letter-spacing: 12px; font-weight: 900; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.8), 0 0 60px rgba(0, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 1); }
+.power-rangers-header { position: absolute; top: 2%; left: 50%; transform: translateX(-50%); text-align: center; z-index: 25; }
+.pr-logo { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.pr-power { font-size: 32px; letter-spacing: 8px; font-weight: 900; color: #00ffff; text-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.8), 0 0 60px rgba(0, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 1); margin: 0; }
+.pr-rangers { font-size: 36px; letter-spacing: 10px; font-weight: 900; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.8), 0 0 60px rgba(0, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 1); margin: 0; }
 @keyframes rainbowShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; }}
-.pr-subtitle { font-size: 15px; letter-spacing: 5px; font-weight: 700; color: #ffffff; margin-top: 8px; text-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 30px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 1); background: rgba(0, 20, 30, 0.95); padding: 10px 25px; border-radius: 5px; display: inline-block; position: absolute; left: 50%; transform: translateX(-50%); top: 130px; z-index: 30; border: 3px solid #00ffff; white-space: nowrap; box-shadow: 0 0 30px rgba(0, 255, 255, 0.6), inset 0 0 15px rgba(0, 255, 255, 0.1); backdrop-filter: blur(10px); }
+.pr-subtitle { font-size: 13px; letter-spacing: 4px; font-weight: 700; color: #ffffff; margin-top: 15px; text-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 30px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 1); background: rgba(0, 20, 30, 0.95); padding: 8px 20px; border-radius: 5px; display: inline-block; position: relative; border: 2px solid #00ffff; white-space: nowrap; box-shadow: 0 0 30px rgba(0, 255, 255, 0.6), inset 0 0 15px rgba(0, 255, 255, 0.1); backdrop-filter: blur(10px); }
 
 /* Ranger Selector */
-.ranger-selector { position: absolute; top: 9%; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 25; }
+.ranger-selector { position: absolute; top: 11%; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 25; }
 .ranger-badge { width: 50px; height: 50px; border-radius: 50%; border: 3px solid var(--ranger-color); background: radial-gradient(circle, var(--ranger-color), rgba(0, 0, 0, 0.8)); cursor: pointer; transition: all 0.3s ease; position: relative; box-shadow: 0 0 15px var(--ranger-color), inset 0 0 15px rgba(0, 0, 0, 0.5); }
 .ranger-badge:hover { transform: scale(1.2); box-shadow: 0 0 30px var(--ranger-color), inset 0 0 20px rgba(255, 255, 255, 0.3); }
 .ranger-badge.active { transform: scale(1.3); box-shadow: 0 0 40px var(--ranger-color), 0 0 60px var(--ranger-color), inset 0 0 25px rgba(255, 255, 255, 0.5); animation: badgePulse 2s ease-in-out infinite; }
@@ -83,19 +72,19 @@
 @keyframes symbolExpand { 0% { transform: scale(0) rotate(0deg); opacity: 0; } 50% { opacity: 1; transform: scale(1) rotate(180deg); } 100% { transform: scale(2) rotate(360deg); opacity: 0; }}
 
 /* HUD Panels */
-.hud-panel { position: absolute; background: rgba(0, 20, 30, 0.7); border: 2px solid rgba(0, 255, 255, 0.3); border-radius: 10px; padding: 20px; backdrop-filter: blur(10px); box-shadow: 0 0 20px rgba(0, 255, 255, 0.2), inset 0 0 20px rgba(0, 255, 255, 0.05); z-index: 10; }
-.hud-left { top: 15%; left: 3%; width: 280px; }
-.hud-right { top: 15%; right: 3%; width: 280px; }
-.panel-header { color: #00ffff; font-size: 14px; font-weight: bold; letter-spacing: 2px; margin-bottom: 15px; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
-.vital-chart { height: 80px; margin-bottom: 20px; position: relative; }
-.heartbeat { position: absolute; width: 100%; height: 100%; animation: heartbeatAnim 2s linear infinite; }
+.hud-panel { position: absolute; background: rgba(0, 20, 30, 0.85); border: 2px solid rgba(0, 255, 255, 0.4); border-radius: 10px; padding: 20px; backdrop-filter: blur(10px); box-shadow: 0 0 30px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.05); z-index: 10; overflow: hidden; }
+.hud-left { top: 18%; left: 3%; width: 280px; max-height: 400px; }
+.hud-right { top: 18%; right: 3%; width: 280px; max-height: 400px; }
+.panel-header { color: #00ffff; font-size: 13px; font-weight: bold; letter-spacing: 2px; margin-bottom: 15px; text-shadow: 0 0 15px rgba(0, 255, 255, 0.8); border-bottom: 2px solid rgba(0, 255, 255, 0.3); padding-bottom: 10px; }
+.vital-chart { height: 60px; margin-bottom: 20px; position: relative; overflow: hidden; }
+.heartbeat { position: absolute; width: 100%; height: 100%; top: 0; left: 0; animation: heartbeatAnim 2s linear infinite; }
 @keyframes heartbeatAnim { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; }}
-.vital-stats { display: flex; flex-direction: column; gap: 10px; }
-.stat-item { display: flex; justify-content: space-between; font-size: 11px; }
-.stat-label { color: #888; letter-spacing: 1px; }
-.stat-value { color: var(--ranger-glow); font-weight: bold; text-shadow: 0 0 5px var(--ranger-glow); }
+.vital-stats { display: flex; flex-direction: column; gap: 8px; }
+.stat-item { display: flex; justify-content: space-between; align-items: center; font-size: 10px; padding: 6px 10px; background: rgba(0, 255, 255, 0.05); border-radius: 5px; border-left: 3px solid var(--ranger-glow); }
+.stat-label { color: #00ffff; letter-spacing: 1px; font-weight: 600; flex-shrink: 0; font-size: 9px; }
+.stat-value { font-weight: bold; font-size: 9px !important; text-align: right; word-break: break-word; line-height: 1.2; }
 .power-circle { position: relative; width: 120px; height: 120px; margin: 20px auto; }
-.power-circle svg { transform: rotate(-90deg); }
+.power-circle svg { transform: rotate(-90deg); width: 100%; height: 100%; }
 .power-progress { animation: powerPulse 3s ease-in-out infinite; }
 @keyframes powerPulse { 0%, 100% { stroke: var(--ranger-glow); filter: drop-shadow(0 0 5px var(--ranger-glow)); } 50% { filter: drop-shadow(0 0 10px var(--ranger-glow)); }}
 .power-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; font-weight: bold; color: var(--ranger-glow); text-shadow: 0 0 10px var(--ranger-glow); }
@@ -104,7 +93,7 @@
 .bar { flex: 1; border-radius: 2px 2px 0 0; animation: barPulse 2s ease-in-out infinite; }
 .bar.ranger-bar { background: linear-gradient(to top, var(--ranger-glow), var(--ranger-glow)); box-shadow: 0 0 10px var(--ranger-glow); filter: brightness(1.2); }
 @keyframes barPulse { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; }}
-.power-label { text-align: center; font-size: 10px; color: #888; letter-spacing: 2px; margin-top: 10px; }
+.power-label { text-align: center; font-size: 11px; color: #00ffff; letter-spacing: 2px; margin-top: 10px; font-weight: 600; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
 
 /* Login Panel */
 .login-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; padding: 50px 40px; background: rgba(5, 20, 35, 0.85); border: 3px solid var(--ranger-glow); border-radius: 15px; backdrop-filter: blur(15px); box-shadow: 0 0 50px var(--ranger-glow), inset 0 0 30px rgba(0, 255, 255, 0.1); z-index: 20; transition: border-color 0.3s ease, box-shadow 0.3s ease; }

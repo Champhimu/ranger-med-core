@@ -3,19 +3,51 @@ import { useNavigate } from 'react-router-dom';
 import './RangerDashboard.css';
 import { logoutRanger } from '../api/auth';
 
-function RangerDashboard() {
+function RangerDashboard({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
-  const [selectedRanger] = useState('red'); // This would come from auth context
+
+  // Ranger color mapping
+  const rangerColors = {
+    red: '#ff0000',
+    blue: '#0066ff',
+    yellow: '#ffcc00',
+    pink: '#ff69b4',
+    black: '#1a1a1a',
+    mercury: '#c0c0c0'
+  };
+
+  const rangerNames = {
+    red: 'Mack Hartford',
+    blue: 'Dax Lo',
+    yellow: 'Ronny Robinson',
+    pink: 'Rose Ortiz',
+    black: 'Will Aston',
+    mercury: 'Tyzonn'
+  };
+
+  const rangerTitles = {
+    red: 'Red Ranger',
+    blue: 'Blue Ranger',
+    yellow: 'Yellow Ranger',
+    pink: 'Pink Ranger',
+    black: 'Black Ranger',
+    mercury: 'Mercury Ranger'
+  };
 
   // Mock data - would come from API
   const rangerData = {
-    name: 'Mack Hartford',
-    rangerColor: 'Red Ranger',
+    name: rangerNames[selectedRanger] || 'Mack Hartford',
+    rangerColor: rangerTitles[selectedRanger] || 'Red Ranger',
     healthScore: 92,
     symptoms: [
       { id: 1, symptom: 'Headache', severity: 'mild', date: '2025-12-03', time: '14:30' },
       { id: 2, symptom: 'Fatigue', severity: 'moderate', date: '2025-12-02', time: '09:15' },
       { id: 3, symptom: 'Muscle soreness', severity: 'mild', date: '2025-12-01', time: '18:45' }
+    ],
+    capsules: [
+      { id: 1, name: 'Overdrive Accelerator', dosage: '500mg', frequency: 'Twice Daily', lastTaken: '2025-12-04 08:00', nextDue: '2025-12-04 20:00', status: 'active' },
+      { id: 2, name: 'Zord Energy Capsule', dosage: '250mg', frequency: 'Once Daily', lastTaken: '2025-12-04 07:30', nextDue: '2025-12-05 07:30', status: 'active' },
+      { id: 3, name: 'Morphin Grid Stabilizer', dosage: '100mg', frequency: 'As Needed', lastTaken: '2025-12-03 15:00', nextDue: 'PRN', status: 'prn' }
     ],
     appointments: [
       { id: 1, type: 'Check-up', doctor: 'Dr. Andrew Hartford', date: '2025-12-10', time: '10:00 AM', status: 'confirmed' },
@@ -81,7 +113,7 @@ function RangerDashboard() {
           <div className="logo-text">OPERATION OVERDRIVE</div>
           <div className="logo-subtitle">HEADQUARTERS - MEDICAL BAY</div>
         </div>
-        <div className="ranger-info">
+        <div className="ranger-info" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
           <div className="ranger-avatar"></div>
           <div className="ranger-details">
             <h2>{rangerData.name}</h2>
@@ -192,7 +224,39 @@ function RangerDashboard() {
                   </div>
                 ))}
               </div>
-              <button className="view-all-btn">View All Symptoms →</button>
+              <button className="view-all-btn" onClick={() => navigate('/symptoms')}>View All Symptoms →</button>
+            </div>
+          </div>
+
+          {/* Capsules */}
+          <div className="dash-panel power-boosts">
+            <div className="panel-header">
+              <span className="header-icon">💊</span>
+              <h3>CAPSULES</h3>
+            </div>
+            <div className="panel-body">
+              <div className="capsules-list">
+                {rangerData.capsules.map(capsule => (
+                  <div key={capsule.id} className="capsule-item">
+                    <div className="capsule-icon">⚡</div>
+                    <div className="capsule-content">
+                      <div className="capsule-name">{capsule.name}</div>
+                      <div className="capsule-details">
+                        <span className="capsule-dosage">{capsule.dosage}</span>
+                        <span className="capsule-frequency">• {capsule.frequency}</span>
+                      </div>
+                      <div className="capsule-schedule">
+                        <span className="last-taken">Last: {capsule.lastTaken}</span>
+                        <span className="next-due">Next: {capsule.nextDue}</span>
+                      </div>
+                    </div>
+                    <div className={`capsule-status status-${capsule.status}`}>
+                      {capsule.status === 'active' ? '✓ ACTIVE' : 'PRN'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button className="view-all-btn" onClick={() => navigate('/capsules')}>Manage Capsules →</button>
             </div>
           </div>
         </div>
@@ -208,25 +272,46 @@ function RangerDashboard() {
             </div>
             <div className="panel-body">
               <div className="action-buttons">
-                <button className="action-btn add-symptom">
+                <button className="action-btn add-symptom" onClick={() => navigate('/symptoms')}>
                   <div className="btn-icon">📝</div>
                   <div className="btn-text">
                     <span className="btn-title">Add Symptom</span>
                     <span className="btn-subtitle">Log new symptom</span>
                   </div>
                 </button>
-                <button className="action-btn book-appointment">
+                <button className="action-btn symptom-checker" onClick={() => navigate('/symptom-checker')}>
+                  <div className="btn-icon">🩺</div>
+                  <div className="btn-text">
+                    <span className="btn-title">Symptom Checker</span>
+                    <span className="btn-subtitle">AI analysis</span>
+                  </div>
+                </button>
+                <button className="action-btn book-appointment" onClick={() => navigate('/appointments')}>
                   <div className="btn-icon">📅</div>
                   <div className="btn-text">
                     <span className="btn-title">Book Appointment</span>
                     <span className="btn-subtitle">Schedule with doctor</span>
                   </div>
                 </button>
-                <button className="action-btn chat-ai">
+                <button className="action-btn view-calendar" onClick={() => navigate('/calendar')}>
+                  <div className="btn-icon">📆</div>
+                  <div className="btn-text">
+                    <span className="btn-title">View Calendar</span>
+                    <span className="btn-subtitle">Schedule overview</span>
+                  </div>
+                </button>
+                <button className="action-btn chat-ai" onClick={() => navigate('/rangerbot')}>
                   <div className="btn-icon">🤖</div>
                   <div className="btn-text">
-                    <span className="btn-title">Chat with AI</span>
-                    <span className="btn-subtitle">Get instant help</span>
+                    <span className="btn-title">RangerBot AI</span>
+                    <span className="btn-subtitle">Chat assistant</span>
+                  </div>
+                </button>
+                <button className="action-btn capsules" onClick={() => navigate('/capsules')}>
+                  <div className="btn-icon">�</div>
+                  <div className="btn-text">
+                    <span className="btn-title">Capsules</span>
+                    <span className="btn-subtitle">Medications</span>
                   </div>
                 </button>
               </div>
@@ -258,7 +343,7 @@ function RangerDashboard() {
                   </div>
                 ))}
               </div>
-              <button className="view-all-btn">View All Appointments →</button>
+              <button className="view-all-btn" onClick={() => navigate('/appointments')}>View All Appointments →</button>
             </div>
           </div>
 

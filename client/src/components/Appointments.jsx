@@ -1,0 +1,348 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Appointments.css';
+
+function Appointments({ selectedRanger = 'red' }) {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('upcoming');
+  const [showBookingForm, setShowBookingForm] = useState(false);
+
+  const rangerColors = {
+    red: '#FF0000',
+    blue: '#0066FF',
+    yellow: '#FFD700',
+    black: '#000000',
+    pink: '#FF69B4',
+    mercury: '#C0C0C0'
+  };
+
+  const currentColor = rangerColors[selectedRanger] || rangerColors.red;
+
+  // Mock data
+  const upcomingAppointments = [
+    { 
+      id: 1, 
+      type: 'Annual Check-up', 
+      doctor: 'Dr. Andrew Hartford', 
+      specialty: 'General Practitioner',
+      date: '2025-12-10', 
+      time: '10:00 AM', 
+      status: 'confirmed',
+      location: 'Operation Overdrive Medical Bay',
+      notes: 'Bring previous health records'
+    },
+    { 
+      id: 2, 
+      type: 'Physical Therapy', 
+      doctor: 'Dr. Spencer', 
+      specialty: 'Sports Medicine',
+      date: '2025-12-15', 
+      time: '02:00 PM', 
+      status: 'pending',
+      location: 'Rehabilitation Center',
+      notes: 'Post-mission recovery session'
+    },
+    { 
+      id: 3, 
+      type: 'Morphin Grid Analysis', 
+      doctor: 'Dr. Katherine Manx', 
+      specialty: 'Ranger Specialist',
+      date: '2025-12-18', 
+      time: '09:30 AM', 
+      status: 'confirmed',
+      location: 'Zord Command Center',
+      notes: 'Energy level assessment'
+    }
+  ];
+
+  const pastAppointments = [
+    { 
+      id: 4, 
+      type: 'Injury Assessment', 
+      doctor: 'Dr. Hartford', 
+      specialty: 'Emergency Medicine',
+      date: '2025-11-28', 
+      time: '03:00 PM', 
+      status: 'completed',
+      location: 'Medical Bay',
+      notes: 'Combat training injury - fully recovered'
+    },
+    { 
+      id: 5, 
+      type: 'Routine Blood Work', 
+      doctor: 'Dr. Spencer', 
+      specialty: 'Laboratory',
+      date: '2025-11-15', 
+      time: '11:00 AM', 
+      status: 'completed',
+      location: 'Medical Laboratory',
+      notes: 'All results normal'
+    }
+  ];
+
+  const doctors = [
+    { id: 1, name: 'Dr. Andrew Hartford', specialty: 'General Practitioner' },
+    { id: 2, name: 'Dr. Spencer', specialty: 'Sports Medicine' },
+    { id: 3, name: 'Dr. Katherine Manx', specialty: 'Ranger Specialist' },
+    { id: 4, name: 'Dr. William Mitchell', specialty: 'Psychiatry' }
+  ];
+
+  const appointmentTypes = [
+    'Annual Check-up',
+    'Physical Therapy',
+    'Mental Health Consultation',
+    'Morphin Grid Analysis',
+    'Injury Assessment',
+    'Routine Blood Work',
+    'Emergency Visit'
+  ];
+
+  const handleBookAppointment = (e) => {
+    e.preventDefault();
+    // Handle booking logic here
+    setShowBookingForm(false);
+    alert('Appointment booking request sent! You will receive confirmation shortly.');
+  };
+
+  return (
+    <div className="appointments-page" data-ranger={selectedRanger}>
+      {/* Backgrounds */}
+      <div className="space-background"></div>
+      <div className="stars"></div>
+      <div className="stars2"></div>
+      <div className="stars3"></div>
+
+      {/* Header */}
+      <div className="appointments-header">
+        <button className="back-to-dashboard" onClick={() => navigate('/dashboard')}>
+          ← Back to Dashboard
+        </button>
+        <div className="header-content">
+          <h1 className="page-title">APPOINTMENT CENTER</h1>
+          <p className="page-subtitle">OPERATION OVERDRIVE - MEDICAL SCHEDULING</p>
+        </div>
+        <button className="book-new-btn" onClick={() => setShowBookingForm(true)} style={{ borderColor: currentColor, color: currentColor }}>
+          + Book New Appointment
+        </button>
+      </div>
+
+      {/* Main Content */}
+      <div className="appointments-container">
+        
+        {/* Tabs */}
+        <div className="appointment-tabs">
+          <button 
+            className={`tab-btn ${activeTab === 'upcoming' ? 'active' : ''}`}
+            onClick={() => setActiveTab('upcoming')}
+            style={activeTab === 'upcoming' ? { borderBottomColor: currentColor, color: currentColor } : {}}
+          >
+            <span className="tab-icon">📅</span>
+            <span className="tab-label">Upcoming Appointments</span>
+            <span className="tab-count">{upcomingAppointments.length}</span>
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'past' ? 'active' : ''}`}
+            onClick={() => setActiveTab('past')}
+            style={activeTab === 'past' ? { borderBottomColor: currentColor, color: currentColor } : {}}
+          >
+            <span className="tab-icon">📋</span>
+            <span className="tab-label">Past Appointments</span>
+            <span className="tab-count">{pastAppointments.length}</span>
+          </button>
+        </div>
+
+        {/* Appointments List */}
+        <div className="appointments-content">
+          {activeTab === 'upcoming' ? (
+            <div className="appointments-grid">
+              {upcomingAppointments.map(appointment => (
+                <div key={appointment.id} className="appointment-detail-card">
+                  <div className="card-header">
+                    <div className="appointment-date-large">
+                      <div className="day">{new Date(appointment.date).getDate()}</div>
+                      <div className="month">{new Date(appointment.date).toLocaleString('default', { month: 'short' }).toUpperCase()}</div>
+                    </div>
+                    <div className={`status-badge status-${appointment.status}`}>
+                      {appointment.status.toUpperCase()}
+                    </div>
+                  </div>
+                  
+                  <div className="card-body">
+                    <h3 className="appointment-type">{appointment.type}</h3>
+                    <div className="appointment-info">
+                      <div className="info-row">
+                        <span className="info-icon">👨‍⚕️</span>
+                        <div className="info-text">
+                          <div className="info-label">Doctor</div>
+                          <div className="info-value">{appointment.doctor}</div>
+                          <div className="info-sub">{appointment.specialty}</div>
+                        </div>
+                      </div>
+                      <div className="info-row">
+                        <span className="info-icon">⏰</span>
+                        <div className="info-text">
+                          <div className="info-label">Time</div>
+                          <div className="info-value">{appointment.time}</div>
+                        </div>
+                      </div>
+                      <div className="info-row">
+                        <span className="info-icon">📍</span>
+                        <div className="info-text">
+                          <div className="info-label">Location</div>
+                          <div className="info-value">{appointment.location}</div>
+                        </div>
+                      </div>
+                      {appointment.notes && (
+                        <div className="info-row notes-row">
+                          <span className="info-icon">📝</span>
+                          <div className="info-text">
+                            <div className="info-label">Notes</div>
+                            <div className="info-value">{appointment.notes}</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="card-footer">
+                    <button className="action-link chat-btn">
+                      💬 Chat with Doctor
+                    </button>
+                    <button className="action-link call-btn">
+                      📞 Schedule Call
+                    </button>
+                    <button className="action-link cancel-btn">
+                      ❌ Cancel
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="appointments-grid">
+              {pastAppointments.map(appointment => (
+                <div key={appointment.id} className="appointment-detail-card past">
+                  <div className="card-header">
+                    <div className="appointment-date-large">
+                      <div className="day">{new Date(appointment.date).getDate()}</div>
+                      <div className="month">{new Date(appointment.date).toLocaleString('default', { month: 'short' }).toUpperCase()}</div>
+                    </div>
+                    <div className={`status-badge status-${appointment.status}`}>
+                      {appointment.status.toUpperCase()}
+                    </div>
+                  </div>
+                  
+                  <div className="card-body">
+                    <h3 className="appointment-type">{appointment.type}</h3>
+                    <div className="appointment-info">
+                      <div className="info-row">
+                        <span className="info-icon">👨‍⚕️</span>
+                        <div className="info-text">
+                          <div className="info-label">Doctor</div>
+                          <div className="info-value">{appointment.doctor}</div>
+                          <div className="info-sub">{appointment.specialty}</div>
+                        </div>
+                      </div>
+                      <div className="info-row">
+                        <span className="info-icon">⏰</span>
+                        <div className="info-text">
+                          <div className="info-label">Time</div>
+                          <div className="info-value">{appointment.time}</div>
+                        </div>
+                      </div>
+                      {appointment.notes && (
+                        <div className="info-row notes-row">
+                          <span className="info-icon">📝</span>
+                          <div className="info-text">
+                            <div className="info-label">Notes</div>
+                            <div className="info-value">{appointment.notes}</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="card-footer">
+                    <button className="action-link">📄 View Summary</button>
+                    <button className="action-link">🔄 Book Follow-up</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Booking Modal */}
+      {showBookingForm && (
+        <div className="booking-modal-overlay" onClick={() => setShowBookingForm(false)}>
+          <div className="booking-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>BOOK NEW APPOINTMENT</h2>
+              <button className="close-modal" onClick={() => setShowBookingForm(false)}>✕</button>
+            </div>
+            
+            <form onSubmit={handleBookAppointment} className="booking-form">
+              <div className="form-group">
+                <label>Appointment Type</label>
+                <select required>
+                  <option value="">Select appointment type</option>
+                  {appointmentTypes.map((type, index) => (
+                    <option key={index} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Select Doctor</label>
+                <select required>
+                  <option value="">Choose a doctor</option>
+                  {doctors.map(doctor => (
+                    <option key={doctor.id} value={doctor.id}>
+                      {doctor.name} - {doctor.specialty}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Preferred Date</label>
+                  <input type="date" required min={new Date().toISOString().split('T')[0]} />
+                </div>
+                <div className="form-group">
+                  <label>Preferred Time</label>
+                  <input type="time" required />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Reason for Visit</label>
+                <textarea rows="4" placeholder="Describe your symptoms or reason for the appointment..." required></textarea>
+              </div>
+
+              <div className="form-group">
+                <label>Additional Notes (Optional)</label>
+                <textarea rows="3" placeholder="Any specific requirements or information..."></textarea>
+              </div>
+
+              <div className="form-actions">
+                <button type="button" className="cancel-form-btn" onClick={() => setShowBookingForm(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="submit-form-btn" style={{ background: currentColor }}>
+                  Book Appointment
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Cockpit Frame */}
+      <div className="cockpit-frame"></div>
+    </div>
+  );
+}
+
+export default Appointments;

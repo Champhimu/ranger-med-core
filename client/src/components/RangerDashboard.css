@@ -74,6 +74,14 @@
   display: flex;
   align-items: center;
   gap: 15px;
+  transition: all 0.3s ease;
+  padding: 5px 10px;
+  border-radius: 10px;
+}
+
+.ranger-info:hover {
+  background: rgba(0, 255, 255, 0.1);
+  transform: translateX(5px);
 }
 
 .ranger-avatar {
@@ -321,6 +329,114 @@
 
 .symptom-date {
   color: #888;
+}
+
+/* Power Boost Capsules */
+.capsules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.capsule-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 15px;
+  background: rgba(0, 40, 60, 0.4);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.capsule-item:hover {
+  background: rgba(0, 50, 70, 0.6);
+  border-color: var(--ranger-glow);
+  transform: translateX(5px);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.capsule-icon {
+  font-size: 32px;
+  min-width: 40px;
+  text-align: center;
+  filter: drop-shadow(0 0 8px var(--ranger-glow));
+  animation: capsulePulse 2s ease-in-out infinite;
+}
+
+@keyframes capsulePulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.capsule-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.capsule-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ranger-glow);
+  text-shadow: 0 0 8px var(--ranger-glow);
+  letter-spacing: 1px;
+}
+
+.capsule-details {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: #00ffff;
+}
+
+.capsule-dosage {
+  font-weight: 600;
+}
+
+.capsule-frequency {
+  opacity: 0.8;
+}
+
+.capsule-schedule {
+  display: flex;
+  gap: 15px;
+  font-size: 11px;
+  color: #888;
+  margin-top: 5px;
+}
+
+.last-taken,
+.next-due {
+  display: flex;
+  align-items: center;
+}
+
+.capsule-status {
+  display: flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.capsule-status.status-active {
+  background: rgba(0, 255, 0, 0.2);
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.capsule-status.status-prn {
+  background: rgba(255, 204, 0, 0.2);
+  color: #ffcc00;
+  border: 1px solid #ffcc00;
+  box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
 }
 
 /* Quick Actions */
@@ -609,13 +725,9 @@
 }
 
 /* Cockpit Frame */
+/* Cockpit frame disabled to remove black lines */
 .cockpit-frame {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 8%), 
-              linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 8%);
-  z-index: 30;
+  display: none;
 }
 
 /* Responsive */

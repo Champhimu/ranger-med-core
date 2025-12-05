@@ -101,14 +101,8 @@ function App() {
         <Routes>
           {/* ==================== Public Routes ==================== */}
           <Route path="/" element={<Welcome />} />
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/doctor" element={<DoctorPage />} />
-          <Route path="/zordon" element={<ZordonPage />} />
-
-          {/* ==================== Authentication Routes ==================== */}
-          {console.log("Dashboard", localStorage.getItem("accessToken"))};
-          <Route
-            path="/login"
+          <Route 
+            path="/login" 
             element={
               <LoggedInRedirect>
                 <LoginPage
@@ -120,8 +114,9 @@ function App() {
               </LoggedInRedirect>
             }
           />
-          
-          {/* ==================== Protected Routes ==================== */}
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/doctor" element={<DoctorPage />} />
+          <Route path="/zordon" element={<ZordonPage />} />
           <Route 
             path="/dashboard" 
             element={
