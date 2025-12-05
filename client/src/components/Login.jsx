@@ -30,7 +30,7 @@ function Login({ onLoginSuccess, onRegister }) {
         })
       }, 2000)
     } else {
-      alert('Please enter both Ranger Signal ID and Tracker Access Code')
+      alert('Please enter both Operator ID and Access Code')
     }
   }
 
@@ -110,7 +110,7 @@ function Login({ onLoginSuccess, onRegister }) {
       </div>
 
       <div className="hud-panel hud-right">
-        <div className="panel-header">OVERDRIVE POWER</div>
+        <div className="panel-header">RANGER POWER</div>
         <div className="power-circle">
           <svg viewBox="0 0 120 120">
             <circle cx="60" cy="60" r="50" fill="none" stroke="#1a3a4a" strokeWidth="8" />
@@ -127,7 +127,7 @@ function Login({ onLoginSuccess, onRegister }) {
             ))}
           </div>
         </div>
-        <div className="power-label">TRACKER SYSTEM</div>
+        <div className="power-label">HEALTH TRACKER STATUS</div>
       </div>
 
       <div className="login-panel">
@@ -146,8 +146,8 @@ function Login({ onLoginSuccess, onRegister }) {
 
         <form onSubmit={handleSubmit} className="login-form">
           {[
-            { id: 'operatorId', label: 'RANGER SIGNAL ID', type: 'text', placeholder: 'Enter Overdrive Ranger ID' },
-            { id: 'accessCode', label: 'TRACKER ACCESS CODE', type: 'password', placeholder: 'Enter Access Code' }
+            { id: 'operatorId', label: 'OPERATOR ID', type: 'text', placeholder: 'Enter Operator ID' },
+            { id: 'accessCode', label: 'ACCESS CODE', type: 'password', placeholder: 'Enter Access Code' }
           ].map(field => (
             <div key={field.id} className="form-group">
               <label htmlFor={field.id}>{field.label}</label>

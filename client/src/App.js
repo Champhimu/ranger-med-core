@@ -9,7 +9,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'r
 import Login from './components/Login.jsx';
 import Register from './components/Register.jsx';
 import Welcome from './components/Welcome.jsx';
-import DoctorPage from './components/DoctorPage.jsx';
+import DoctorLogin from './components/DoctorLogin.jsx';
+import DoctorDashboard from './components/DoctorDashboard.jsx';
 import ZordonPage from './components/ZordonPage.jsx';
 import RangerDashboard from './components/RangerDashboard';
 import Appointments from './components/Appointments';
@@ -51,6 +52,15 @@ function ProtectedRoute({ isAuthenticated, children }) {
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 }
 
+/**
+ * DoctorProtectedRoute - Wrapper for doctor authenticated routes
+ * Redirects to doctor login if doctor is not authenticated
+ */
+function DoctorProtectedRoute({ children }) {
+  const doctorAuth = localStorage.getItem('doctorAuth');
+  return doctorAuth ? children : <Navigate to="/doctor/login" replace />;
+}
+
 // ==================== Main App Component ====================
 
 function App() {
@@ -83,7 +93,7 @@ function App() {
           {/* ==================== Public Routes ==================== */}
           <Route path="/" element={<Welcome />} />
           <Route path="/welcome" element={<Welcome />} />
-          <Route path="/doctor" element={<DoctorPage />} />
+          <Route path="/doctor/login" element={<DoctorLogin />} />
           <Route path="/zordon" element={<ZordonPage />} />
 
           {/* ==================== Authentication Routes ==================== */}
@@ -187,6 +197,16 @@ function App() {
               <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <WeeklyInsights selectedRanger={selectedRanger} />
               </ProtectedRoute>
+            } 
+          />
+
+          {/* ==================== Doctor Routes ==================== */}
+          <Route 
+            path="/doctor/dashboard" 
+            element={
+              <DoctorProtectedRoute>
+                <DoctorDashboard />
+              </DoctorProtectedRoute>
             } 
           />
         </Routes>

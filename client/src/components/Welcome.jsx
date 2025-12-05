@@ -21,9 +21,9 @@ function Welcome() {
       title: '👨‍⚕️ DOCTOR PORTAL',
       description: 'Medical Professional Dashboard',
       subtitle: 'Patient management and health analytics',
-      color: '#0066ff',
+      color: '#22c55e',
       icon: '🏥',
-      path: '/doctor'
+      path: '/doctor/login'
     },
     {
       id: 'admin',
