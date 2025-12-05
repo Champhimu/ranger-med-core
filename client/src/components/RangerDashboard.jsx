@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RangerDashboard.css';
+import { logoutRanger } from '../api/auth';
 
 function RangerDashboard() {
   const navigate = useNavigate();
@@ -48,6 +49,23 @@ function RangerDashboard() {
       />
     </svg>
   );
+
+  const handleLogout = async() => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    const res = await logoutRanger({
+      refreshToken
+    });
+
+    if (res.status == 500) {
+      return alert("Something went wrong! Unable to logout");
+    }
+    
+    // Clear everything
+    localStorage.clear();
+
+    navigate('/welcome'); // Redirect to welcome/login page
+  };
+
 
   return (
     <div className="ranger-dashboard" data-ranger={selectedRanger}>
@@ -273,8 +291,8 @@ function RangerDashboard() {
           </div>
         </div>
         <div className="hud-item">
-          <button className="logout-btn" onClick={() => navigate('/welcome')}>
-            <span>⏏️ LOGOUT</span>
+          <button className="logout-btn" onClick={handleLogout}>
+            <span> LOGOUT</span>
           </button>
         </div>
       </div>

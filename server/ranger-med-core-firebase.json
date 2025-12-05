@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "ranger-med-core",
+  "private_key_id": "4910a54a4400ddaa7e92af55c4be377b86c3fc80",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDRscGV5xIAwOQQ\neffJggMyPuvqybi2GVd+P17vYMrs8xHEJbnr5Q4jsfVUw4jc9zGuRENLGGGBtOBF\n2aBq3oGJ7lkA2WVA/LiLRPeRJzh4TxBYXplhUxDpA7ObG18pWf8Yow7eOC6tIxfW\n2wJrux3LNHTll3SoWUG9ikIY3SmU50xlhfgShVYfHRCAJFoD7JX0S45+bAmJfFRz\nYVqx2Zu844VHCWcf9rC5WMffEd2C9bIZ/1+MSdG1dbiBmJWwwh04guc4k8pZdRGh\nhHLVErxRYs954BhNhZkpcTnRSkoMKj9dztR7JK/Tor26yg8HnzXjh+fo8L3qPq9u\ngy7Z83PRAgMBAAECggEAB4ptpHseg93r5abJMRsmi8ZE/Bi8dnnzUkQroQ6ZRYuZ\nKjVUGgZO65ww7xcoAxA1nmdwhxENopkzTne8w9MUE/Z5B2WJ9VwRM9rrTzI6nuLy\n+saOG/idfU+nhA6oLafBm2xzsqyRCyNdrlmKXP7p256bjI0Vgh9RlKQV6+h6IBNf\niHhlnNOx7gkngPCgwlqb7VkjeP6jc6JSvz8IAVkMW/stmyr0EPcdZAavNsUv5FLo\n8b5MHE92s2D0683SRDIGzueAJPL4yOt6/pWQWsixeWijAtrQzrlhJv9jbb4vN7o6\nAcErvfnmv6s435stfqrv6mEZS+ywkUoVALreidwFcQKBgQD+dmd+Uv08C5N2HoUm\nkUePUUcdH5xVpF45tWB/RZs5Y8CEGOMz2IxemJOjI5zj9alcprSrnGp2pVsVmLr4\niV28aCA2OU3dtm9wA8KKtpC45a8oIsOR8Qwxpk+GlARkr36bqSFbPbnP0tsx/ERv\n0elJi3bvT91YaKcE7hrKf/GN+QKBgQDS9hsScw3RRecfyen3khsK7pzVuYAdOxdG\nKDwVk7kGh8loSAXAJWxmes+1UOFWQvB2goAGq3VWWtj3t38vR1mfvfejElL2BHTK\nUO06LJHKRfhQFr5GmDJ8dn/pl2s2bq5UYpDME7el2rW6F1EQYsUYKqjqzNYwCcp4\na0tVQVDqmQKBgQCW/9hGRCT1vsDQtSe6TTezuj2C8MEqqREpGZKbs8h689DIEqSw\nnW4erFff1UBCngLUcjCALZ+XrGQymqFI3ur65KdIxhSI3rueMvz8p32V2uZn4MlB\nD1N3GwPSDn/U57cv09txc12SD8P3E4Xg/SV8eQAo3rGwxtlluY24YNgMsQKBgE+z\nm1bFERtXhZKE/lgCYyUmMSquArEIeiqPWOPuA6Fr+7PiQgnuGZ4+F+swu3GTqLWd\naDEc5h/SAtbUBMEf+8RWSRDbA2zfEiC9omKwJAR/mujnLswNBEXxnzHpex/9gO9w\nrbPsXx3SG4ZK+N1v83bF5zuOV/2eNVh5cOSs4J1BAoGBAOEuYVykIfHLkRGDsr8m\nszIwFuTrV70S+VXyLhreYBA/8GG1p3o5qSpJ36dwD6M+HQrEslzVCadOi1uXqCZf\nxln5XPdOt8rqX7TgpYa/TRpiVzaFZCyqCnsEJyY7txoHVSQU5S7hpbEyM1nqSzx/\naiWLLvEZvbAWBGwu1l3rzYBK\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@ranger-med-core.iam.gserviceaccount.com",
+  "client_id": "117606942028124753031",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40ranger-med-core.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

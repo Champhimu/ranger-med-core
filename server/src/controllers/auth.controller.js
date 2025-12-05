@@ -17,17 +17,21 @@ const generateRefreshToken = (id) => {
 // POST: /api/auth/register
 export const register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, username, email, password, role } = req.body;
 
     // Check if email already registered
     const exists = await User.findOne({ email });
-    if (exists) return res.status(400).json({ message: "User already exists" });
+    if (exists) return res.status(400).json({ message: "Email already exists" });
+
+    // Check if username already exists
+    const uexists = await User.findOne({ username });
+    if (uexists) return res.status(400).json({ message: "Username already exists. Please use other username"});
 
     // Hash the password using bcrypt
     const hashed = await bcrypt.hash(password, 10);
 
     // Create a new user in the DB with hashed password.
-    await User.create({ name, email, password: hashed, role });
+    await User.create({ name, username, email, password: hashed, role });
 
     res.json({ message: "User registered successfully" });
   } catch (err) {
@@ -38,11 +42,11 @@ export const register = async (req, res) => {
 // POST /api/auth/login
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     // Find the user by email.
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    const user = await User.findOne({ username });
+    if (!user) return res.status(400).json({ message: "Operator ID not found" });
 
     // Compare input password with hashed password in DB
     const match = await bcrypt.compare(password, user.password);

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './Login.css'
+import { loginRanger } from '../api/auth'
 
 function Login({ onLoginSuccess, onRegister }) {
   const [form, setForm] = useState({ operatorId: '', accessCode: '' })
@@ -17,13 +18,33 @@ function Login({ onLoginSuccess, onRegister }) {
 
   const currentRanger = rangers.find(r => r.id === selectedRanger)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault()
     if (form.operatorId && form.accessCode) {
+      
+      const res = await loginRanger({
+        username: form.operatorId,
+        password: form.accessCode
+      });
+      
+      if (res.error || res.message === "Invalid credentials" || res.message === "Operator ID not found") {
+        // setIsMorphing(false);
+        return alert(res.error || res.message);
+      }
       setIsMorphing(true)
+
+      // Save tokens
+      localStorage.setItem("accessToken", res.accessToken);
+      localStorage.setItem("refreshToken", res.refreshToken);
+      localStorage.setItem("rangerDesignation", "ranger");
+
       setTimeout(() => {
         alert(`OVERDRIVE ACCELERATE! ${currentRanger.name} - KICK INTO OVERDRIVE!`)
-        onLoginSuccess?.()
+        onLoginSuccess?.({ 
+          rangerId: selectedRanger, 
+          rangerName: currentRanger.name,
+          rangerColor: currentRanger.color 
+        })
       }, 2000)
     } else {
       alert('Please enter both Ranger Signal ID and Tracker Access Code')

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Register.css';
+import { registerRanger } from '../api/auth';
 
 function Register({ onBack }) {
   const [form, setForm] = useState({
@@ -24,18 +25,41 @@ function Register({ onBack }) {
 
   const currentRanger = rangers.find(r => r.id === selectedRanger);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.accessCode !== form.confirmCode) {
       alert('Access codes do not match!');
       return;
     }
     setIsRegistering(true);
-    setTimeout(() => {
-      setIsRegistering(false);
-      alert(`Welcome to Operation Overdrive, ${currentRanger.name}!`);
-      onBack?.();
-    }, 2000);
+
+    const payload = {
+      name: form.fullName,
+      username: form.operatorId,
+      email: form.email,
+      password: form.accessCode,
+      role: "ranger",
+    };
+    
+    try {
+      const res = await registerRanger(payload);
+      console.log("Response",res);
+      if (res.error || res.message === "Email already exists" || res.message === "Username already exists") {
+        alert(res.error || res.message);
+      } else {
+        alert(`Register Successfull! Welcome to Operation Overdrive, ${currentRanger.name}!`);
+        onBack?.();
+      }
+    }catch (error){
+      alert("Something went wrong!");
+      console.error(error);
+    }
+    setIsRegistering(false);
+    // setTimeout(() => {
+    //   setIsRegistering(false);
+    //   alert(`Welcome to Operation Overdrive, ${currentRanger.name}!`);
+    //   onBack?.();
+    // }, 2000);
   };
 
   const handleRangerSelect = (rangerId) => {
