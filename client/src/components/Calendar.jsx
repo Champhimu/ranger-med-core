@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Calendar.css';
 
@@ -7,6 +7,7 @@ function Calendar({ selectedRanger = 'red' }) {
   const [currentDate, setCurrentDate] = useState(new Date(2025, 11, 4)); // December 4, 2025
   const [selectedDate, setSelectedDate] = useState(null);
   const [viewMode, setViewMode] = useState('month'); // month, week, day
+  const fileInputRef = useRef(null);
 
   const rangerColors = {
     red: '#FF0000',
@@ -64,6 +65,131 @@ function Calendar({ selectedRanger = 'red' }) {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
+
+  // ==================== CALENDAR EXPORT/IMPORT FUNCTIONS ====================
+  
+  const generateICS = () => {
+    // ICS (iCalendar) format generator
+    const icsEvents = allEvents.map(event => {
+      const eventDate = new Date(`${event.date} ${event.time || '00:00'}`);
+      const startDate = eventDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      const endDate = new Date(eventDate.getTime() + 60 * 60 * 1000).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      
+      let description = '';
+      if (event.doctor) description += `Doctor: ${event.doctor}\\n`;
+      if (event.dosage) description += `Dosage: ${event.dosage}\\n`;
+      if (event.description) description += event.description;
+      if (event.severity) description += `Severity: ${event.severity}`;
+      
+      return [
+        'BEGIN:VEVENT',
+        `DTSTART:${startDate}`,
+        `DTEND:${endDate}`,
+        `SUMMARY:${event.title}`,
+        description ? `DESCRIPTION:${description}` : '',
+        `CATEGORIES:${event.type.toUpperCase()}`,
+        `STATUS:CONFIRMED`,
+        `UID:${event.date}-${event.title.replace(/\s/g, '-')}@ranger-med-core.app`,
+        'END:VEVENT'
+      ].filter(Boolean).join('\r\n');
+    }).join('\r\n');
+
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Ranger Med-Core//NONSGML v1.0//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'X-WR-CALNAME:Ranger Health Calendar',
+      'X-WR-TIMEZONE:UTC',
+      'X-WR-CALDESC:Medical appointments, medications, and health tracking',
+      icsEvents,
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    return icsContent;
+  };
+
+  const handleExportCalendar = () => {
+    const icsContent = generateICS();
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `ranger-health-calendar-${formatDateToString(new Date())}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    alert('📅 Calendar exported successfully! You can now import this file into Google Calendar, Apple Calendar, Outlook, or any other calendar app.');
+  };
+
+  const handleImportCalendar = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const icsContent = e.target.result;
+      parseICS(icsContent);
+    };
+    reader.readAsText(file);
+  };
+
+  const parseICS = (icsContent) => {
+    // Basic ICS parser - In production, use a library like ical.js
+    const lines = icsContent.split(/\r\n|\n|\r/);
+    let importedCount = 0;
+    
+    lines.forEach((line, index) => {
+      if (line.startsWith('SUMMARY:')) {
+        const summary = line.substring(8);
+        const dateLineBefore = lines.slice(0, index).reverse().find(l => l.startsWith('DTSTART'));
+        
+        if (dateLineBefore) {
+          importedCount++;
+        }
+      }
+    });
+
+    alert(`📥 Successfully imported ${importedCount} events from calendar file!\n\nNote: In a production app, these would be saved to your account.`);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSyncGoogleCalendar = () => {
+    // In production, this would use Google Calendar API
+    alert('🔗 Google Calendar Sync\n\nTo enable sync:\n1. Connect your Google account\n2. Grant calendar permissions\n3. Choose sync direction (one-way or two-way)\n\nThis feature requires backend API integration.');
+  };
+
+  const handleAddToPhoneCalendar = (event) => {
+    // Generate a single event ICS for quick add
+    const eventDate = new Date(`${event.date} ${event.time || '00:00'}`);
+    const startDate = eventDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    const endDate = new Date(eventDate.getTime() + 60 * 60 * 1000).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Ranger Med-Core//NONSGML v1.0//EN',
+      'BEGIN:VEVENT',
+      `DTSTART:${startDate}`,
+      `DTEND:${endDate}`,
+      `SUMMARY:${event.title}`,
+      `DESCRIPTION:${event.description || event.doctor || event.dosage || ''}`,
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${event.title.replace(/\s/g, '-')}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // ==================== END EXPORT/IMPORT FUNCTIONS ====================
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -156,6 +282,42 @@ function Calendar({ selectedRanger = 'red' }) {
           <h1 className="page-title">MISSION CALENDAR</h1>
           <p className="page-subtitle">OPERATION OVERDRIVE - SCHEDULE OVERVIEW</p>
         </div>
+        
+        {/* Calendar Sync Buttons */}
+        <div className="calendar-sync-buttons">
+          <button 
+            className="sync-btn export-btn"
+            onClick={handleExportCalendar}
+            title="Export to ICS file"
+            style={{ borderColor: currentColor, color: currentColor }}
+          >
+            📤 Export
+          </button>
+          <button 
+            className="sync-btn import-btn"
+            onClick={() => fileInputRef.current?.click()}
+            title="Import from ICS file"
+            style={{ borderColor: currentColor, color: currentColor }}
+          >
+            📥 Import
+          </button>
+          <button 
+            className="sync-btn google-btn"
+            onClick={handleSyncGoogleCalendar}
+            title="Sync with Google Calendar"
+            style={{ borderColor: currentColor, color: currentColor }}
+          >
+            🔗 Sync
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".ics,.ical"
+            onChange={handleImportCalendar}
+            style={{ display: 'none' }}
+          />
+        </div>
+        
         <div className="view-mode-toggle">
           <button 
             className={viewMode === 'month' ? 'active' : ''} 
@@ -248,6 +410,13 @@ function Calendar({ selectedRanger = 'red' }) {
                       <div className="event-title">{event.title}</div>
                       <div className="event-detail">{event.doctor}</div>
                     </div>
+                    <button 
+                      className="add-to-cal-btn"
+                      onClick={() => handleAddToPhoneCalendar(event)}
+                      title="Add to your calendar"
+                    >
+                      📲
+                    </button>
                   </div>
                 ))}
                 {(selectedDate 
@@ -281,6 +450,13 @@ function Calendar({ selectedRanger = 'red' }) {
                       <div className="event-title">{event.title}</div>
                       <div className="event-detail">{event.dosage}</div>
                     </div>
+                    <button 
+                      className="add-to-cal-btn"
+                      onClick={() => handleAddToPhoneCalendar(event)}
+                      title="Add to your calendar"
+                    >
+                      📲
+                    </button>
                   </div>
                 ))}
                 {(selectedDate 

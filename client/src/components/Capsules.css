@@ -723,6 +723,313 @@
   line-height: 1.5;
 }
 
+/* Smart Recommendations Section */
+.smart-recommendations {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 2px solid rgba(0, 255, 255, 0.3);
+}
+
+.recommendations-header {
+  margin-bottom: 20px;
+}
+
+.recommendations-header h3 {
+  margin: 0 0 5px 0;
+  color: #00ffff;
+  font-size: 22px;
+  text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.recommendations-header p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+}
+
+.recommendations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.recommendation-card {
+  background: rgba(0, 255, 255, 0.05);
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.recommendation-card:hover {
+  border-color: rgba(0, 255, 255, 0.6);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.recommendation-card.priority-high {
+  border-color: rgba(255, 69, 0, 0.5);
+  background: rgba(255, 69, 0, 0.05);
+}
+
+.recommendation-card.priority-medium {
+  border-color: rgba(255, 165, 0, 0.5);
+  background: rgba(255, 165, 0, 0.05);
+}
+
+.rec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rec-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+}
+
+.rec-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.5px;
+}
+
+.rec-priority {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.rec-priority.high {
+  background: rgba(255, 69, 0, 0.3);
+  border: 1px solid #ff4500;
+  color: #ff4500;
+}
+
+.rec-priority.medium {
+  background: rgba(255, 165, 0, 0.3);
+  border: 1px solid #ffa500;
+  color: #ffa500;
+}
+
+.rec-priority.low {
+  background: rgba(0, 255, 255, 0.3);
+  border: 1px solid #00ffff;
+  color: #00ffff;
+}
+
+.rec-content h4 {
+  margin: 0 0 10px 0;
+  color: #fff;
+  font-size: 18px;
+}
+
+.rec-message {
+  margin: 0 0 10px 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.rec-suggestion {
+  margin: 8px 0;
+  padding: 8px 12px;
+  background: rgba(0, 255, 255, 0.08);
+  border-left: 3px solid #00ffff;
+  border-radius: 4px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.rec-suggestion strong {
+  color: #00ffff;
+}
+
+.rec-footer {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.confidence-indicator {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.confidence-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+
+.confidence-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.confidence-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ffff, #00cccc);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.confidence-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: #00ffff;
+  min-width: 40px;
+  text-align: right;
+}
+
+.apply-recommendation-btn {
+  padding: 8px 16px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 2px solid #00ffff;
+  color: #00ffff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.apply-recommendation-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Adherence Analytics */
+.adherence-analytics {
+  margin-top: 25px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+}
+
+.adherence-analytics h3 {
+  margin: 0 0 20px 0;
+  color: #00ffff;
+  font-size: 20px;
+  text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px;
+}
+
+.analytics-card {
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.analytics-card h4 {
+  margin: 0 0 12px 0;
+  color: #fff;
+  font-size: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.analytics-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.stat-value {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: #00ffff;
+}
+
+.stat-value.pattern-on-time {
+  color: #00ff00;
+  border-color: rgba(0, 255, 0, 0.3);
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.stat-value.pattern-consistently-late {
+  color: #ffa500;
+  border-color: rgba(255, 165, 0, 0.3);
+  background: rgba(255, 165, 0, 0.1);
+}
+
+.stat-value.pattern-consistently-early {
+  color: #00bfff;
+  border-color: rgba(0, 191, 255, 0.3);
+  background: rgba(0, 191, 255, 0.1);
+}
+
+.stat-value.consistency-excellent {
+  color: #00ff00;
+  border-color: rgba(0, 255, 0, 0.3);
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.stat-value.consistency-good {
+  color: #00ffff;
+  border-color: rgba(0, 255, 255, 0.3);
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.stat-value.consistency-fair {
+  color: #ffa500;
+  border-color: rgba(255, 165, 0, 0.3);
+  background: rgba(255, 165, 0, 0.1);
+}
+
+.stat-value.consistency-poor {
+  color: #ff4500;
+  border-color: rgba(255, 69, 0, 0.3);
+  background: rgba(255, 69, 0, 0.1);
+}
+
 /* Cockpit Frame */
 .cockpit-frame {
   position: fixed;

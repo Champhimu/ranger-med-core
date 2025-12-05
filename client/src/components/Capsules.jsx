@@ -97,6 +97,130 @@ const Capsules = ({ ranger = 'red' }) => {
     }
   ]);
 
+  // Smart Reminders: Track dose history and patterns
+  const [doseHistory] = useState([
+    { medication: 'Morphinium-12', scheduledTime: '08:00', actualTime: '08:05', date: '2025-01-24' },
+    { medication: 'Morphinium-12', scheduledTime: '08:00', actualTime: '08:12', date: '2025-01-23' },
+    { medication: 'Morphinium-12', scheduledTime: '08:00', actualTime: '07:58', date: '2025-01-22' },
+    { medication: 'Morphinium-12', scheduledTime: '08:00', actualTime: '08:20', date: '2025-01-21' },
+    { medication: 'Neural-Sync Plus', scheduledTime: '09:00', actualTime: '09:15', date: '2025-01-24' },
+    { medication: 'Neural-Sync Plus', scheduledTime: '09:00', actualTime: '09:10', date: '2025-01-23' },
+    { medication: 'Ranger Vitamins Complex', scheduledTime: '07:00', actualTime: '07:05', date: '2025-01-24' },
+    { medication: 'Ranger Vitamins Complex', scheduledTime: '07:00', actualTime: '07:02', date: '2025-01-23' }
+  ]);
+
+  // Calculate smart reminder timing based on user patterns
+  const calculateSmartReminderTime = (medication) => {
+    const medHistory = doseHistory.filter(d => d.medication === medication);
+    
+    if (medHistory.length < 3) {
+      // Not enough data, use scheduled time
+      const med = medications.find(m => m.name === medication);
+      return med?.time[0] || '08:00';
+    }
+
+    // Calculate average actual taking time
+    const totalMinutes = medHistory.reduce((sum, dose) => {
+      const [hours, mins] = dose.actualTime.split(':').map(Number);
+      return sum + (hours * 60 + mins);
+    }, 0);
+    
+    const avgMinutes = Math.round(totalMinutes / medHistory.length);
+    const avgHours = Math.floor(avgMinutes / 60);
+    const avgMins = avgMinutes % 60;
+    
+    // Suggest reminder 10 minutes before average time
+    const reminderMinutes = avgMinutes - 10;
+    const reminderHours = Math.floor(reminderMinutes / 60);
+    const reminderMins = reminderMinutes % 60;
+    
+    return `${String(reminderHours).padStart(2, '0')}:${String(reminderMins).padStart(2, '0')}`;
+  };
+
+  // Analyze adherence patterns
+  const analyzeAdherencePattern = (medication) => {
+    const medHistory = doseHistory.filter(d => d.medication === medication);
+    
+    if (medHistory.length < 3) {
+      return { pattern: 'insufficient-data', avgDelay: 0, consistency: 'unknown' };
+    }
+
+    const delays = medHistory.map(dose => {
+      const [schedHours, schedMins] = dose.scheduledTime.split(':').map(Number);
+      const [actualHours, actualMins] = dose.actualTime.split(':').map(Number);
+      const scheduledMinutes = schedHours * 60 + schedMins;
+      const actualMinutes = actualHours * 60 + actualMins;
+      return actualMinutes - scheduledMinutes;
+    });
+
+    const avgDelay = Math.round(delays.reduce((sum, d) => sum + d, 0) / delays.length);
+    const variance = delays.reduce((sum, d) => sum + Math.pow(d - avgDelay, 2), 0) / delays.length;
+    const stdDev = Math.sqrt(variance);
+
+    let consistency = 'excellent';
+    if (stdDev > 15) consistency = 'poor';
+    else if (stdDev > 10) consistency = 'fair';
+    else if (stdDev > 5) consistency = 'good';
+
+    let pattern = 'on-time';
+    if (avgDelay > 10) pattern = 'consistently-late';
+    else if (avgDelay < -10) pattern = 'consistently-early';
+
+    return { pattern, avgDelay, consistency, stdDev: Math.round(stdDev) };
+  };
+
+  // Generate smart recommendations
+  const getSmartRecommendations = () => {
+    const recommendations = [];
+
+    medications.forEach(med => {
+      const analysis = analyzeAdherencePattern(med.name);
+      const smartTime = calculateSmartReminderTime(med.name);
+      const scheduledTime = med.time[0];
+
+      if (analysis.pattern === 'consistently-late' && analysis.avgDelay > 15) {
+        recommendations.push({
+          medication: med.name,
+          type: 'timing-adjustment',
+          priority: 'high',
+          message: `You typically take ${med.name} ${analysis.avgDelay} minutes late. Consider setting reminder for ${smartTime} instead of ${scheduledTime}.`,
+          suggestedTime: smartTime,
+          confidence: 85
+        });
+      }
+
+      if (analysis.consistency === 'poor') {
+        recommendations.push({
+          medication: med.name,
+          type: 'consistency-alert',
+          priority: 'medium',
+          message: `Your ${med.name} timing varies by ±${analysis.stdDev} minutes. Try setting multiple reminders to improve consistency.`,
+          suggestedAction: 'Enable snooze reminders every 5 minutes',
+          confidence: 78
+        });
+      }
+
+      if (med.status === 'low-stock') {
+        const daysLeft = med.frequency === 'Once Daily' ? med.stock : med.stock / 2;
+        recommendations.push({
+          medication: med.name,
+          type: 'refill-alert',
+          priority: 'high',
+          message: `Only ${daysLeft} days of ${med.name} remaining. Order refill soon.`,
+          suggestedAction: `Contact ${med.prescribedBy} before ${med.refillDate}`,
+          confidence: 100
+        });
+      }
+    });
+
+    return recommendations.sort((a, b) => {
+      const priorityOrder = { high: 0, medium: 1, low: 2 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
+  };
+
+  const smartRecommendations = getSmartRecommendations();
+
   const [newMedication, setNewMedication] = useState({
     name: '',
     dosage: '',
@@ -408,6 +532,105 @@ const Capsules = ({ ranger = 'red' }) => {
                     </div>
                   ))}
               </div>
+
+              {/* Smart Recommendations Section */}
+              {smartRecommendations.length > 0 && (
+                <div className="smart-recommendations">
+                  <div className="recommendations-header">
+                    <h3>🤖 AI-Powered Smart Insights</h3>
+                    <p>Personalized recommendations based on your medication patterns</p>
+                  </div>
+                  <div className="recommendations-list">
+                    {smartRecommendations.map((rec, idx) => (
+                      <div key={idx} className={`recommendation-card priority-${rec.priority}`}>
+                        <div className="rec-header">
+                          <div className="rec-type">
+                            {rec.type === 'timing-adjustment' && '⏰'}
+                            {rec.type === 'consistency-alert' && '📊'}
+                            {rec.type === 'refill-alert' && '💊'}
+                            <span className="rec-label">
+                              {rec.type.replace(/-/g, ' ').toUpperCase()}
+                            </span>
+                          </div>
+                          <div className={`rec-priority ${rec.priority}`}>
+                            {rec.priority.toUpperCase()}
+                          </div>
+                        </div>
+                        <div className="rec-content">
+                          <h4>{rec.medication}</h4>
+                          <p className="rec-message">{rec.message}</p>
+                          {rec.suggestedTime && (
+                            <div className="rec-suggestion">
+                              <strong>Suggested Time:</strong> {rec.suggestedTime}
+                            </div>
+                          )}
+                          {rec.suggestedAction && (
+                            <div className="rec-suggestion">
+                              <strong>Suggested Action:</strong> {rec.suggestedAction}
+                            </div>
+                          )}
+                        </div>
+                        <div className="rec-footer">
+                          <div className="confidence-indicator">
+                            <span className="confidence-label">AI Confidence:</span>
+                            <div className="confidence-bar">
+                              <div 
+                                className="confidence-fill" 
+                                style={{ 
+                                  width: `${rec.confidence}%`,
+                                  background: currentColor
+                                }}
+                              ></div>
+                            </div>
+                            <span className="confidence-value">{rec.confidence}%</span>
+                          </div>
+                          <button 
+                            className="apply-recommendation-btn"
+                            style={{ borderColor: currentColor, color: currentColor }}
+                          >
+                            Apply Suggestion
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Adherence Analytics */}
+                  <div className="adherence-analytics">
+                    <h3>📈 Your Medication Patterns</h3>
+                    <div className="analytics-grid">
+                      {medications.map(med => {
+                        const analysis = analyzeAdherencePattern(med.name);
+                        return (
+                          <div key={med.id} className="analytics-card">
+                            <h4>{med.name}</h4>
+                            <div className="analytics-stats">
+                              <div className="stat">
+                                <span className="stat-label">Pattern:</span>
+                                <span className={`stat-value pattern-${analysis.pattern}`}>
+                                  {analysis.pattern.replace(/-/g, ' ')}
+                                </span>
+                              </div>
+                              <div className="stat">
+                                <span className="stat-label">Avg Delay:</span>
+                                <span className="stat-value">
+                                  {analysis.avgDelay > 0 ? '+' : ''}{analysis.avgDelay} min
+                                </span>
+                              </div>
+                              <div className="stat">
+                                <span className="stat-label">Consistency:</span>
+                                <span className={`stat-value consistency-${analysis.consistency}`}>
+                                  {analysis.consistency}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

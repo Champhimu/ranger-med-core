@@ -19,6 +19,8 @@ import SymptomChecker from './components/SymptomChecker';
 import RangerBot from './components/RangerBot';
 import Capsules from './components/Capsules';
 import Profile from './components/Profile';
+import HealthTimeline from './components/HealthTimeline';
+import WeeklyInsights from './components/WeeklyInsights';
 
 // ==================== Helper Components ====================
 
@@ -166,6 +168,24 @@ function App() {
             element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Profile ranger={selectedRanger} />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/timeline" 
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <HealthTimeline selectedRanger={selectedRanger} />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/insights" 
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <WeeklyInsights selectedRanger={selectedRanger} />
               </ProtectedRoute>
             } 
           />
