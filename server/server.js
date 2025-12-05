@@ -8,7 +8,7 @@ import { processDoseReminders } from "./src/utils/reminderEngine.js";
 // Routes
 import authRoutes from "./src/routes/auth.routes.js";
 import capsuleRoutes from "./src/routes/capsule.routes.js";
-// import symptomRoutes from "./src/routes/symptom.routes.js";
+import symptomRoutes from "./src/routes/symptom.routes.js";
 // import aiRoutes from "./src/routes/ai.routes.js";
 
 const app = express();
@@ -19,7 +19,7 @@ connectDB();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/capsules", capsuleRoutes);
-// app.use("/api/symptoms", symptomRoutes);
+app.use("/api/symptoms", symptomRoutes);
 // app.use("/api/ai", aiRoutes);
 
 app.listen(5000, () => console.log("Ranger Med-Core API running on 5000"));
