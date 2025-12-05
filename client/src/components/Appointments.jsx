@@ -2,10 +2,21 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Appointments.css';
 
-function Appointments() {
+function Appointments({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('upcoming');
   const [showBookingForm, setShowBookingForm] = useState(false);
+
+  const rangerColors = {
+    red: '#FF0000',
+    blue: '#0066FF',
+    yellow: '#FFD700',
+    black: '#000000',
+    pink: '#FF69B4',
+    mercury: '#C0C0C0'
+  };
+
+  const currentColor = rangerColors[selectedRanger] || rangerColors.red;
 
   // Mock data
   const upcomingAppointments = [
@@ -94,7 +105,7 @@ function Appointments() {
   };
 
   return (
-    <div className="appointments-page" data-ranger="red">
+    <div className="appointments-page" data-ranger={selectedRanger}>
       {/* Backgrounds */}
       <div className="space-background"></div>
       <div className="stars"></div>
@@ -110,7 +121,7 @@ function Appointments() {
           <h1 className="page-title">APPOINTMENT CENTER</h1>
           <p className="page-subtitle">OPERATION OVERDRIVE - MEDICAL SCHEDULING</p>
         </div>
-        <button className="book-new-btn" onClick={() => setShowBookingForm(true)}>
+        <button className="book-new-btn" onClick={() => setShowBookingForm(true)} style={{ borderColor: currentColor, color: currentColor }}>
           + Book New Appointment
         </button>
       </div>
@@ -123,6 +134,7 @@ function Appointments() {
           <button 
             className={`tab-btn ${activeTab === 'upcoming' ? 'active' : ''}`}
             onClick={() => setActiveTab('upcoming')}
+            style={activeTab === 'upcoming' ? { borderBottomColor: currentColor, color: currentColor } : {}}
           >
             <span className="tab-icon">📅</span>
             <span className="tab-label">Upcoming Appointments</span>
@@ -131,6 +143,7 @@ function Appointments() {
           <button 
             className={`tab-btn ${activeTab === 'past' ? 'active' : ''}`}
             onClick={() => setActiveTab('past')}
+            style={activeTab === 'past' ? { borderBottomColor: currentColor, color: currentColor } : {}}
           >
             <span className="tab-icon">📋</span>
             <span className="tab-label">Past Appointments</span>
@@ -317,7 +330,7 @@ function Appointments() {
                 <button type="button" className="cancel-form-btn" onClick={() => setShowBookingForm(false)}>
                   Cancel
                 </button>
-                <button type="submit" className="submit-form-btn">
+                <button type="submit" className="submit-form-btn" style={{ background: currentColor }}>
                   Book Appointment
                 </button>
               </div>

@@ -2,11 +2,22 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Calendar.css';
 
-function Calendar() {
+function Calendar({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date(2025, 11, 4)); // December 4, 2025
   const [selectedDate, setSelectedDate] = useState(null);
   const [viewMode, setViewMode] = useState('month'); // month, week, day
+
+  const rangerColors = {
+    red: '#FF0000',
+    blue: '#0066FF',
+    yellow: '#FFD700',
+    black: '#000000',
+    pink: '#FF69B4',
+    mercury: '#C0C0C0'
+  };
+
+  const currentColor = rangerColors[selectedRanger] || rangerColors.red;
 
   // Mock data for calendar events
   const events = {
@@ -129,7 +140,7 @@ function Calendar() {
   };
 
   return (
-    <div className="calendar-page" data-ranger="red">
+    <div className="calendar-page" data-ranger={selectedRanger}>
       {/* Backgrounds */}
       <div className="space-background"></div>
       <div className="stars"></div>
@@ -146,7 +157,11 @@ function Calendar() {
           <p className="page-subtitle">OPERATION OVERDRIVE - SCHEDULE OVERVIEW</p>
         </div>
         <div className="view-mode-toggle">
-          <button className={viewMode === 'month' ? 'active' : ''} onClick={() => setViewMode('month')}>
+          <button 
+            className={viewMode === 'month' ? 'active' : ''} 
+            onClick={() => setViewMode('month')}
+            style={viewMode === 'month' ? { background: currentColor } : {}}
+          >
             Month
           </button>
         </div>

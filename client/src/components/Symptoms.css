@@ -11,7 +11,17 @@
   position: relative;
   overflow-x: hidden;
   padding: 20px;
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
+  --ranger-glow: #ff0000;
 }
+
+/* Ranger color theming */
+.symptoms-page[data-ranger="red"] { --ranger-glow: #ff0000; }
+.symptoms-page[data-ranger="blue"] { --ranger-glow: #0066ff; }
+.symptoms-page[data-ranger="yellow"] { --ranger-glow: #ffcc00; }
+.symptoms-page[data-ranger="pink"] { --ranger-glow: #ff69b4; }
+.symptoms-page[data-ranger="black"] { --ranger-glow: #ffffff; }
+.symptoms-page[data-ranger="mercury"] { --ranger-glow: #c0c0c0; }
 
 /* ==================== Background Animations ==================== */
 .space-background {

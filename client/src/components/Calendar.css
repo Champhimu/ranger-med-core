@@ -14,6 +14,9 @@
 .calendar-page[data-ranger="red"] { --ranger-glow: #ff0000; }
 .calendar-page[data-ranger="blue"] { --ranger-glow: #0066ff; }
 .calendar-page[data-ranger="yellow"] { --ranger-glow: #ffcc00; }
+.calendar-page[data-ranger="pink"] { --ranger-glow: #ff69b4; }
+.calendar-page[data-ranger="black"] { --ranger-glow: #ffffff; }
+.calendar-page[data-ranger="mercury"] { --ranger-glow: #c0c0c0; }
 
 /* Backgrounds */
 .space-background { position: fixed; inset: 0; background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%); z-index: 0; }

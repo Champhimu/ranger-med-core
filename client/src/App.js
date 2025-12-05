@@ -6,7 +6,6 @@
 // ==================== React & Router Imports ====================
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import Login from './components/Login.jsx';
 import Register from './components/Register.jsx';
 import Welcome from './components/Welcome.jsx';
@@ -16,6 +15,10 @@ import RangerDashboard from './components/RangerDashboard';
 import Appointments from './components/Appointments';
 import Calendar from './components/Calendar';
 import Symptoms from './components/Symptoms';
+import SymptomChecker from './components/SymptomChecker';
+import RangerBot from './components/RangerBot';
+import Capsules from './components/Capsules';
+import Profile from './components/Profile';
 
 // ==================== Helper Components ====================
 
@@ -127,6 +130,42 @@ function App() {
             element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
                 <Symptoms selectedRanger={selectedRanger} />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/symptom-checker" 
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <SymptomChecker ranger={selectedRanger} />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/rangerbot" 
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <RangerBot ranger={selectedRanger} />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/capsules" 
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <Capsules ranger={selectedRanger} />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <Profile ranger={selectedRanger} />
               </ProtectedRoute>
             } 
           />

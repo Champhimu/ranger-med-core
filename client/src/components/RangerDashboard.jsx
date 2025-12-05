@@ -43,7 +43,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
       { id: 2, symptom: 'Fatigue', severity: 'moderate', date: '2025-12-02', time: '09:15' },
       { id: 3, symptom: 'Muscle soreness', severity: 'mild', date: '2025-12-01', time: '18:45' }
     ],
-    powerBoosts: [
+    capsules: [
       { id: 1, name: 'Overdrive Accelerator', dosage: '500mg', frequency: 'Twice Daily', lastTaken: '2025-12-04 08:00', nextDue: '2025-12-04 20:00', status: 'active' },
       { id: 2, name: 'Zord Energy Capsule', dosage: '250mg', frequency: 'Once Daily', lastTaken: '2025-12-04 07:30', nextDue: '2025-12-05 07:30', status: 'active' },
       { id: 3, name: 'Morphin Grid Stabilizer', dosage: '100mg', frequency: 'As Needed', lastTaken: '2025-12-03 15:00', nextDue: 'PRN', status: 'prn' }
@@ -95,7 +95,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
           <div className="logo-text">OPERATION OVERDRIVE</div>
           <div className="logo-subtitle">HEADQUARTERS - MEDICAL BAY</div>
         </div>
-        <div className="ranger-info">
+        <div className="ranger-info" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
           <div className="ranger-avatar"></div>
           <div className="ranger-details">
             <h2>{rangerData.name}</h2>
@@ -210,15 +210,15 @@ function RangerDashboard({ selectedRanger = 'red' }) {
             </div>
           </div>
 
-          {/* Power Boost Capsules */}
+          {/* Capsules */}
           <div className="dash-panel power-boosts">
             <div className="panel-header">
               <span className="header-icon">💊</span>
-              <h3>POWER BOOST CAPSULES</h3>
+              <h3>CAPSULES</h3>
             </div>
             <div className="panel-body">
               <div className="capsules-list">
-                {rangerData.powerBoosts.map(capsule => (
+                {rangerData.capsules.map(capsule => (
                   <div key={capsule.id} className="capsule-item">
                     <div className="capsule-icon">⚡</div>
                     <div className="capsule-content">
@@ -238,7 +238,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
                   </div>
                 ))}
               </div>
-              <button className="view-all-btn">Manage Capsules →</button>
+              <button className="view-all-btn" onClick={() => navigate('/capsules')}>Manage Capsules →</button>
             </div>
           </div>
         </div>
@@ -261,6 +261,13 @@ function RangerDashboard({ selectedRanger = 'red' }) {
                     <span className="btn-subtitle">Log new symptom</span>
                   </div>
                 </button>
+                <button className="action-btn symptom-checker" onClick={() => navigate('/symptom-checker')}>
+                  <div className="btn-icon">🩺</div>
+                  <div className="btn-text">
+                    <span className="btn-title">Symptom Checker</span>
+                    <span className="btn-subtitle">AI analysis</span>
+                  </div>
+                </button>
                 <button className="action-btn book-appointment" onClick={() => navigate('/appointments')}>
                   <div className="btn-icon">📅</div>
                   <div className="btn-text">
@@ -268,18 +275,25 @@ function RangerDashboard({ selectedRanger = 'red' }) {
                     <span className="btn-subtitle">Schedule with doctor</span>
                   </div>
                 </button>
-                <button className="action-btn chat-ai">
-                  <div className="btn-icon">🤖</div>
-                  <div className="btn-text">
-                    <span className="btn-title">Chat with AI</span>
-                    <span className="btn-subtitle">Get instant help</span>
-                  </div>
-                </button>
                 <button className="action-btn view-calendar" onClick={() => navigate('/calendar')}>
                   <div className="btn-icon">📆</div>
                   <div className="btn-text">
                     <span className="btn-title">View Calendar</span>
                     <span className="btn-subtitle">Schedule overview</span>
+                  </div>
+                </button>
+                <button className="action-btn chat-ai" onClick={() => navigate('/rangerbot')}>
+                  <div className="btn-icon">🤖</div>
+                  <div className="btn-text">
+                    <span className="btn-title">RangerBot AI</span>
+                    <span className="btn-subtitle">Chat assistant</span>
+                  </div>
+                </button>
+                <button className="action-btn capsules" onClick={() => navigate('/capsules')}>
+                  <div className="btn-icon">�</div>
+                  <div className="btn-text">
+                    <span className="btn-title">Capsules</span>
+                    <span className="btn-subtitle">Medications</span>
                   </div>
                 </button>
               </div>

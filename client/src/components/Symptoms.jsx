@@ -8,10 +8,21 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Symptoms.css';
 
-function Symptoms() {
+function Symptoms({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('log'); // 'log', 'history', 'progress'
   const [showLogForm, setShowLogForm] = useState(false);
+
+  const rangerColors = {
+    red: '#FF0000',
+    blue: '#0066FF',
+    yellow: '#FFD700',
+    black: '#000000',
+    pink: '#FF69B4',
+    mercury: '#C0C0C0'
+  };
+
+  const currentColor = rangerColors[selectedRanger] || rangerColors.red;
 
   // Form state
   const [newSymptom, setNewSymptom] = useState({
@@ -172,7 +183,7 @@ function Symptoms() {
   const renderLogSymptomTab = () => (
     <div className="symptoms-log-section">
       <div className="quick-log-actions">
-        <button className="quick-log-btn" onClick={() => setShowLogForm(true)}>
+        <button className="quick-log-btn" onClick={() => setShowLogForm(true)} style={{ borderColor: currentColor, color: currentColor }}>
           <span className="btn-icon">➕</span>
           <span className="btn-text">Log New Symptom</span>
         </button>
@@ -309,7 +320,7 @@ function Symptoms() {
                 <button type="button" className="cancel-btn" onClick={() => setShowLogForm(false)}>
                   Cancel
                 </button>
-                <button type="submit" className="submit-btn">
+                <button type="submit" className="submit-btn" style={{ background: currentColor }}>
                   <span>🔬 Log Symptom</span>
                 </button>
               </div>
@@ -552,7 +563,7 @@ function Symptoms() {
   );
 
   return (
-    <div className="symptoms-page">
+    <div className="symptoms-page" data-ranger={selectedRanger}>
       {/* Background Elements */}
       <div className="space-background"></div>
       <div className="stars"></div>
@@ -575,6 +586,7 @@ function Symptoms() {
         <button 
           className={`tab-btn ${activeTab === 'log' ? 'active' : ''}`}
           onClick={() => setActiveTab('log')}
+          style={activeTab === 'log' ? { borderBottomColor: currentColor, color: currentColor } : {}}
         >
           <span className="tab-icon">➕</span>
           <span className="tab-text">Log Symptom</span>
@@ -582,6 +594,7 @@ function Symptoms() {
         <button 
           className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`}
           onClick={() => setActiveTab('history')}
+          style={activeTab === 'history' ? { borderBottomColor: currentColor, color: currentColor } : {}}
         >
           <span className="tab-icon">📋</span>
           <span className="tab-text">Symptom History</span>
@@ -589,6 +602,7 @@ function Symptoms() {
         <button 
           className={`tab-btn ${activeTab === 'progress' ? 'active' : ''}`}
           onClick={() => setActiveTab('progress')}
+          style={activeTab === 'progress' ? { borderBottomColor: currentColor, color: currentColor } : {}}
         >
           <span className="tab-icon">📈</span>
           <span className="tab-text">Track Progress</span>
