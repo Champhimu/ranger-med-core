@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import toast from 'react-hot-toast'
 import './Login.css'
+import { loginRanger } from '../api/auth'
 
 function Login({ onLoginSuccess, onRegister }) {
   const [form, setForm] = useState({ operatorId: '', accessCode: '' })
@@ -18,76 +18,44 @@ function Login({ onLoginSuccess, onRegister }) {
 
   const currentRanger = rangers.find(r => r.id === selectedRanger)
 
-  const validateForm = () => {
-    if (!form.operatorId.trim()) {
-      toast.error('⚠️ Operator ID is required!', {
-        style: {
-          border: '2px solid #ff0000',
-          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
-        }
-      });
-      return false;
-    }
-
-    if (!form.accessCode.trim()) {
-      toast.error('⚠️ Access Code is required!', {
-        style: {
-          border: '2px solid #ff0000',
-          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
-        }
-      });
-      return false;
-    }
-
-    if (form.operatorId.length < 3) {
-      toast.error('⚠️ Operator ID must be at least 3 characters!', {
-        style: {
-          border: '2px solid #ff0000',
-          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
-        }
-      });
-      return false;
-    }
-
-    if (form.accessCode.length < 6) {
-      toast.error('⚠️ Access Code must be at least 6 characters!', {
-        style: {
-          border: '2px solid #ff0000',
-          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
-        }
-      });
-      return false;
-    }
-
-    return true;
-  }
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault()
-    
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsMorphing(true)
-    toast.loading('🔄 Initializing Overdrive Sequence...', { id: 'morphing' })
-    
-    setTimeout(() => {
-      toast.success(`✨ OVERDRIVE ACCELERATE! ${currentRanger.name} - KICK INTO OVERDRIVE!`, {
-        id: 'morphing',
-        duration: 3000,
-        style: {
-          border: `2px solid ${currentRanger.color}`,
-          boxShadow: `0 0 30px ${currentRanger.color}`,
-        }
+    if (form.operatorId && form.accessCode) {
+      
+      const res = await loginRanger({
+        username: form.operatorId,
+        password: form.accessCode
       });
       
-      onLoginSuccess?.({ 
-        rangerId: selectedRanger, 
-        rangerName: currentRanger.name,
-        rangerColor: currentRanger.color 
-      })
-    }, 2000)
+      if (res.error || res.message === "Invalid credentials" || res.message === "Operator ID not found") {
+        // setIsMorphing(false);
+        return alert(res.error || res.message);
+      }
+      setIsMorphing(true)
+
+      // Save tokens
+      localStorage.setItem("accessToken", res.accessToken);
+      localStorage.setItem("refreshToken", res.refreshToken);
+      localStorage.setItem("rangerDesignation", "ranger");
+
+      setTimeout(() => {
+        onLoginSuccess({
+          rangerId: res.rangerDesignation,
+          rangerName: currentRanger.name,
+          rangerColor: currentRanger.color,
+        });
+      }, 2000);
+      // setTimeout(() => {
+      //   alert(`OVERDRIVE ACCELERATE! ${currentRanger.name} - KICK INTO OVERDRIVE!`)
+      //   onLoginSuccess?.({ 
+      //     rangerId: selectedRanger, 
+      //     rangerName: currentRanger.name,
+      //     rangerColor: currentRanger.color 
+      //   })
+      // }, 2000)
+    } else {
+      alert('Please enter both Ranger Signal ID and Tracker Access Code')
+    }
   }
 
   const Heartbeat = ({ delay = 0 }) => (
@@ -166,7 +134,7 @@ function Login({ onLoginSuccess, onRegister }) {
       </div>
 
       <div className="hud-panel hud-right">
-        <div className="panel-header">RANGER POWER</div>
+        <div className="panel-header">OVERDRIVE POWER</div>
         <div className="power-circle">
           <svg viewBox="0 0 120 120">
             <circle cx="60" cy="60" r="50" fill="none" stroke="#1a3a4a" strokeWidth="8" />
@@ -183,7 +151,7 @@ function Login({ onLoginSuccess, onRegister }) {
             ))}
           </div>
         </div>
-        <div className="power-label">HEALTH TRACKER STATUS</div>
+        <div className="power-label">TRACKER SYSTEM</div>
       </div>
 
       <div className="login-panel">
@@ -196,14 +164,14 @@ function Login({ onLoginSuccess, onRegister }) {
           <p className="login-subtitle">COMMAND CENTER</p>
           <div className="ranger-info">
             <span style={{ color: currentRanger.color }}>{currentRanger.name}</span>
-            <span className="zord-name">{currentRanger.power}</span>
+            <span className="zord-name">// {currentRanger.power}</span>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
           {[
-            { id: 'operatorId', label: 'OPERATOR ID', type: 'text', placeholder: 'Enter Operator ID' },
-            { id: 'accessCode', label: 'ACCESS CODE', type: 'password', placeholder: 'Enter Access Code' }
+            { id: 'operatorId', label: 'RANGER SIGNAL ID', type: 'text', placeholder: 'Enter Overdrive Ranger ID' },
+            { id: 'accessCode', label: 'TRACKER ACCESS CODE', type: 'password', placeholder: 'Enter Access Code' }
           ].map(field => (
             <div key={field.id} className="form-group">
               <label htmlFor={field.id}>{field.label}</label>

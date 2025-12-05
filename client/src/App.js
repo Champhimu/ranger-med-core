@@ -6,12 +6,10 @@
 // ==================== React & Router Imports ====================
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
 import Login from './components/Login.jsx';
 import Register from './components/Register.jsx';
 import Welcome from './components/Welcome.jsx';
-import DoctorLogin from './components/DoctorLogin.jsx';
-import DoctorDashboard from './components/DoctorDashboard.jsx';
+import DoctorPage from './components/DoctorPage.jsx';
 import ZordonPage from './components/ZordonPage.jsx';
 import RangerDashboard from './components/RangerDashboard';
 import Appointments from './components/Appointments';
@@ -49,17 +47,27 @@ function LoginPage({ onLoginSuccess, showRegister, onRegister, onBackToLogin }) 
  * ProtectedRoute - Wrapper for authenticated routes
  * Redirects to login if user is not authenticated
  */
-function ProtectedRoute({ isAuthenticated, children }) {
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+// function ProtectedRoute({ isAuthenticated, children }) {
+//   return isAuthenticated ? children : <Navigate to="/login" replace />;
+// }
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 }
 
-/**
- * DoctorProtectedRoute - Wrapper for doctor authenticated routes
- * Redirects to doctor login if doctor is not authenticated
- */
-function DoctorProtectedRoute({ children }) {
-  const doctorAuth = localStorage.getItem('doctorAuth');
-  return doctorAuth ? children : <Navigate to="/doctor/login" replace />;
+function LoggedInRedirect({ children }) {
+  const token = localStorage.getItem("accessToken");
+
+  if (token) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
 }
 
 // ==================== Main App Component ====================
@@ -90,76 +98,34 @@ function App() {
   return (
     <Router>
       <div className="App">
-        {/* Toast Notifications Container */}
-        <Toaster
-          position="top-right"
-          reverseOrder={false}
-          gutter={8}
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#1a1f3a',
-              color: '#fff',
-              border: '1px solid #00ffff',
-              borderRadius: '10px',
-              padding: '16px',
-              fontSize: '14px',
-              fontFamily: 'Orbitron, monospace',
-            },
-            success: {
-              duration: 3000,
-              iconTheme: {
-                primary: '#00ff00',
-                secondary: '#000',
-              },
-              style: {
-                border: '1px solid #00ff00',
-              },
-            },
-            error: {
-              duration: 4000,
-              iconTheme: {
-                primary: '#ff0000',
-                secondary: '#fff',
-              },
-              style: {
-                border: '1px solid #ff0000',
-              },
-            },
-            loading: {
-              iconTheme: {
-                primary: '#00ffff',
-                secondary: '#000',
-              },
-            },
-          }}
-        />
-        
         <Routes>
           {/* ==================== Public Routes ==================== */}
           <Route path="/" element={<Welcome />} />
           <Route path="/welcome" element={<Welcome />} />
-          <Route path="/doctor/login" element={<DoctorLogin />} />
+          <Route path="/doctor" element={<DoctorPage />} />
           <Route path="/zordon" element={<ZordonPage />} />
 
           {/* ==================== Authentication Routes ==================== */}
-          <Route 
-            path="/login" 
+          {console.log("Dashboard", localStorage.getItem("accessToken"))};
+          <Route
+            path="/login"
             element={
-              <LoginPage 
-                onLoginSuccess={handleLoginSuccess}
-                showRegister={showRegister}
-                onRegister={handleRegister}
-                onBackToLogin={handleBackToLogin}
-              />
-            } 
+              <LoggedInRedirect>
+                <LoginPage
+                  onLoginSuccess={handleLoginSuccess}
+                  showRegister={showRegister}
+                  onRegister={handleRegister}
+                  onBackToLogin={handleBackToLogin}
+                />
+              </LoggedInRedirect>
+            }
           />
-
+          
           {/* ==================== Protected Routes ==================== */}
           <Route 
             path="/dashboard" 
             element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProtectedRoute>
                 <RangerDashboard selectedRanger={selectedRanger} />
               </ProtectedRoute>
             } 
@@ -168,7 +134,7 @@ function App() {
           <Route 
             path="/appointments" 
             element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProtectedRoute>
                 <Appointments selectedRanger={selectedRanger} />
               </ProtectedRoute>
             } 
@@ -177,7 +143,7 @@ function App() {
           <Route 
             path="/calendar" 
             element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProtectedRoute>
                 <Calendar selectedRanger={selectedRanger} />
               </ProtectedRoute>
             } 
@@ -186,7 +152,7 @@ function App() {
           <Route 
             path="/symptoms" 
             element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProtectedRoute>
                 <Symptoms selectedRanger={selectedRanger} />
               </ProtectedRoute>
             } 
@@ -195,7 +161,7 @@ function App() {
           <Route 
             path="/symptom-checker" 
             element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProtectedRoute>
                 <SymptomChecker ranger={selectedRanger} />
               </ProtectedRoute>
             } 
@@ -204,7 +170,7 @@ function App() {
           <Route 
             path="/rangerbot" 
             element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProtectedRoute>
                 <RangerBot ranger={selectedRanger} />
               </ProtectedRoute>
             } 
@@ -213,7 +179,7 @@ function App() {
           <Route 
             path="/capsules" 
             element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProtectedRoute>
                 <Capsules ranger={selectedRanger} />
               </ProtectedRoute>
             } 
@@ -222,7 +188,7 @@ function App() {
           <Route 
             path="/profile" 
             element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProtectedRoute>
                 <Profile ranger={selectedRanger} />
               </ProtectedRoute>
             } 
@@ -231,7 +197,7 @@ function App() {
           <Route 
             path="/timeline" 
             element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProtectedRoute>
                 <HealthTimeline selectedRanger={selectedRanger} />
               </ProtectedRoute>
             } 
@@ -240,19 +206,9 @@ function App() {
           <Route 
             path="/insights" 
             element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProtectedRoute>
                 <WeeklyInsights selectedRanger={selectedRanger} />
               </ProtectedRoute>
-            } 
-          />
-
-          {/* ==================== Doctor Routes ==================== */}
-          <Route 
-            path="/doctor/dashboard" 
-            element={
-              <DoctorProtectedRoute>
-                <DoctorDashboard />
-              </DoctorProtectedRoute>
             } 
           />
         </Routes>
