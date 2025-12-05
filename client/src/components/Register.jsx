@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import './Register.css';
 
 function Register({ onBack }) {
@@ -24,17 +25,90 @@ function Register({ onBack }) {
 
   const currentRanger = rangers.find(r => r.id === selectedRanger);
 
+  const validateForm = () => {
+    if (!form.fullName.trim()) {
+      toast.error('⚠️ Full Name is required!');
+      return false;
+    }
+
+    if (form.fullName.trim().length < 3) {
+      toast.error('⚠️ Full Name must be at least 3 characters!');
+      return false;
+    }
+
+    if (!form.operatorId.trim()) {
+      toast.error('⚠️ Operator ID is required!');
+      return false;
+    }
+
+    if (form.operatorId.length < 3) {
+      toast.error('⚠️ Operator ID must be at least 3 characters!');
+      return false;
+    }
+
+    if (!form.email.trim()) {
+      toast.error('⚠️ Email is required!');
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      toast.error('⚠️ Please enter a valid email address!');
+      return false;
+    }
+
+    if (!form.accessCode.trim()) {
+      toast.error('⚠️ Access Code is required!');
+      return false;
+    }
+
+    if (form.accessCode.length < 6) {
+      toast.error('⚠️ Access Code must be at least 6 characters!');
+      return false;
+    }
+
+    if (!form.confirmCode.trim()) {
+      toast.error('⚠️ Please confirm your Access Code!');
+      return false;
+    }
+
+    if (form.accessCode !== form.confirmCode) {
+      toast.error('⚠️ Access Codes do not match!', {
+        style: {
+          border: '2px solid #ff0000',
+          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
+        }
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (form.accessCode !== form.confirmCode) {
-      alert('Access codes do not match!');
+    
+    if (!validateForm()) {
       return;
     }
+
     setIsRegistering(true);
+    toast.loading('🔄 Initializing Ranger Registration...', { id: 'register' });
+    
     setTimeout(() => {
       setIsRegistering(false);
-      alert(`Welcome to Operation Overdrive, ${currentRanger.name}!`);
-      onBack?.();
+      toast.success(`✨ Welcome to Operation Overdrive, ${currentRanger.name}!`, {
+        id: 'register',
+        duration: 3000,
+        style: {
+          border: `2px solid ${currentRanger.color}`,
+          boxShadow: `0 0 30px ${currentRanger.color}`,
+        }
+      });
+      
+      setTimeout(() => {
+        onBack?.();
+      }, 1000);
     }, 2000);
   };
 
@@ -153,7 +227,7 @@ function Register({ onBack }) {
           <p className="register-subtitle">OPERATOR REGISTRATION</p>
           <div className="ranger-info" style={{ color: currentRanger?.color }}>
             <span>{currentRanger?.name}</span>
-            <span className="vehicle-name">// {currentRanger?.vehicle}</span>
+            <span className="vehicle-name">{currentRanger?.vehicle}</span>
           </div>
         </div>
 

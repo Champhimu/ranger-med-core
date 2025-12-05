@@ -6,6 +6,7 @@
 // ==================== React & Router Imports ====================
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Login from './components/Login.jsx';
 import Register from './components/Register.jsx';
 import Welcome from './components/Welcome.jsx';
@@ -89,6 +90,51 @@ function App() {
   return (
     <Router>
       <div className="App">
+        {/* Toast Notifications Container */}
+        <Toaster
+          position="top-right"
+          reverseOrder={false}
+          gutter={8}
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#1a1f3a',
+              color: '#fff',
+              border: '1px solid #00ffff',
+              borderRadius: '10px',
+              padding: '16px',
+              fontSize: '14px',
+              fontFamily: 'Orbitron, monospace',
+            },
+            success: {
+              duration: 3000,
+              iconTheme: {
+                primary: '#00ff00',
+                secondary: '#000',
+              },
+              style: {
+                border: '1px solid #00ff00',
+              },
+            },
+            error: {
+              duration: 4000,
+              iconTheme: {
+                primary: '#ff0000',
+                secondary: '#fff',
+              },
+              style: {
+                border: '1px solid #ff0000',
+              },
+            },
+            loading: {
+              iconTheme: {
+                primary: '#00ffff',
+                secondary: '#000',
+              },
+            },
+          }}
+        />
+        
         <Routes>
           {/* ==================== Public Routes ==================== */}
           <Route path="/" element={<Welcome />} />

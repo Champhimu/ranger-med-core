@@ -5,50 +5,98 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import './DoctorLogin.css';
 
 function DoctorLogin() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ 
     licenseNumber: '', 
-    password: '',
-    specialty: 'general'
+    password: ''
   });
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const specialties = [
-    { id: 'general', name: 'General Practice', icon: '🏥' },
-    { id: 'cardiology', name: 'Cardiology', icon: '❤️' },
-    { id: 'neurology', name: 'Neurology', icon: '🧠' },
-    { id: 'pediatrics', name: 'Pediatrics', icon: '👶' },
-    { id: 'surgery', name: 'Surgery', icon: '⚕️' },
-    { id: 'emergency', name: 'Emergency Medicine', icon: '🚑' }
-  ];
+  const validateForm = () => {
+    if (!form.licenseNumber.trim()) {
+      toast.error('📧 Email or Username is required!', {
+        style: {
+          background: '#0a1f35',
+          border: '2px solid #ef4444',
+          boxShadow: '0 0 20px rgba(239, 68, 68, 0.5)',
+        }
+      });
+      return false;
+    }
+
+    if (form.licenseNumber.length < 3) {
+      toast.error('📧 Email or Username must be at least 3 characters!', {
+        style: {
+          background: '#0a1f35',
+          border: '2px solid #ef4444',
+          boxShadow: '0 0 20px rgba(239, 68, 68, 0.5)',
+        }
+      });
+      return false;
+    }
+
+    if (!form.password.trim()) {
+      toast.error('🔒 Password is required!', {
+        style: {
+          background: '#0a1f35',
+          border: '2px solid #ef4444',
+          boxShadow: '0 0 20px rgba(239, 68, 68, 0.5)',
+        }
+      });
+      return false;
+    }
+
+    if (form.password.length < 6) {
+      toast.error('🔒 Password must be at least 6 characters!', {
+        style: {
+          background: '#0a1f35',
+          border: '2px solid #ef4444',
+          boxShadow: '0 0 20px rgba(239, 68, 68, 0.5)',
+        }
+      });
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if (form.licenseNumber && form.password) {
-      setIsAuthenticating(true);
-      
-      // Simulate authentication
-      setTimeout(() => {
-        const specialty = specialties.find(s => s.id === form.specialty);
-        
-        // Store doctor info (in real app, this would come from backend)
-        localStorage.setItem('doctorAuth', JSON.stringify({
-          licenseNumber: form.licenseNumber,
-          specialty: specialty.name,
-          specialtyId: form.specialty,
-          loginTime: new Date().toISOString()
-        }));
-        
-        navigate('/doctor/dashboard');
-      }, 2000);
-    } else {
-      alert('Please enter both Medical License Number and Password');
+    if (!validateForm()) {
+      return;
     }
+
+    setIsAuthenticating(true);
+    toast.loading('🔐 Authenticating Medical Credentials...', { id: 'doctor-auth' });
+    
+    // Simulate authentication
+    setTimeout(() => {
+      // Store doctor info (in real app, this would come from backend)
+      localStorage.setItem('doctorAuth', JSON.stringify({
+        licenseNumber: form.licenseNumber,
+        loginTime: new Date().toISOString()
+      }));
+      
+      toast.success(`✅ Welcome Dr. ${form.licenseNumber}`, {
+        id: 'doctor-auth',
+        duration: 2000,
+        style: {
+          background: '#0a1f35',
+          border: '2px solid #22c55e',
+          boxShadow: '0 0 30px rgba(34, 197, 94, 0.5)',
+        }
+      });
+      
+      setTimeout(() => {
+        navigate('/doctor/dashboard');
+      }, 1000);
+    }, 2000);
   };
 
   const handleChange = (e) => {
@@ -118,11 +166,11 @@ function DoctorLogin() {
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
-          {/* License Number */}
+          {/* Email or Username */}
           <div className="form-group">
             <label htmlFor="licenseNumber">
-              <span className="label-icon">🆔</span>
-              Medical License Number
+              <span className="label-icon">📧</span>
+              Email or Username
             </label>
             <div className="input-wrapper">
               <input
@@ -131,7 +179,7 @@ function DoctorLogin() {
                 name="licenseNumber"
                 value={form.licenseNumber}
                 onChange={handleChange}
-                placeholder="e.g., MD-123456"
+                placeholder="e.g., doctor@hospital.com or username"
                 className="form-input"
                 autoComplete="username"
               />
@@ -167,26 +215,6 @@ function DoctorLogin() {
             </div>
           </div>
 
-          {/* Specialty Selection */}
-          <div className="form-group">
-            <label htmlFor="specialty">
-              <span className="label-icon">⚕️</span>
-              Medical Specialty
-            </label>
-            <div className="specialty-grid">
-              {specialties.map(specialty => (
-                <div
-                  key={specialty.id}
-                  className={`specialty-option ${form.specialty === specialty.id ? 'selected' : ''}`}
-                  onClick={() => setForm({ ...form, specialty: specialty.id })}
-                >
-                  <span className="specialty-icon">{specialty.icon}</span>
-                  <span className="specialty-name">{specialty.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Remember Me & Forgot Password */}
           <div className="form-options">
             <label className="checkbox-label">
@@ -210,10 +238,6 @@ function DoctorLogin() {
           <button onClick={handleBackToWelcome} className="back-button">
             ← Back to Welcome
           </button>
-          <div className="footer-info">
-            <span className="info-icon">ℹ️</span>
-            <span>Secure HIPAA-Compliant System</span>
-          </div>
         </div>
       </div>
 

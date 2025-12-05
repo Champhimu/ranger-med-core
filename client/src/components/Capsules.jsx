@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import './Capsules.css';
 
 const Capsules = ({ ranger = 'red' }) => {
@@ -234,30 +235,71 @@ const Capsules = ({ ranger = 'red' }) => {
   });
 
   const handleAddMedication = () => {
-    if (newMedication.name && newMedication.dosage) {
-      const medication = {
-        id: medications.length + 1,
-        ...newMedication,
-        time: newMedication.time.split(',').map(t => t.trim()),
-        stock: parseInt(newMedication.stock),
-        refillDate: calculateRefillDate(parseInt(newMedication.stock), newMedication.frequency),
-        lastTaken: new Date().toISOString().slice(0, 16).replace('T', ' '),
-        status: 'active'
-      };
-      setMedications([...medications, medication]);
-      setShowAddForm(false);
-      setNewMedication({
-        name: '',
-        dosage: '',
-        frequency: 'Once Daily',
-        time: '',
-        stock: '',
-        prescribedBy: '',
-        condition: '',
-        instructions: '',
-        sideEffects: ''
-      });
+    // Validation
+    if (!newMedication.name.trim()) {
+      toast.error('💊 Medication name is required!');
+      return;
     }
+
+    if (!newMedication.dosage.trim()) {
+      toast.error('💊 Dosage is required!');
+      return;
+    }
+
+    if (!newMedication.time.trim()) {
+      toast.error('⏰ Time schedule is required!');
+      return;
+    }
+
+    if (!newMedication.stock || parseInt(newMedication.stock) <= 0) {
+      toast.error('📦 Stock quantity must be greater than 0!');
+      return;
+    }
+
+    if (!newMedication.prescribedBy.trim()) {
+      toast.error('👨‍⚕️ Prescribing doctor is required!');
+      return;
+    }
+
+    if (!newMedication.condition.trim()) {
+      toast.error('🩺 Medical condition is required!');
+      return;
+    }
+
+    // Create medication
+    const medication = {
+      id: medications.length + 1,
+      ...newMedication,
+      time: newMedication.time.split(',').map(t => t.trim()),
+      stock: parseInt(newMedication.stock),
+      refillDate: calculateRefillDate(parseInt(newMedication.stock), newMedication.frequency),
+      lastTaken: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      status: 'active'
+    };
+
+    setMedications([...medications, medication]);
+    setShowAddForm(false);
+    
+    // Reset form
+    setNewMedication({
+      name: '',
+      dosage: '',
+      frequency: 'Once Daily',
+      time: '',
+      stock: '',
+      prescribedBy: '',
+      condition: '',
+      instructions: '',
+      sideEffects: ''
+    });
+
+    toast.success(`✅ ${medication.name} added successfully!`, {
+      icon: '💊',
+      style: {
+        border: '2px solid #00ff00',
+        boxShadow: '0 0 20px rgba(0, 255, 0, 0.5)',
+      }
+    });
   };
 
   const calculateRefillDate = (stock, frequency) => {
@@ -269,11 +311,37 @@ const Capsules = ({ ranger = 'red' }) => {
   };
 
   const handleMarkTaken = (medId) => {
+    const medication = medications.find(med => med.id === medId);
+    if (!medication) return;
+
+    if (medication.stock <= 0) {
+      toast.error('⚠️ No stock available! Please refill medication.', {
+        icon: '📦',
+      });
+      return;
+    }
+
     setMedications(medications.map(med => 
       med.id === medId 
         ? { ...med, lastTaken: new Date().toISOString().slice(0, 16).replace('T', ' '), stock: med.stock - 1 }
         : med
     ));
+
+    toast.success(`✅ ${medication.name} marked as taken!`, {
+      icon: '💊',
+      duration: 2000,
+    });
+
+    // Check for low stock warning
+    const newStock = medication.stock - 1;
+    if (newStock <= 10 && newStock > 0) {
+      setTimeout(() => {
+        toast.warning(`⚠️ Low stock alert for ${medication.name}! Only ${newStock} left.`, {
+          duration: 3000,
+          icon: '📦',
+        });
+      }, 500);
+    }
   };
 
   const getStockStatus = (stock, frequency) => {

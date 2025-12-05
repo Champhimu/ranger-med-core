@@ -269,9 +269,10 @@
   background: rgba(15, 23, 42, 0.95);
   border: 2px solid rgba(34, 197, 94, 0.3);
   border-radius: 20px;
-  padding: 40px;
-  max-width: 500px;
+  padding: 40px 30px;
+  max-width: 480px;
   width: 100%;
+  margin: 0 auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(34, 197, 94, 0.1);
   backdrop-filter: blur(10px);
   animation: slideUp 0.8s ease-out;
@@ -290,29 +291,31 @@
 
 .card-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 35px;
   padding-bottom: 20px;
   border-bottom: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .card-header h2 {
-  margin: 0 0 10px 0;
-  font-size: 26px;
+  margin: 0 0 12px 0;
+  font-size: 28px;
   color: #fff;
   text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+  font-weight: 700;
 }
 
 .card-header p {
   margin: 0;
   font-size: 14px;
   color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
 }
 
 /* Form */
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 24px;
 }
 
 .form-group {
@@ -328,31 +331,41 @@
   font-size: 14px;
   font-weight: 600;
   color: #3b82f6;
+  margin-bottom: 2px;
 }
 
 .label-icon {
   font-size: 18px;
+  display: flex;
+  align-items: center;
 }
 
 .input-wrapper {
   position: relative;
+  width: 100%;
 }
 
 .form-input {
   width: 100%;
-  padding: 14px 16px;
+  padding: 15px 18px;
   background: rgba(30, 41, 59, 0.8);
   border: 2px solid rgba(59, 130, 246, 0.3);
-  border-radius: 10px;
+  border-radius: 12px;
   color: #fff;
-  font-size: 14px;
+  font-size: 15px;
   transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .form-input:focus {
   outline: none;
   border-color: #3b82f6;
-  background: rgba(30, 41, 59, 0.9);
+  background: rgba(30, 41, 59, 0.95);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .form-input:focus ~ .input-glow {
@@ -363,71 +376,31 @@
   position: absolute;
   inset: -2px;
   background: linear-gradient(135deg, #22c55e, #3b82f6);
-  border-radius: 10px;
+  border-radius: 12px;
   opacity: 0;
   filter: blur(10px);
   transition: opacity 0.3s ease;
   z-index: -1;
+  pointer-events: none;
 }
 
 .toggle-password {
   position: absolute;
-  right: 12px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 18px;
-  opacity: 0.7;
+  font-size: 20px;
+  opacity: 0.6;
   transition: opacity 0.3s ease;
+  padding: 4px;
+  z-index: 10;
 }
 
 .toggle-password:hover {
   opacity: 1;
-}
-
-/* Specialty Grid */
-.specialty-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.specialty-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 15px 10px;
-  background: rgba(30, 41, 59, 0.6);
-  border: 2px solid rgba(59, 130, 246, 0.2);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.specialty-option:hover {
-  border-color: rgba(59, 130, 246, 0.5);
-  background: rgba(30, 41, 59, 0.8);
-  transform: translateY(-2px);
-}
-
-.specialty-option.selected {
-  border-color: #22c55e;
-  background: rgba(34, 197, 94, 0.1);
-  box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
-}
-
-.specialty-icon {
-  font-size: 28px;
-}
-
-.specialty-name {
-  font-size: 11px;
-  color: #fff;
-  text-align: center;
-  font-weight: 600;
 }
 
 /* Form Options */
@@ -435,7 +408,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
   font-size: 13px;
+  margin-top: -4px;
 }
 
 .checkbox-label {
@@ -488,10 +464,10 @@
 /* Login Button */
 .login-button {
   position: relative;
-  padding: 16px;
+  padding: 17px 20px;
   background: linear-gradient(135deg, #22c55e, #3b82f6);
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   color: white;
   font-size: 16px;
   font-weight: 700;
@@ -502,11 +478,13 @@
   gap: 10px;
   overflow: hidden;
   transition: all 0.3s ease;
+  margin-top: 8px;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
 }
 
 .login-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
 }
 
 .login-button:active {
@@ -514,14 +492,20 @@
 }
 
 .button-icon {
-  font-size: 20px;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+}
+
+.button-text {
+  letter-spacing: 0.3px;
 }
 
 .button-glow {
   position: absolute;
   inset: -2px;
   background: linear-gradient(135deg, #22c55e, #3b82f6);
-  border-radius: 10px;
+  border-radius: 12px;
   filter: blur(15px);
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -534,40 +518,47 @@
 
 /* Card Footer */
 .card-footer {
-  margin-top: 25px;
-  padding-top: 20px;
+  margin-top: 28px;
+  padding-top: 22px;
   border-top: 1px solid rgba(34, 197, 94, 0.2);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .back-button {
   background: transparent;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  border: 1.5px solid rgba(59, 130, 246, 0.3);
   color: #3b82f6;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 10px 18px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 600;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .back-button:hover {
   border-color: #3b82f6;
   background: rgba(59, 130, 246, 0.1);
+  transform: translateX(-2px);
 }
 
 .footer-info {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 11px;
+  gap: 7px;
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.5);
 }
 
 .info-icon {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* Side Panel */
@@ -687,16 +678,67 @@
   to { opacity: 1; }
 }
 
+/* Large Tablets and Small Desktops */
 @media (max-width: 1200px) {
   .side-panel {
     display: none;
   }
+  
+  .doctor-login-card {
+    max-width: 520px;
+  }
 }
 
+/* Tablets */
+@media (max-width: 968px) {
+  .doctor-login-header {
+    top: 20px;
+    gap: 15px;
+  }
+
+  .medical-title {
+    font-size: 28px;
+  }
+
+  .medical-subtitle {
+    font-size: 13px;
+  }
+
+  .doctor-login-card {
+    max-width: 500px;
+    padding: 35px 25px;
+  }
+
+  .card-header h2 {
+    font-size: 26px;
+  }
+}
+
+/* Mobile Landscape and Small Tablets */
 @media (max-width: 768px) {
+  .doctor-login-container {
+    padding: 15px;
+  }
+
   .doctor-login-header {
     flex-direction: column;
-    top: 20px;
+    top: 15px;
+    gap: 12px;
+  }
+
+  .medical-cross {
+    width: 50px;
+    height: 50px;
+  }
+
+  .cross-horizontal {
+    width: 50px;
+    height: 16px;
+  }
+
+  .cross-vertical {
+    width: 16px;
+    height: 50px;
   }
 
   .header-content {
@@ -705,24 +747,234 @@
 
   .medical-title {
     font-size: 24px;
+    letter-spacing: 1.5px;
+  }
+
+  .medical-subtitle {
+    font-size: 12px;
   }
 
   .doctor-login-card {
     padding: 30px 20px;
-    margin-top: 180px;
+    margin-top: 170px;
+    max-width: 100%;
+    border-radius: 16px;
   }
 
-  .specialty-grid {
-    grid-template-columns: 1fr;
+  .card-header {
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+  }
+
+  .card-header h2 {
+    font-size: 24px;
+  }
+
+  .card-header p {
+    font-size: 13px;
+  }
+
+  .login-form {
+    gap: 20px;
+  }
+
+  .form-input {
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
+  .form-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .login-button {
+    padding: 15px;
+    font-size: 15px;
   }
 
   .card-footer {
     flex-direction: column;
     gap: 15px;
+    margin-top: 20px;
   }
 
   .version-info {
     font-size: 10px;
     padding: 0 10px;
+    bottom: 15px;
   }
 }
+
+/* Mobile Portrait */
+@media (max-width: 480px) {
+  .doctor-login-container {
+    padding: 10px;
+  }
+
+  .doctor-login-header {
+    top: 10px;
+  }
+
+  .medical-cross {
+    width: 40px;
+    height: 40px;
+  }
+
+  .cross-horizontal {
+    width: 40px;
+    height: 14px;
+  }
+
+  .cross-vertical {
+    width: 14px;
+    height: 40px;
+  }
+
+  .medical-title {
+    font-size: 20px;
+    letter-spacing: 1px;
+  }
+
+  .medical-subtitle {
+    font-size: 11px;
+  }
+
+  .system-status {
+    font-size: 11px;
+  }
+
+  .doctor-login-card {
+    padding: 25px 18px;
+    margin-top: 150px;
+    border-radius: 14px;
+  }
+
+  .card-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+  }
+
+  .card-header h2 {
+    font-size: 22px;
+  }
+
+  .card-header p {
+    font-size: 12px;
+  }
+
+  .login-form {
+    gap: 18px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .label-icon {
+    font-size: 16px;
+  }
+
+  .form-input {
+    padding: 13px 14px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .toggle-password {
+    font-size: 18px;
+    right: 12px;
+  }
+
+  .form-options {
+    font-size: 12px;
+  }
+
+  .login-button {
+    padding: 14px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .button-icon {
+    font-size: 18px;
+  }
+
+  .back-button {
+    font-size: 13px;
+    padding: 10px 16px;
+  }
+
+  .footer-info {
+    font-size: 11px;
+  }
+
+  .version-info {
+    font-size: 9px;
+    bottom: 10px;
+  }
+}
+
+/* Very Small Mobile Devices */
+@media (max-width: 360px) {
+  .doctor-login-container {
+    padding: 8px;
+  }
+
+  .doctor-login-card {
+    padding: 20px 15px;
+    margin-top: 140px;
+  }
+
+  .card-header h2 {
+    font-size: 20px;
+  }
+
+  .card-header p {
+    font-size: 11px;
+  }
+
+  .form-input {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .login-button {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .medical-title {
+    font-size: 18px;
+  }
+}
+
+/* Landscape Orientation */
+@media (max-height: 600px) and (orientation: landscape) {
+  .doctor-login-header {
+    position: relative;
+    margin-bottom: 15px;
+  }
+
+  .doctor-login-card {
+    margin-top: 20px;
+    padding: 25px 20px;
+  }
+
+  .card-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+  }
+
+  .login-form {
+    gap: 16px;
+  }
+
+  .version-info {
+    position: relative;
+    margin-top: 15px;
+    margin-bottom: 10px;
+  }
+}
+

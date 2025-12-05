@@ -50,7 +50,6 @@
   backdrop-filter: blur(15px);
   box-shadow: 0 0 50px var(--ranger-glow), inset 0 0 30px rgba(0, 255, 255, 0.1);
   z-index: 20;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .register-panel::-webkit-scrollbar {
@@ -88,6 +87,23 @@
   letter-spacing: 6px;
   opacity: 0.8;
   margin-bottom: 15px;
+}
+
+.ranger-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 14px;
+  margin-top: 15px;
+  align-items: center;
+  pointer-events: none;
+}
+
+.ranger-info span:first-child {
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
 }
 
 .vehicle-name {

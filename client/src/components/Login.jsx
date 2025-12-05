@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 import './Login.css'
 
 function Login({ onLoginSuccess, onRegister }) {
@@ -17,21 +18,76 @@ function Login({ onLoginSuccess, onRegister }) {
 
   const currentRanger = rangers.find(r => r.id === selectedRanger)
 
+  const validateForm = () => {
+    if (!form.operatorId.trim()) {
+      toast.error('⚠️ Operator ID is required!', {
+        style: {
+          border: '2px solid #ff0000',
+          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
+        }
+      });
+      return false;
+    }
+
+    if (!form.accessCode.trim()) {
+      toast.error('⚠️ Access Code is required!', {
+        style: {
+          border: '2px solid #ff0000',
+          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
+        }
+      });
+      return false;
+    }
+
+    if (form.operatorId.length < 3) {
+      toast.error('⚠️ Operator ID must be at least 3 characters!', {
+        style: {
+          border: '2px solid #ff0000',
+          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
+        }
+      });
+      return false;
+    }
+
+    if (form.accessCode.length < 6) {
+      toast.error('⚠️ Access Code must be at least 6 characters!', {
+        style: {
+          border: '2px solid #ff0000',
+          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
+        }
+      });
+      return false;
+    }
+
+    return true;
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (form.operatorId && form.accessCode) {
-      setIsMorphing(true)
-      setTimeout(() => {
-        alert(`OVERDRIVE ACCELERATE! ${currentRanger.name} - KICK INTO OVERDRIVE!`)
-        onLoginSuccess?.({ 
-          rangerId: selectedRanger, 
-          rangerName: currentRanger.name,
-          rangerColor: currentRanger.color 
-        })
-      }, 2000)
-    } else {
-      alert('Please enter both Operator ID and Access Code')
+    
+    if (!validateForm()) {
+      return;
     }
+
+    setIsMorphing(true)
+    toast.loading('🔄 Initializing Overdrive Sequence...', { id: 'morphing' })
+    
+    setTimeout(() => {
+      toast.success(`✨ OVERDRIVE ACCELERATE! ${currentRanger.name} - KICK INTO OVERDRIVE!`, {
+        id: 'morphing',
+        duration: 3000,
+        style: {
+          border: `2px solid ${currentRanger.color}`,
+          boxShadow: `0 0 30px ${currentRanger.color}`,
+        }
+      });
+      
+      onLoginSuccess?.({ 
+        rangerId: selectedRanger, 
+        rangerName: currentRanger.name,
+        rangerColor: currentRanger.color 
+      })
+    }, 2000)
   }
 
   const Heartbeat = ({ delay = 0 }) => (
@@ -140,7 +196,7 @@ function Login({ onLoginSuccess, onRegister }) {
           <p className="login-subtitle">COMMAND CENTER</p>
           <div className="ranger-info">
             <span style={{ color: currentRanger.color }}>{currentRanger.name}</span>
-            <span className="zord-name">// {currentRanger.power}</span>
+            <span className="zord-name">{currentRanger.power}</span>
           </div>
         </div>
 

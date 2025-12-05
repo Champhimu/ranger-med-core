@@ -9,29 +9,29 @@ function Welcome() {
   const roles = [
     {
       id: 'ranger',
-      title: '🚀 RANGER OPERATIVE',
+      title: 'RANGER OPERATIVE',
       description: 'Overdrive Ranger Health Management',
       subtitle: 'Manage capsules, track health, stay powered up',
       color: '#ff0000',
-      icon: '⚡',
+      icon: '',
       path: '/login'
     },
     {
       id: 'doctor',
-      title: '👨‍⚕️ DOCTOR PORTAL',
+      title: 'DOCTOR PORTAL',
       description: 'Medical Professional Dashboard',
       subtitle: 'Patient management and health analytics',
       color: '#22c55e',
-      icon: '🏥',
+      icon: '',
       path: '/doctor/login'
     },
     {
       id: 'admin',
-      title: '🤖 ZORDON ADMIN',
+      title: 'ZORDON ADMIN',
       description: 'System Administration Center',
       subtitle: 'AI models, predictions, and system control',
       color: '#c0c0c0',
-      icon: '⚙️',
+      icon: '',
       path: '/zordon'
     }
   ];
@@ -89,19 +89,19 @@ function Welcome() {
       <div className="welcome-footer">
         <div className="features-bar">
           <div className="feature-item">
-            <span className="feature-icon">💊</span>
+            <span className="feature-icon"></span>
             <span className="feature-text">Capsule Management</span>
           </div>
           <div className="feature-item">
-            <span className="feature-icon">🤖</span>
+            <span className="feature-icon"></span>
             <span className="feature-text">AI Assistant</span>
           </div>
           <div className="feature-item">
-            <span className="feature-icon">📊</span>
+            <span className="feature-icon"></span>
             <span className="feature-text">Health Analytics</span>
           </div>
           <div className="feature-item">
-            <span className="feature-icon">📱</span>
+            <span className="feature-icon"></span>
             <span className="feature-text">Dose Alerts</span>
           </div>
         </div>
