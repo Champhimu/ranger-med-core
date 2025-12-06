@@ -5,6 +5,7 @@ import { logoutRanger } from '../api/auth';
 
 function RangerDashboard({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
 
   // Ranger color mapping
   const rangerColors = {
@@ -113,11 +114,25 @@ function RangerDashboard({ selectedRanger = 'red' }) {
           <div className="logo-text">OPERATION OVERDRIVE</div>
           <div className="logo-subtitle">HEADQUARTERS - MEDICAL BAY</div>
         </div>
-        <div className="ranger-info" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
-          <div className="ranger-avatar"></div>
-          <div className="ranger-details">
-            <h2>{rangerData.name}</h2>
-            <p>{rangerData.rangerColor}</p>
+        
+        <div className="header-right">
+          {/* Hamburger Menu Button */}
+          <button 
+            className="hamburger-menu-btn" 
+            onClick={() => setIsSideMenuOpen(!isSideMenuOpen)}
+            aria-label="Toggle Quick Actions Menu"
+          >
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
+          </button>
+          
+          <div className="ranger-info" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
+            <div className="ranger-avatar"></div>
+            <div className="ranger-details">
+              <h2>{rangerData.name}</h2>
+              <p>{rangerData.rangerColor}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -264,60 +279,6 @@ function RangerDashboard({ selectedRanger = 'red' }) {
         {/* Right Column */}
         <div className="right-column">
           
-          {/* Quick Actions */}
-          <div className="dash-panel quick-actions">
-            <div className="panel-header">
-              <span className="header-icon">⚡</span>
-              <h3>QUICK ACTIONS</h3>
-            </div>
-            <div className="panel-body">
-              <div className="action-buttons">
-                <button className="action-btn add-symptom" onClick={() => navigate('/symptoms')}>
-                  <div className="btn-icon">📝</div>
-                  <div className="btn-text">
-                    <span className="btn-title">Add Symptom</span>
-                    <span className="btn-subtitle">Log new symptom</span>
-                  </div>
-                </button>
-                <button className="action-btn symptom-checker" onClick={() => navigate('/symptom-checker')}>
-                  <div className="btn-icon">🩺</div>
-                  <div className="btn-text">
-                    <span className="btn-title">Symptom Checker</span>
-                    <span className="btn-subtitle">AI analysis</span>
-                  </div>
-                </button>
-                <button className="action-btn book-appointment" onClick={() => navigate('/appointments')}>
-                  <div className="btn-icon">📅</div>
-                  <div className="btn-text">
-                    <span className="btn-title">Book Appointment</span>
-                    <span className="btn-subtitle">Schedule with doctor</span>
-                  </div>
-                </button>
-                <button className="action-btn view-calendar" onClick={() => navigate('/calendar')}>
-                  <div className="btn-icon">📆</div>
-                  <div className="btn-text">
-                    <span className="btn-title">View Calendar</span>
-                    <span className="btn-subtitle">Schedule overview</span>
-                  </div>
-                </button>
-                <button className="action-btn chat-ai" onClick={() => navigate('/rangerbot')}>
-                  <div className="btn-icon">🤖</div>
-                  <div className="btn-text">
-                    <span className="btn-title">RangerBot AI</span>
-                    <span className="btn-subtitle">Chat assistant</span>
-                  </div>
-                </button>
-                <button className="action-btn capsules" onClick={() => navigate('/capsules')}>
-                  <div className="btn-icon">�</div>
-                  <div className="btn-text">
-                    <span className="btn-title">Capsules</span>
-                    <span className="btn-subtitle">Medications</span>
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* Upcoming Appointments */}
           <div className="dash-panel upcoming-appointments">
             <div className="panel-header">
@@ -378,6 +339,91 @@ function RangerDashboard({ selectedRanger = 'red' }) {
         <div className="hud-item">
           <button className="logout-btn" onClick={handleLogout}>
             <span> LOGOUT</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Sliding Side Menu for Quick Actions */}
+      {isSideMenuOpen && <div className="side-menu-overlay" onClick={() => setIsSideMenuOpen(false)}></div>}
+      <div className={`side-menu ${isSideMenuOpen ? 'open' : ''}`}>
+        <div className="side-menu-header">
+          <h3>QUICK ACTIONS</h3>
+          <button className="close-menu-btn" onClick={() => setIsSideMenuOpen(false)}>
+            <span>✕</span>
+          </button>
+        </div>
+        <div className="side-menu-content">
+          <button className="side-action-btn" onClick={() => { navigate('/capsules'); setIsSideMenuOpen(false); }}>
+            <div className="side-btn-icon">💊</div>
+            <div className="side-btn-text">
+              <span className="side-btn-title">Capsules</span>
+              <span className="side-btn-subtitle">Medications</span>
+            </div>
+            <div className="side-btn-arrow">→</div>
+          </button>
+          <button className="side-action-btn" onClick={() => { navigate('/symptoms'); setIsSideMenuOpen(false); }}>
+            <div className="side-btn-icon">📝</div>
+            <div className="side-btn-text">
+              <span className="side-btn-title">Add Symptom</span>
+              <span className="side-btn-subtitle">Log new symptom</span>
+            </div>
+            <div className="side-btn-arrow">→</div>
+          </button>
+          <button className="side-action-btn" onClick={() => { navigate('/symptom-checker'); setIsSideMenuOpen(false); }}>
+            <div className="side-btn-icon">🩺</div>
+            <div className="side-btn-text">
+              <span className="side-btn-title">Symptom Checker</span>
+              <span className="side-btn-subtitle">AI analysis</span>
+            </div>
+            <div className="side-btn-arrow">→</div>
+          </button>
+          <button className="side-action-btn" onClick={() => { navigate('/appointments'); setIsSideMenuOpen(false); }}>
+            <div className="side-btn-icon">📅</div>
+            <div className="side-btn-text">
+              <span className="side-btn-title">Book Appointment</span>
+              <span className="side-btn-subtitle">Schedule with doctor</span>
+            </div>
+            <div className="side-btn-arrow">→</div>
+          </button>
+          <button className="side-action-btn" onClick={() => { navigate('/calendar'); setIsSideMenuOpen(false); }}>
+            <div className="side-btn-icon">📆</div>
+            <div className="side-btn-text">
+              <span className="side-btn-title">View Calendar</span>
+              <span className="side-btn-subtitle">Schedule overview</span>
+            </div>
+            <div className="side-btn-arrow">→</div>
+          </button>
+          <button className="side-action-btn" onClick={() => { navigate('/rangerbot'); setIsSideMenuOpen(false); }}>
+            <div className="side-btn-icon">🤖</div>
+            <div className="side-btn-text">
+              <span className="side-btn-title">RangerBot AI</span>
+              <span className="side-btn-subtitle">Chat assistant</span>
+            </div>
+            <div className="side-btn-arrow">→</div>
+          </button>
+          <button className="side-action-btn" onClick={() => { navigate('/timeline'); setIsSideMenuOpen(false); }}>
+            <div className="side-btn-icon">📊</div>
+            <div className="side-btn-text">
+              <span className="side-btn-title">Health Timeline</span>
+              <span className="side-btn-subtitle">View history</span>
+            </div>
+            <div className="side-btn-arrow">→</div>
+          </button>
+          <button className="side-action-btn" onClick={() => { navigate('/insights'); setIsSideMenuOpen(false); }}>
+            <div className="side-btn-icon">💡</div>
+            <div className="side-btn-text">
+              <span className="side-btn-title">Weekly Insights</span>
+              <span className="side-btn-subtitle">Health trends</span>
+            </div>
+            <div className="side-btn-arrow">→</div>
+          </button>
+          <button className="side-action-btn" onClick={() => { navigate('/profile'); setIsSideMenuOpen(false); }}>
+            <div className="side-btn-icon">👤</div>
+            <div className="side-btn-text">
+              <span className="side-btn-title">Profile Settings</span>
+              <span className="side-btn-subtitle">Manage account</span>
+            </div>
+            <div className="side-btn-arrow">→</div>
           </button>
         </div>
       </div>

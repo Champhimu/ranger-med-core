@@ -5,6 +5,7 @@ const doseSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   date: String,  // 2025-01-10
   time: String,  // 08:00 or 20:00
+  dosage: String,
   status: {
     type: String,
     enum: ["scheduled", "taken", "missed", "snoozed"],
@@ -14,7 +15,8 @@ const doseSchema = new mongoose.Schema({
   uniqueKey: {
     type: String,
     unique: true
-  }
+  },
+  notes: String,
 });
 
 export default mongoose.model("Dose", doseSchema);

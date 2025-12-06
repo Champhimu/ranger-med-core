@@ -983,7 +983,7 @@
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 6px;
-  background: rgba(0, 255, 255, 0.1);
+  /* background: rgba(0, 255, 255, 0.1); */
   border: 1px solid rgba(0, 255, 255, 0.3);
   color: #00ffff;
 }
@@ -1074,3 +1074,23 @@
     flex-direction: column;
   }
 }
+
+.dosage-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.dosage-flex {
+  display: flex;
+  gap: 10px; /* Space between input and select */
+  width: 100%;
+}
+
+.dosage-flex input {
+  flex: 1; /* same width */
+}
+
+.dosage-flex select {
+  flex: 1; /* same width */
+}
+

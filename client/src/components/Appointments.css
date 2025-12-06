@@ -447,7 +447,7 @@
 .form-group select,
 .form-group input,
 .form-group textarea {
-  width: 100%;
+  width: auto;
   padding: 12px 15px;
   background: rgba(0, 40, 60, 0.5);
   border: 2px solid rgba(0, 255, 255, 0.3);

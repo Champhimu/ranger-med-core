@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import './Symptoms.css';
 
 function Symptoms({ selectedRanger = 'red' }) {
@@ -165,8 +166,40 @@ function Symptoms({ selectedRanger = 'red' }) {
 
   const handleSubmitSymptom = (e) => {
     e.preventDefault();
+
+    // Validation
+    if (!newSymptom.symptomName.trim()) {
+      toast.error('🩺 Symptom name is required!');
+      return;
+    }
+
+    if (!newSymptom.bodyPart.trim()) {
+      toast.error('🎯 Body part is required!');
+      return;
+    }
+
+    if (!newSymptom.description.trim()) {
+      toast.error('📝 Symptom description is required!');
+      return;
+    }
+
+    if (!newSymptom.duration.trim()) {
+      toast.error('⏱️ Duration is required!');
+      return;
+    }
+
     console.log('New symptom logged:', newSymptom);
     // Here you would send to API
+    
+    toast.success(`✅ Symptom "${newSymptom.symptomName}" logged successfully!`, {
+      icon: '🩺',
+      duration: 3000,
+      style: {
+        border: '2px solid #00ff00',
+        boxShadow: '0 0 20px rgba(0, 255, 0, 0.5)',
+      }
+    });
+
     setShowLogForm(false);
     setNewSymptom({
       symptomName: '',

@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import './Appointments.css';
 
 function Appointments({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('upcoming');
   const [showBookingForm, setShowBookingForm] = useState(false);
+  const [bookingData, setBookingData] = useState({
+    type: '',
+    doctor: '',
+    date: '',
+    time: '',
+    reason: ''
+  });
 
   const rangerColors = {
     red: '#FF0000',
@@ -99,9 +107,56 @@ function Appointments({ selectedRanger = 'red' }) {
 
   const handleBookAppointment = (e) => {
     e.preventDefault();
+
+    // Validation
+    if (!bookingData.type) {
+      toast.error('📋 Please select an appointment type!');
+      return;
+    }
+
+    if (!bookingData.doctor) {
+      toast.error('👨‍⚕️ Please select a doctor!');
+      return;
+    }
+
+    if (!bookingData.date) {
+      toast.error('📅 Please select a date!');
+      return;
+    }
+
+    if (!bookingData.time) {
+      toast.error('⏰ Please select a time!');
+      return;
+    }
+
+    if (!bookingData.reason.trim()) {
+      toast.error('📝 Please provide a reason for visit!');
+      return;
+    }
+
     // Handle booking logic here
-    setShowBookingForm(false);
-    alert('Appointment booking request sent! You will receive confirmation shortly.');
+    toast.loading('📋 Sending appointment request...', { id: 'booking' });
+    
+    setTimeout(() => {
+      toast.success('✅ Appointment booking request sent! You will receive confirmation shortly.', {
+        id: 'booking',
+        duration: 4000,
+        icon: '📅',
+        style: {
+          border: '2px solid #00ff00',
+          boxShadow: '0 0 20px rgba(0, 255, 0, 0.5)',
+        }
+      });
+      
+      setShowBookingForm(false);
+      setBookingData({
+        type: '',
+        doctor: '',
+        date: '',
+        time: '',
+        reason: ''
+      });
+    }, 1500);
   };
 
   return (
@@ -285,7 +340,11 @@ function Appointments({ selectedRanger = 'red' }) {
             <form onSubmit={handleBookAppointment} className="booking-form">
               <div className="form-group">
                 <label>Appointment Type</label>
-                <select required>
+                <select 
+                  required 
+                  value={bookingData.type}
+                  onChange={(e) => setBookingData({...bookingData, type: e.target.value})}
+                >
                   <option value="">Select appointment type</option>
                   {appointmentTypes.map((type, index) => (
                     <option key={index} value={type}>{type}</option>
@@ -295,7 +354,11 @@ function Appointments({ selectedRanger = 'red' }) {
 
               <div className="form-group">
                 <label>Select Doctor</label>
-                <select required>
+                <select 
+                  required
+                  value={bookingData.doctor}
+                  onChange={(e) => setBookingData({...bookingData, doctor: e.target.value})}
+                >
                   <option value="">Choose a doctor</option>
                   {doctors.map(doctor => (
                     <option key={doctor.id} value={doctor.id}>
@@ -308,22 +371,44 @@ function Appointments({ selectedRanger = 'red' }) {
               <div className="form-row">
                 <div className="form-group">
                   <label>Preferred Date</label>
-                  <input type="date" required min={new Date().toISOString().split('T')[0]} />
+                  <input 
+                    type="date" 
+                    required 
+                    min={new Date().toISOString().split('T')[0]}
+                    value={bookingData.date}
+                    onChange={(e) => setBookingData({...bookingData, date: e.target.value})}
+                  />
                 </div>
                 <div className="form-group">
                   <label>Preferred Time</label>
-                  <input type="time" required />
+                  <input 
+                    type="time" 
+                    required
+                    value={bookingData.time}
+                    onChange={(e) => setBookingData({...bookingData, time: e.target.value})}
+                  />
                 </div>
               </div>
 
               <div className="form-group">
                 <label>Reason for Visit</label>
-                <textarea rows="4" placeholder="Describe your symptoms or reason for the appointment..." required></textarea>
+                <textarea 
+                  rows="4" 
+                  placeholder="Describe your symptoms or reason for the appointment..." 
+                  required
+                  value={bookingData.reason}
+                  onChange={(e) => setBookingData({...bookingData, reason: e.target.value})}
+                ></textarea>
               </div>
 
               <div className="form-group">
                 <label>Additional Notes (Optional)</label>
-                <textarea rows="3" placeholder="Any specific requirements or information..."></textarea>
+                <textarea 
+                  rows="3" 
+                  placeholder="Any specific requirements or information..."
+                  value={bookingData.notes || ''}
+                  onChange={(e) => setBookingData({...bookingData, notes: e.target.value})}
+                ></textarea>
               </div>
 
               <div className="form-actions">

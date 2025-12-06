@@ -1,13 +1,24 @@
 import mongoose from "mongoose";
 
 const capsuleSchema = new mongoose.Schema({
-  userId: mongoose.Schema.Types.ObjectId,
-  name: String,
-  dosage: String,
-  frequency: String, // "once_daily", "twice_daily", "custom"
+  userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  name: { type: String, required: true },
+  doseAmount: Number,
+  doseUnit: String,
+  dosage: String, // optional, can be computed from amount + unit
+  frequency: String, // "once_daily", "twice_daily", etc.
   timeSlots: [String], // ["08:00", "20:00"]
-  startDate: Date,
+  stock: Number,
+  prescribedBy: String,
+  condition: String,
+  instructions: String,
+  sideEffects: String,
+  startDate: { type: Date, default: Date.now },
   endDate: Date,
+  refillDate: Date, // date when user should refill medication
+  lastTaken: Date, // timestamp of the last taken dose
+}, {
+  timestamps: true // adds createdAt and updatedAt
 });
 
 export default mongoose.model("Capsule", capsuleSchema);
