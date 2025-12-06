@@ -93,11 +93,11 @@ function Register({ onBack }) {
     }
 
     setIsRegistering(true);
-    toast.loading('🔄 Initializing Ranger Registration...', { id: 'register' });
+    toast.loading('Initializing Ranger Registration...', { id: 'register' });
     
     setTimeout(() => {
       setIsRegistering(false);
-      toast.success(`✨ Welcome to Operation Overdrive, ${currentRanger.name}!`, {
+      toast.success(`Welcome to Operation Overdrive, ${currentRanger.name}!`, {
         id: 'register',
         duration: 3000,
         style: {

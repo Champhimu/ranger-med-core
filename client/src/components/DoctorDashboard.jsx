@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Icon from './Icon';
 import './DoctorDashboard.css';
 
 const DoctorDashboard = () => {
@@ -256,7 +257,7 @@ const DoctorDashboard = () => {
       {/* Stats Cards */}
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon">📅</div>
+          <div className="stat-icon"><Icon name="calendar" size={24} color="#ff00ff" /></div>
           <div className="stat-info">
             <h3>Today's Appointments</h3>
             <div className="stat-value">{todayAppointments.length}</div>
@@ -265,7 +266,7 @@ const DoctorDashboard = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">👥</div>
+          <div className="stat-icon"><Icon name="users" size={24} color="#ff00ff" /></div>
           <div className="stat-info">
             <h3>Total Patients</h3>
             <div className="stat-value">{doctorInfo.patients}</div>
@@ -274,7 +275,7 @@ const DoctorDashboard = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">⚠️</div>
+          <div className="stat-icon"><Icon name="alert" size={24} color="#ff00ff" /></div>
           <div className="stat-info">
             <h3>Critical Alerts</h3>
             <div className="stat-value">{alerts.filter(a => a.type === 'critical').length}</div>
@@ -283,7 +284,7 @@ const DoctorDashboard = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">💬</div>
+          <div className="stat-icon"><Icon name="message" size={24} color="#ff00ff" /></div>
           <div className="stat-info">
             <h3>Messages</h3>
             <div className="stat-value">{messages.filter(m => !m.read).length}</div>
@@ -296,7 +297,7 @@ const DoctorDashboard = () => {
       <div className="dashboard-grid">
         {/* Today's Appointments */}
         <div className="dashboard-section">
-          <h2>📅 Today's Schedule</h2>
+          <h2><Icon name="calendar" size={20} color="#ff00ff" /> Today's Schedule</h2>
           <div className="appointments-list">
             {todayAppointments.map(apt => (
               <div key={apt.id} className={`appointment-card ${apt.urgency}`}>
@@ -316,7 +317,7 @@ const DoctorDashboard = () => {
 
         {/* Alerts */}
         <div className="dashboard-section">
-          <h2>⚠️ Alerts & Notifications</h2>
+          <h2><Icon name="alert" size={20} color="#ff00ff" /> Alerts & Notifications</h2>
           <div className="alerts-list">
             {alerts.map(alert => (
               <div key={alert.id} className={`alert-card ${alert.type}`}>
@@ -335,7 +336,7 @@ const DoctorDashboard = () => {
 
         {/* Recent Tasks */}
         <div className="dashboard-section">
-          <h2>✓ Pending Tasks</h2>
+          <h2><Icon name="check" size={20} color="#ff00ff" /> Pending Tasks</h2>
           <div className="tasks-preview">
             {tasks.filter(t => t.status !== 'completed').slice(0, 5).map(task => (
               <div key={task.id} className="task-item-preview">
@@ -353,15 +354,15 @@ const DoctorDashboard = () => {
   const renderPatients = () => (
     <div className="doctor-main-content">
       <div className="section-header">
-        <h2>👥 Patient Management</h2>
-        <input type="text" className="search-input" placeholder="🔍 Search patients..." />
+        <h2><Icon name="users" size={20} color="#ff00ff" /> Patient Management</h2>
+        <input type="text" className="search-input" placeholder="Search patients..." />
       </div>
 
       <div className="patients-grid">
         {patients.map(patient => (
           <div key={patient.id} className={`patient-card ${patient.riskLevel === 'high' ? 'risk-high' : ''}`}>
             <div className="patient-header">
-              <div className="patient-avatar">{patient.gender === 'Male' ? '👨' : '👩'}</div>
+              <div className="patient-avatar"><Icon name="users" size={24} color="#ff00ff" /></div>
               <div className="patient-basic">
                 <h3>{patient.name}</h3>
                 <p>{patient.age} years • {patient.gender}</p>
@@ -415,7 +416,7 @@ const DoctorDashboard = () => {
   const renderAppointments = () => (
     <div className="doctor-main-content">
       <div className="section-header">
-        <h2>📅 Appointment Management</h2>
+        <h2><Icon name="calendar" size={20} color="#ff00ff" /> Appointment Management</h2>
         <input type="date" className="date-selector" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
       </div>
 
@@ -453,10 +454,10 @@ const DoctorDashboard = () => {
               </div>
               <div className="apt-request-actions">
                 <button className="approve-btn" onClick={() => handleApproveAppointment(apt.id)}>
-                  ✓ Approve
+                  <Icon name="check" size={16} color="#22c55e" /> Approve
                 </button>
                 <button className="cancel-btn" onClick={() => handleCancelAppointment(apt.id)}>
-                  ✗ Decline
+                  <Icon name="x" size={16} color="#ef4444" /> Decline
                 </button>
               </div>
             </div>
@@ -469,7 +470,7 @@ const DoctorDashboard = () => {
   const renderAnalytics = () => (
     <div className="doctor-main-content">
       <div className="section-header">
-        <h2>📊 Reports & Analytics</h2>
+        <h2><Icon name="chart" size={20} color="#ff00ff" /> Reports & Analytics</h2>
       </div>
 
       <div className="analytics-grid">
@@ -525,7 +526,7 @@ const DoctorDashboard = () => {
             </div>
             <div className="metric-item">
               <span>Patient Satisfaction</span>
-              <span className="metric-value">{analyticsData.patientSatisfaction}/5.0 ⭐</span>
+              <span className="metric-value">{analyticsData.patientSatisfaction}/5.0</span>
             </div>
           </div>
         </div>
@@ -536,7 +537,7 @@ const DoctorDashboard = () => {
   const renderTasks = () => (
     <div className="doctor-main-content">
       <div className="section-header">
-        <h2>✓ Tasks & Reminders</h2>
+        <h2><Icon name="check" size={20} color="#ff00ff" /> Tasks & Reminders</h2>
         <button className="add-task-btn">+ New Task</button>
       </div>
 
@@ -567,7 +568,7 @@ const DoctorDashboard = () => {
   const renderCommunication = () => (
     <div className="doctor-main-content">
       <div className="section-header">
-        <h2>💬 Communication Center</h2>
+        <h2><Icon name="message" size={20} color="#ff00ff" /> Communication Center</h2>
       </div>
 
       <div className="communication-grid">
@@ -587,7 +588,7 @@ const DoctorDashboard = () => {
 
         <div className="video-call-panel">
           <h3>Video Consultations</h3>
-          <button className="video-call-btn">📹 Start Video Call</button>
+          <button className="video-call-btn">Start Video Call</button>
           <div className="upcoming-calls">
             <p>No upcoming video calls scheduled</p>
           </div>
@@ -599,12 +600,12 @@ const DoctorDashboard = () => {
   const renderProfile = () => (
     <div className="doctor-main-content">
       <div className="section-header">
-        <h2>👤 Doctor Profile & Settings</h2>
+        <h2><Icon name="users" size={20} color="#ff00ff" /> Doctor Profile & Settings</h2>
       </div>
 
       <div className="profile-grid">
         <div className="profile-card">
-          <div className="profile-avatar-large">👩‍⚕️</div>
+          <div className="profile-avatar-large"><Icon name="users" size={48} color="#ff00ff" /></div>
           <h2>{doctorInfo.name}</h2>
           <p>{doctorInfo.specialty}</p>
           <p className="license-number">License: {doctorInfo.license}</p>
@@ -649,8 +650,8 @@ const DoctorDashboard = () => {
   const renderPrescriptionHistory = () => (
     <div className="doctor-main-content">
       <div className="section-header">
-        <h2>💊 Prescription History</h2>
-        <input type="text" className="search-input" placeholder="🔍 Search prescriptions..." />
+        <h2><Icon name="pill" size={20} color="#ff00ff" /> Prescription History</h2>
+        <input type="text" className="search-input" placeholder="Search prescriptions..." />
       </div>
 
       <div className="prescription-history-list">
@@ -687,14 +688,14 @@ const DoctorDashboard = () => {
             setConsultationMode(false);
             setSelectedPatient(null);
           }}>
-            ✕ Close Consultation
+            <Icon name="x" size={16} color="#ef4444" /> Close Consultation
           </button>
         </div>
 
         <div className="consultation-grid">
           {/* AI Assistant Panel */}
           <div className="consultation-panel">
-            <h3>🤖 AI Assistant (RangerMD)</h3>
+            <h3><Icon name="lightbulb" size={20} color="#ff00ff" /> AI Assistant (RangerMD)</h3>
             <button className="ai-btn" onClick={() => handleAIAnalysis(selectedPatient.id)}>
               Run AI Analysis
             </button>
@@ -726,7 +727,7 @@ const DoctorDashboard = () => {
 
           {/* SOAP Notes Panel */}
           <div className="consultation-panel">
-            <h3>📋 SOAP Notes</h3>
+            <h3><Icon name="info" size={20} color="#ff00ff" /> SOAP Notes</h3>
             {['subjective', 'objective', 'assessment', 'plan'].map(section => (
               <div key={section} className="soap-section">
                 <label>{section.charAt(0).toUpperCase() + section.slice(1)}</label>
@@ -742,7 +743,7 @@ const DoctorDashboard = () => {
 
           {/* E-Prescription Panel */}
           <div className="consultation-panel">
-            <h3>💊 E-Prescription</h3>
+            <h3><Icon name="pill" size={20} color="#ff00ff" /> E-Prescription</h3>
             
             {aiSuggestions.prescription.length > 0 && (
               <div className="ai-prescription-suggestions">

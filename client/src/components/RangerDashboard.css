@@ -445,6 +445,99 @@
   box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
 }
 
+/* Dose Buttons */
+.dose-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.dose-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 5px;
+  color: #00ffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.dose-btn:hover:not(:disabled) {
+  background: rgba(0, 255, 255, 0.2);
+  border-color: #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.dose-btn.taken {
+  background: rgba(0, 255, 0, 0.2);
+  border-color: #00ff00;
+  color: #00ff00;
+  cursor: not-allowed;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.dose-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Capsule Actions (Snooze) */
+.capsule-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.snooze-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: rgba(255, 170, 0, 0.1);
+  border: 1px solid rgba(255, 170, 0, 0.3);
+  border-radius: 5px;
+  color: #ffaa00;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.snooze-btn:hover:not(:disabled) {
+  background: rgba(255, 170, 0, 0.2);
+  border-color: #ffaa00;
+  box-shadow: 0 0 15px rgba(255, 170, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.snooze-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(150, 150, 150, 0.1);
+  border-color: rgba(150, 150, 150, 0.3);
+  color: #999;
+}
+
+.capsule-item.snoozed {
+  opacity: 0.5;
+  background: rgba(0, 40, 60, 0.2);
+  border-color: rgba(150, 150, 150, 0.2);
+}
+
+.capsule-item.snoozed .capsule-name {
+  color: #999;
+  text-shadow: none;
+}
+
 /* Quick Actions */
 .action-buttons {
   display: flex;

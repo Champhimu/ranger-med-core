@@ -70,10 +70,10 @@ function Login({ onLoginSuccess, onRegister }) {
     }
 
     setIsMorphing(true)
-    toast.loading('🔄 Initializing Overdrive Sequence...', { id: 'morphing' })
+    toast.loading('Initializing Overdrive Sequence...', { id: 'morphing' })
     
     setTimeout(() => {
-      toast.success(`✨ OVERDRIVE ACCELERATE! ${currentRanger.name} - KICK INTO OVERDRIVE!`, {
+      toast.success(`OVERDRIVE ACCELERATE! ${currentRanger.name} - KICK INTO OVERDRIVE!`, {
         id: 'morphing',
         duration: 3000,
         style: {
