@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import Icon from './Icon';
 import './Capsules.css';
 
 const Capsules = ({ ranger = 'red' }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('current');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [capsuleDoses, setCapsuleDoses] = useState({}); // Track which doses are taken
+  const [snoozedCapsules, setSnoozedCapsules] = useState({}); // Track snoozed capsules
   const [medications, setMedications] = useState([
     {
       id: 1,
       name: 'Morphinium-12',
       dosage: '500mg',
       frequency: 'Twice Daily',
+      timesPerDay: 2,
+      prescribedByDoctor: true,
       time: ['08:00', '20:00'],
       stock: 45,
       refillDate: '2025-02-15',
@@ -27,8 +32,10 @@ const Capsules = ({ ranger = 'red' }) => {
       id: 2,
       name: 'Neural-Sync Plus',
       dosage: '250mg',
-      frequency: 'Once Daily',
-      time: ['09:00'],
+      frequency: 'Thrice Daily',
+      timesPerDay: 3,
+      prescribedByDoctor: true,
+      time: ['09:00', '15:00', '21:00'],
       stock: 12,
       refillDate: '2025-01-30',
       prescribedBy: 'Dr. Spencer',
@@ -43,6 +50,8 @@ const Capsules = ({ ranger = 'red' }) => {
       name: 'Ranger Vitamins Complex',
       dosage: '1 Tablet',
       frequency: 'Once Daily',
+      timesPerDay: 1,
+      prescribedByDoctor: true,
       time: ['07:00'],
       stock: 60,
       refillDate: '2025-03-01',
@@ -97,6 +106,77 @@ const Capsules = ({ ranger = 'red' }) => {
       date: '2025-01-26'
     }
   ]);
+
+  // Handler for taking capsule dose
+  const handleTakeDose = (medId, doseNumber) => {
+    const medication = medications.find(med => med.id === medId);
+    if (!medication) return;
+
+    if (medication.stock <= 0) {
+      toast.error('⚠️ No stock available! Please refill medication.', {
+        icon: '📦',
+      });
+      return;
+    }
+
+    setCapsuleDoses(prev => ({
+      ...prev,
+      [medId]: [...(prev[medId] || []), doseNumber]
+    }));
+
+    // Update stock
+    setMedications(medications.map(med => 
+      med.id === medId 
+        ? { ...med, lastTaken: new Date().toISOString().slice(0, 16).replace('T', ' '), stock: med.stock - 1 }
+        : med
+    ));
+
+    toast.success(`✅ Dose ${doseNumber} of ${medication.name} taken!`, {
+      icon: '💊',
+      duration: 2000,
+    });
+
+    // Check for low stock warning
+    const newStock = medication.stock - 1;
+    if (newStock <= 10 && newStock > 0) {
+      setTimeout(() => {
+        toast.warning(`⚠️ Low stock alert for ${medication.name}! Only ${newStock} left.`, {
+          duration: 3000,
+          icon: '📦',
+        });
+      }, 500);
+    }
+  };
+
+  // Handler for snoozing capsule
+  const handleSnoozeCapsule = (medId) => {
+    setSnoozedCapsules(prev => ({
+      ...prev,
+      [medId]: true
+    }));
+    
+    const medication = medications.find(med => med.id === medId);
+    toast.success(`🔕 ${medication?.name} snoozed for 10 minutes`, {
+      duration: 2000,
+    });
+
+    // Auto-unsnooze after 10 minutes (600000 milliseconds)
+    setTimeout(() => {
+      setSnoozedCapsules(prev => ({
+        ...prev,
+        [medId]: false
+      }));
+      toast.info(`🔔 ${medication?.name} reminder is back!`, {
+        duration: 2000,
+      });
+    }, 600000); // 10 minutes
+  };
+
+  // Check if all doses are taken for a medication
+  const allDosesTaken = (medId, timesPerDay) => {
+    const takenDoses = capsuleDoses[medId] || [];
+    return takenDoses.length >= timesPerDay;
+  };
 
   // Smart Reminders: Track dose history and patterns
   const [doseHistory] = useState([
@@ -563,13 +643,69 @@ const Capsules = ({ ranger = 'red' }) => {
                       <p><strong>Instructions:</strong> {med.instructions}</p>
                       <p><strong>Side Effects:</strong> {med.sideEffects}</p>
                     </div>
-                    <button 
-                      className="mark-taken-btn"
-                      onClick={() => handleMarkTaken(med.id)}
-                      style={{ background: currentColor }}
-                    >
-                      ✓ Mark as Taken
-                    </button>
+                    
+                    {/* Dose tracking and snooze controls */}
+                    <div className="capsule-controls">
+                      {(() => {
+                        const isSnoozed = snoozedCapsules[med.id];
+                        const takenDoses = capsuleDoses[med.id] || [];
+                        
+                        return (
+                          <>
+                            {/* Dose tracking buttons for multiple daily doses */}
+                            {med.timesPerDay >= 2 && !isSnoozed && !allDosesTaken(med.id, med.timesPerDay) && (
+                              <div className="dose-buttons">
+                                {Array.from({length: med.timesPerDay}, (_, i) => i + 1).map(doseNum => (
+                                  <button
+                                    key={doseNum}
+                                    className={`dose-btn ${takenDoses.includes(doseNum) ? 'taken' : ''}`}
+                                    onClick={() => handleTakeDose(med.id, doseNum)}
+                                    disabled={takenDoses.includes(doseNum)}
+                                    style={!takenDoses.includes(doseNum) ? { borderColor: currentColor, color: currentColor } : {}}
+                                  >
+                                    <Icon name={takenDoses.includes(doseNum) ? "check" : "pill"} size={14} />
+                                    Dose {doseNum}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {/* Single dose button for once-daily medications */}
+                            {med.timesPerDay === 1 && !isSnoozed && !allDosesTaken(med.id, med.timesPerDay) && (
+                              <button 
+                                className="mark-taken-btn"
+                                onClick={() => handleTakeDose(med.id, 1)}
+                                style={{ background: currentColor }}
+                              >
+                                <Icon name="check" size={16} />
+                                Mark as Taken
+                              </button>
+                            )}
+                            
+                            {/* Snooze button */}
+                            {!allDosesTaken(med.id, med.timesPerDay) && (
+                              <button 
+                                className="snooze-btn"
+                                onClick={() => handleSnoozeCapsule(med.id)}
+                                disabled={isSnoozed}
+                                style={!isSnoozed ? { borderColor: '#ffaa00', color: '#ffaa00' } : {}}
+                              >
+                                <Icon name="bell" size={14} color={isSnoozed ? '#999' : '#ffaa00'} />
+                                {isSnoozed ? 'Snoozed (10min)' : 'Snooze'}
+                              </button>
+                            )}
+                            
+                            {/* Completed indicator */}
+                            {allDosesTaken(med.id, med.timesPerDay) && (
+                              <div className="all-doses-taken">
+                                <Icon name="check" size={20} color="#00d26a" />
+                                <span>All doses taken today!</span>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
                   </div>
                 );
               })}
