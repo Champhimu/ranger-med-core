@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Icon from './Icon';
 import './RangerDashboard.css';
 import { logoutRanger } from '../api/auth';
 
 function RangerDashboard({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const [capsuleDoses, setCapsuleDoses] = useState({}); // Track which doses are taken
+  const [snoozedCapsules, setSnoozedCapsules] = useState({}); // Track snoozed capsules
 
   // Ranger color mapping
   const rangerColors = {
@@ -46,9 +49,9 @@ function RangerDashboard({ selectedRanger = 'red' }) {
       { id: 3, symptom: 'Muscle soreness', severity: 'mild', date: '2025-12-01', time: '18:45' }
     ],
     capsules: [
-      { id: 1, name: 'Overdrive Accelerator', dosage: '500mg', frequency: 'Twice Daily', lastTaken: '2025-12-04 08:00', nextDue: '2025-12-04 20:00', status: 'active' },
-      { id: 2, name: 'Zord Energy Capsule', dosage: '250mg', frequency: 'Once Daily', lastTaken: '2025-12-04 07:30', nextDue: '2025-12-05 07:30', status: 'active' },
-      { id: 3, name: 'Morphin Grid Stabilizer', dosage: '100mg', frequency: 'As Needed', lastTaken: '2025-12-03 15:00', nextDue: 'PRN', status: 'prn' }
+      { id: 1, name: 'Overdrive Accelerator', dosage: '500mg', frequency: 'Twice Daily', lastTaken: '2025-12-04 08:00', nextDue: '2025-12-04 20:00', status: 'active', timesPerDay: 2, prescribedByDoctor: true },
+      { id: 2, name: 'Zord Energy Capsule', dosage: '250mg', frequency: 'Thrice Daily', lastTaken: '2025-12-04 07:30', nextDue: '2025-12-04 12:30', status: 'active', timesPerDay: 3, prescribedByDoctor: true },
+      { id: 3, name: 'Morphin Grid Stabilizer', dosage: '100mg', frequency: 'As Needed', lastTaken: '2025-12-03 15:00', nextDue: 'PRN', status: 'prn', timesPerDay: 0, prescribedByDoctor: false }
     ],
     appointments: [
       { id: 1, type: 'Check-up', doctor: 'Dr. Andrew Hartford', date: '2025-12-10', time: '10:00 AM', status: 'confirmed' },
@@ -71,6 +74,41 @@ function RangerDashboard({ selectedRanger = 'red' }) {
     };
     return colors[severity] || '#00ffff';
   };
+
+  // Handler for taking capsule dose
+  const handleTakeDose = (capsuleId, doseNumber) => {
+    setCapsuleDoses(prev => ({
+      ...prev,
+      [capsuleId]: [...(prev[capsuleId] || []), doseNumber]
+    }));
+    // In real app, this would call API to log dose
+    console.log(`Dose ${doseNumber} taken for capsule ${capsuleId}`);
+  };
+
+  // Handler for snoozing capsule
+  const handleSnoozeCapsule = (capsuleId) => {
+    setSnoozedCapsules(prev => ({
+      ...prev,
+      [capsuleId]: true
+    }));
+    // Auto-unsnooze after 10 minutes (600000 milliseconds)
+    setTimeout(() => {
+      setSnoozedCapsules(prev => ({
+        ...prev,
+        [capsuleId]: false
+      }));
+    }, 600000); // 10 minutes = 10 * 60 * 1000 = 600000ms
+  };
+
+  // Check if all doses are taken for a capsule
+  const allDosesTaken = (capsuleId, timesPerDay) => {
+    const takenDoses = capsuleDoses[capsuleId] || [];
+    return takenDoses.length >= timesPerDay;
+  };
+
+  // Check if capsule has doctor prescription
+  const hasDoctorPrescription = rangerData.capsules.some(c => c.prescribedByDoctor);
+
 
   const Heartbeat = () => (
     <svg className="heartbeat-svg" viewBox="0 0 300 100" preserveAspectRatio="none">
@@ -143,67 +181,68 @@ function RangerDashboard({ selectedRanger = 'red' }) {
         {/* Left Column */}
         <div className="left-column">
           
-          {/* Health Summary */}
-          <div className="dash-panel health-summary">
-            <div className="panel-header">
-              <span className="header-icon">❤️</span>
-              <h3>HEALTH SUMMARY</h3>
-            </div>
-            <div className="panel-body">
-              <div className="health-score-container">
-                <div className="health-score-circle">
-                  <svg width="160" height="160">
-                    <circle
-                      cx="80"
-                      cy="80"
-                      r="70"
-                      fill="none"
-                      stroke="rgba(0, 255, 255, 0.2)"
-                      strokeWidth="10"
-                    />
-                    <circle
-                      cx="80"
-                      cy="80"
-                      r="70"
-                      fill="none"
-                      stroke="var(--ranger-glow)"
-                      strokeWidth="10"
-                      strokeDasharray="440"
-                      strokeDashoffset={440 - (440 * rangerData.healthScore) / 100}
-                      className="health-progress"
-                    />
-                  </svg>
-                  <div className="health-score-text">
-                    <span className="score">{rangerData.healthScore}</span>
-                    <span className="label">HEALTH</span>
+          {/* Health Summary - Only show if doctor has prescribed capsules */}
+          {hasDoctorPrescription && (
+            <div className="dash-panel health-summary">
+              <div className="panel-header">
+                <span className="header-icon"><Icon name="hospital" size={24} color="#ff8800" /></span>
+                <h3>HEALTH SUMMARY</h3>
+              </div>
+              <div className="panel-body">
+                <div className="health-score-container">
+                  <div className="health-score-circle">
+                    <svg width="160" height="160">
+                      <circle
+                        cx="80"
+                        cy="80"
+                        r="70"
+                        fill="none"
+                        stroke="rgba(0, 255, 255, 0.2)"
+                        strokeWidth="10"
+                      />
+                      <circle
+                        cx="80"
+                        cy="80"
+                        r="70"
+                        fill="none"
+                        stroke="var(--ranger-glow)"
+                        strokeWidth="10"
+                        strokeDasharray="440"
+                        strokeDashoffset={440 - (440 * rangerData.healthScore) / 100}
+                        className="health-progress"
+                      />
+                    </svg>
+                    <div className="health-score-text">
+                      <span className="score">{rangerData.healthScore}</span>
+                      <span className="label">HEALTH</span>
+                    </div>
                   </div>
                 </div>
-              </div>
               
               <div className="vitals-grid">
                 <div className="vital-item">
-                  <div className="vital-icon">💓</div>
+                  <div className="vital-icon"><Icon name="hospital" size={20} color="#ff8800" /></div>
                   <div className="vital-info">
                     <span className="vital-label">Heart Rate</span>
                     <span className="vital-value">{rangerData.vitals.heartRate} BPM</span>
                   </div>
                 </div>
                 <div className="vital-item">
-                  <div className="vital-icon">🩺</div>
+                  <div className="vital-icon"><Icon name="hospital" size={20} color="#ff8800" /></div>
                   <div className="vital-info">
                     <span className="vital-label">Blood Pressure</span>
                     <span className="vital-value">{rangerData.vitals.bloodPressure}</span>
                   </div>
                 </div>
                 <div className="vital-item">
-                  <div className="vital-icon">🌡️</div>
+                  <div className="vital-icon"><Icon name="alert" size={20} color="#ff8800" /></div>
                   <div className="vital-info">
                     <span className="vital-label">Temperature</span>
                     <span className="vital-value">{rangerData.vitals.temperature}°F</span>
                   </div>
                 </div>
                 <div className="vital-item">
-                  <div className="vital-icon">💨</div>
+                  <div className="vital-icon"><Icon name="zap" size={20} color="#ff8800" /></div>
                   <div className="vital-info">
                     <span className="vital-label">Oxygen</span>
                     <span className="vital-value">{rangerData.vitals.oxygen}%</span>
@@ -212,11 +251,12 @@ function RangerDashboard({ selectedRanger = 'red' }) {
               </div>
             </div>
           </div>
+          )}
 
           {/* Recent Symptoms */}
           <div className="dash-panel recent-symptoms">
             <div className="panel-header">
-              <span className="header-icon">📋</span>
+              <span className="header-icon"><Icon name="info" size={24} color="#ff8800" /></span>
               <h3>RECENT SYMPTOMS LOGGED</h3>
             </div>
             <div className="panel-body">
@@ -246,30 +286,72 @@ function RangerDashboard({ selectedRanger = 'red' }) {
           {/* Capsules */}
           <div className="dash-panel power-boosts">
             <div className="panel-header">
-              <span className="header-icon">💊</span>
+              <span className="header-icon"><Icon name="pill" size={24} color="#ff8800" /></span>
               <h3>CAPSULES</h3>
             </div>
             <div className="panel-body">
               <div className="capsules-list">
-                {rangerData.capsules.map(capsule => (
-                  <div key={capsule.id} className="capsule-item">
-                    <div className="capsule-icon">⚡</div>
-                    <div className="capsule-content">
-                      <div className="capsule-name">{capsule.name}</div>
-                      <div className="capsule-details">
-                        <span className="capsule-dosage">{capsule.dosage}</span>
-                        <span className="capsule-frequency">• {capsule.frequency}</span>
+                {rangerData.capsules.map(capsule => {
+                  const isSnoozed = snoozedCapsules[capsule.id];
+                  const takenDoses = capsuleDoses[capsule.id] || [];
+                  
+                  return (
+                    <div key={capsule.id} className={`capsule-item ${isSnoozed ? 'snoozed' : ''}`}>
+                      <div className="capsule-icon"><Icon name="zap" size={20} color="#ff8800" /></div>
+                      <div className="capsule-content">
+                        <div className="capsule-name">{capsule.name}</div>
+                        <div className="capsule-details">
+                          <span className="capsule-dosage">{capsule.dosage}</span>
+                          <span className="capsule-frequency">• {capsule.frequency}</span>
+                        </div>
+                        <div className="capsule-schedule">
+                          <span className="last-taken">Last: {capsule.lastTaken}</span>
+                          <span className="next-due">Next: {capsule.nextDue}</span>
+                        </div>
+                        
+                        {/* Dose confirmation buttons for multiple daily doses */}
+                        {capsule.timesPerDay >= 2 && !isSnoozed && (
+                          <div className="dose-buttons">
+                            {Array.from({ length: capsule.timesPerDay }, (_, i) => i + 1).map(doseNum => (
+                              <button
+                                key={doseNum}
+                                className={`dose-btn ${takenDoses.includes(doseNum) ? 'taken' : ''}`}
+                                onClick={() => handleTakeDose(capsule.id, doseNum)}
+                                disabled={takenDoses.includes(doseNum)}
+                              >
+                                <Icon name={takenDoses.includes(doseNum) ? "check" : "pill"} size={14} />
+                                Dose {doseNum}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Snooze button - only for active capsules */}
+                        {capsule.status === 'active' && !allDosesTaken(capsule.id, capsule.timesPerDay) && (
+                          <div className="capsule-actions">
+                            <button 
+                              className="snooze-btn"
+                              onClick={() => handleSnoozeCapsule(capsule.id)}
+                              disabled={isSnoozed}
+                            >
+                              <Icon name="bell" size={14} color="#ffaa00" />
+                              {isSnoozed ? 'Snoozed (10min)' : 'Snooze'}
+                            </button>
+                          </div>
+                        )}
                       </div>
-                      <div className="capsule-schedule">
-                        <span className="last-taken">Last: {capsule.lastTaken}</span>
-                        <span className="next-due">Next: {capsule.nextDue}</span>
+                      <div className={`capsule-status status-${capsule.status}`}>
+                        {capsule.status === 'active' ? (
+                          allDosesTaken(capsule.id, capsule.timesPerDay) ? (
+                            <><Icon name="check" size={16} color="#00ff00" /> COMPLETED</>
+                          ) : (
+                            <><Icon name="zap" size={16} color="#00ff00" /> ACTIVE</>
+                          )
+                        ) : 'PRN'}
                       </div>
                     </div>
-                    <div className={`capsule-status status-${capsule.status}`}>
-                      {capsule.status === 'active' ? '✓ ACTIVE' : 'PRN'}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               <button className="view-all-btn" onClick={() => navigate('/capsules')}>Manage Capsules →</button>
             </div>
@@ -282,7 +364,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
           {/* Upcoming Appointments */}
           <div className="dash-panel upcoming-appointments">
             <div className="panel-header">
-              <span className="header-icon">📅</span>
+              <span className="header-icon"><Icon name="calendar" size={24} color="#ff8800" /></span>
               <h3>UPCOMING APPOINTMENTS</h3>
             </div>
             <div className="panel-body">
@@ -296,7 +378,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
                     <div className="appointment-details">
                       <div className="appointment-type">{appointment.type}</div>
                       <div className="appointment-doctor">Dr. {appointment.doctor}</div>
-                      <div className="appointment-time">⏰ {appointment.time}</div>
+                      <div className="appointment-time"><Icon name="bell" size={16} color="#ff8800" /> {appointment.time}</div>
                     </div>
                     <div className={`appointment-status status-${appointment.status}`}>
                       {appointment.status.toUpperCase()}
@@ -311,12 +393,12 @@ function RangerDashboard({ selectedRanger = 'red' }) {
           {/* Wellness Tip */}
           <div className="dash-panel wellness-tip">
             <div className="panel-header">
-              <span className="header-icon">💡</span>
+              <span className="header-icon"><Icon name="lightbulb" size={24} color="#ff8800" /></span>
               <h3>WELLNESS TIP OF THE DAY</h3>
             </div>
             <div className="panel-body">
               <div className="tip-content">
-                <div className="tip-icon">🌟</div>
+                <div className="tip-icon"><Icon name="lightbulb" size={32} color="#ffaa00" /></div>
                 <p className="tip-text">{rangerData.wellnessTip}</p>
               </div>
             </div>
@@ -337,8 +419,8 @@ function RangerDashboard({ selectedRanger = 'red' }) {
           </div>
         </div>
         <div className="hud-item">
-          <button className="logout-btn" onClick={handleLogout}>
-            <span> LOGOUT</span>
+          <button className="logout-btn" onClick={() => navigate('/welcome')}>
+            <span>⏏️ LOGOUT</span>
           </button>
         </div>
       </div>
@@ -349,7 +431,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
         <div className="side-menu-header">
           <h3>QUICK ACTIONS</h3>
           <button className="close-menu-btn" onClick={() => setIsSideMenuOpen(false)}>
-            <span>✕</span>
+            <span><Icon name="x" size={20} /></span>
           </button>
         </div>
         <div className="side-menu-content">
@@ -362,68 +444,76 @@ function RangerDashboard({ selectedRanger = 'red' }) {
             <div className="side-btn-arrow">→</div>
           </button>
           <button className="side-action-btn" onClick={() => { navigate('/symptoms'); setIsSideMenuOpen(false); }}>
-            <div className="side-btn-icon">📝</div>
+            <div className="side-btn-icon"><Icon name="info" size={24} color="#ff8800" /></div>
             <div className="side-btn-text">
               <span className="side-btn-title">Add Symptom</span>
               <span className="side-btn-subtitle">Log new symptom</span>
             </div>
-            <div className="side-btn-arrow">→</div>
+            <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
           </button>
           <button className="side-action-btn" onClick={() => { navigate('/symptom-checker'); setIsSideMenuOpen(false); }}>
-            <div className="side-btn-icon">🩺</div>
+            <div className="side-btn-icon"><Icon name="hospital" size={24} color="#ff8800" /></div>
             <div className="side-btn-text">
               <span className="side-btn-title">Symptom Checker</span>
               <span className="side-btn-subtitle">AI analysis</span>
             </div>
-            <div className="side-btn-arrow">→</div>
+            <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
           </button>
           <button className="side-action-btn" onClick={() => { navigate('/appointments'); setIsSideMenuOpen(false); }}>
-            <div className="side-btn-icon">📅</div>
+            <div className="side-btn-icon"><Icon name="calendar" size={24} color="#ff8800" /></div>
             <div className="side-btn-text">
               <span className="side-btn-title">Book Appointment</span>
               <span className="side-btn-subtitle">Schedule with doctor</span>
             </div>
-            <div className="side-btn-arrow">→</div>
+            <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
           </button>
           <button className="side-action-btn" onClick={() => { navigate('/calendar'); setIsSideMenuOpen(false); }}>
-            <div className="side-btn-icon">📆</div>
+            <div className="side-btn-icon"><Icon name="calendar" size={24} color="#ff8800" /></div>
             <div className="side-btn-text">
               <span className="side-btn-title">View Calendar</span>
               <span className="side-btn-subtitle">Schedule overview</span>
             </div>
-            <div className="side-btn-arrow">→</div>
+            <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
           </button>
           <button className="side-action-btn" onClick={() => { navigate('/rangerbot'); setIsSideMenuOpen(false); }}>
-            <div className="side-btn-icon">🤖</div>
+            <div className="side-btn-icon"><Icon name="message" size={24} color="#ff8800" /></div>
             <div className="side-btn-text">
               <span className="side-btn-title">RangerBot AI</span>
               <span className="side-btn-subtitle">Chat assistant</span>
             </div>
-            <div className="side-btn-arrow">→</div>
+            <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
+          </button>
+          <button className="side-action-btn" onClick={() => { navigate('/capsules'); setIsSideMenuOpen(false); }}>
+            <div className="side-btn-icon"><Icon name="pill" size={24} color="#ff8800" /></div>
+            <div className="side-btn-text">
+              <span className="side-btn-title">Capsules</span>
+              <span className="side-btn-subtitle">Medications</span>
+            </div>
+            <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
           </button>
           <button className="side-action-btn" onClick={() => { navigate('/timeline'); setIsSideMenuOpen(false); }}>
-            <div className="side-btn-icon">📊</div>
+            <div className="side-btn-icon"><Icon name="chart" size={24} color="#ff8800" /></div>
             <div className="side-btn-text">
               <span className="side-btn-title">Health Timeline</span>
               <span className="side-btn-subtitle">View history</span>
             </div>
-            <div className="side-btn-arrow">→</div>
+            <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
           </button>
           <button className="side-action-btn" onClick={() => { navigate('/insights'); setIsSideMenuOpen(false); }}>
-            <div className="side-btn-icon">💡</div>
+            <div className="side-btn-icon"><Icon name="lightbulb" size={24} color="#ff8800" /></div>
             <div className="side-btn-text">
               <span className="side-btn-title">Weekly Insights</span>
               <span className="side-btn-subtitle">Health trends</span>
             </div>
-            <div className="side-btn-arrow">→</div>
+            <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
           </button>
           <button className="side-action-btn" onClick={() => { navigate('/profile'); setIsSideMenuOpen(false); }}>
-            <div className="side-btn-icon">👤</div>
+            <div className="side-btn-icon"><Icon name="users" size={24} color="#ff8800" /></div>
             <div className="side-btn-text">
               <span className="side-btn-title">Profile Settings</span>
               <span className="side-btn-subtitle">Manage account</span>
             </div>
-            <div className="side-btn-arrow">→</div>
+            <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
           </button>
         </div>
       </div>
