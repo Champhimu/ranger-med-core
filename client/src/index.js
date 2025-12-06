@@ -7,10 +7,19 @@ import App from './App';
 import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+const isDev = process.env.NODE_ENV === "development";
+
 root.render(
-  <React.StrictMode>
+  isDev ? (
     <Provider store={store}>
       <App />
     </Provider>
-  </React.StrictMode>
+  ) : (
+    <React.StrictMode>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </React.StrictMode>
+  )
 );

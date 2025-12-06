@@ -390,6 +390,7 @@ const Capsules = ({ ranger = 'red' }) => {
   useEffect(() => {
     dispatch(fetchCapsulesThunk());
     dispatch(fetchRecommendationsThunk());
+    console.log("CALLED");
   }, [dispatch]);
 
   if (loading) return <p>Loading...</p>;

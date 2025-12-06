@@ -65,6 +65,9 @@ function Login({ onLoginSuccess, onRegister }) {
     // morph immediately after login success
     setIsMorphing(true)
 
+    // clear storage
+    localStorage.clear();
+
     // save tokens
     localStorage.setItem("accessToken", res.accessToken)
     localStorage.setItem("refreshToken", res.refreshToken)

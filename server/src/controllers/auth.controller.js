@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 const generateAccessToken = (id) => {
   return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "15m",
+    expiresIn: "1m",
   });
 };
 
@@ -70,7 +70,7 @@ export const login = async (req, res) => {
 export const refresh = async (req, res) => {
   try {
     const { refreshToken } = req.body;
-    
+    console.log("R",refreshToken);
     if (!refreshToken) return res.status(401).json({ message: "No token" });
     
     // Check if refresh token exists in DB
