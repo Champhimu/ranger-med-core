@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Icon from './Icon';
+import Icon from '../shared/Icon';
 import './RangerDashboard.css';
 
 function RangerDashboard({ selectedRanger = 'red' }) {

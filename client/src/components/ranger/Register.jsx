@@ -27,53 +27,53 @@ function Register({ onBack }) {
 
   const validateForm = () => {
     if (!form.fullName.trim()) {
-      toast.error('⚠️ Full Name is required!');
+      toast.error('Full Name is required!');
       return false;
     }
 
     if (form.fullName.trim().length < 3) {
-      toast.error('⚠️ Full Name must be at least 3 characters!');
+      toast.error('Full Name must be at least 3 characters!');
       return false;
     }
 
     if (!form.operatorId.trim()) {
-      toast.error('⚠️ Operator ID is required!');
+      toast.error('Operator ID is required!');
       return false;
     }
 
     if (form.operatorId.length < 3) {
-      toast.error('⚠️ Operator ID must be at least 3 characters!');
+      toast.error('Operator ID must be at least 3 characters!');
       return false;
     }
 
     if (!form.email.trim()) {
-      toast.error('⚠️ Email is required!');
+      toast.error('Email is required!');
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.email)) {
-      toast.error('⚠️ Please enter a valid email address!');
+      toast.error('Please enter a valid email address!');
       return false;
     }
 
     if (!form.accessCode.trim()) {
-      toast.error('⚠️ Access Code is required!');
+      toast.error('Access Code is required!');
       return false;
     }
 
     if (form.accessCode.length < 6) {
-      toast.error('⚠️ Access Code must be at least 6 characters!');
+      toast.error('Access Code must be at least 6 characters!');
       return false;
     }
 
     if (!form.confirmCode.trim()) {
-      toast.error('⚠️ Please confirm your Access Code!');
+      toast.error('Please confirm your Access Code!');
       return false;
     }
 
     if (form.accessCode !== form.confirmCode) {
-      toast.error('⚠️ Access Codes do not match!', {
+      toast.error('Access Codes do not match!', {
         style: {
           border: '2px solid #ff0000',
           boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',

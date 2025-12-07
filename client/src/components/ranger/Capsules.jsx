@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import Icon from './Icon';
+import Icon from '../shared/Icon';
 import './Capsules.css';
 
 const Capsules = ({ ranger = 'red' }) => {

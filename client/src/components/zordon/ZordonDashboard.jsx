@@ -1,11 +1,11 @@
 /**
- * Zordon Dashboard - SPD Headquarters Command Center
+ * Zordon Dashboard - Operation Overdrive Headquarters Command Center
  * System-wide Analytics & Administrative Control
  */
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Icon from './Icon';
+import Icon from '../shared/Icon';
 import './ZordonDashboard.css';
 
 function ZordonDashboard() {
@@ -173,10 +173,10 @@ function ZordonDashboard() {
 
   return (
     <div className="zordon-dashboard">
-      {/* SPD Background Effects */}
-      <div className="spd-background">
-        <div className="spd-grid"></div>
-        <div className="spd-particles"></div>
+      {/* Operation Overdrive Background Effects */}
+      <div className="overdrive-background">
+        <div className="overdrive-grid"></div>
+        <div className="overdrive-particles"></div>
       </div>
 
       {/* Header */}
@@ -185,7 +185,7 @@ function ZordonDashboard() {
           <div className="zordon-logo"><Icon name="zap" size={40} color="#00d4ff" /></div>
           <div className="header-info">
             <h1>ZORDON COMMAND CENTER</h1>
-            <p>SPD HEADQUARTERS • SYSTEM ADMINISTRATION</p>
+            <p>OPERATION OVERDRIVE HEADQUARTERS • SYSTEM ADMINISTRATION</p>
           </div>
         </div>
         <div className="header-right">

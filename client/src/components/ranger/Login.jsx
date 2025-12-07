@@ -20,7 +20,7 @@ function Login({ onLoginSuccess, onRegister }) {
 
   const validateForm = () => {
     if (!form.operatorId.trim()) {
-      toast.error('⚠️ Operator ID is required!', {
+      toast.error('Operator ID is required!', {
         style: {
           border: '2px solid #ff0000',
           boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
@@ -30,7 +30,7 @@ function Login({ onLoginSuccess, onRegister }) {
     }
 
     if (!form.accessCode.trim()) {
-      toast.error('⚠️ Access Code is required!', {
+      toast.error('Access Code is required!', {
         style: {
           border: '2px solid #ff0000',
           boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
@@ -40,7 +40,7 @@ function Login({ onLoginSuccess, onRegister }) {
     }
 
     if (form.operatorId.length < 3) {
-      toast.error('⚠️ Operator ID must be at least 3 characters!', {
+      toast.error('Operator ID must be at least 3 characters!', {
         style: {
           border: '2px solid #ff0000',
           boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
@@ -50,7 +50,7 @@ function Login({ onLoginSuccess, onRegister }) {
     }
 
     if (form.accessCode.length < 6) {
-      toast.error('⚠️ Access Code must be at least 6 characters!', {
+      toast.error('Access Code must be at least 6 characters!', {
         style: {
           border: '2px solid #ff0000',
           boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
