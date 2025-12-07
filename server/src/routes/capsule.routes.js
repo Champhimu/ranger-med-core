@@ -9,7 +9,8 @@ import {
   getCapsules,
   getAllHistory,
   getReminders,
-  getRecommendations
+  getRecommendations,
+  getAdherencePattern
 } from "../controllers/capsule.controller.js";
 
 const router = express.Router();
@@ -33,4 +34,7 @@ router.get("/reminders", auth, getReminders);
 // AI Smart Recommendations
 router.get("/recommendations", auth, getRecommendations);
 
+
+// Medication Patterns
+router.get("/pattern", auth, getAdherencePattern)
 export default router;

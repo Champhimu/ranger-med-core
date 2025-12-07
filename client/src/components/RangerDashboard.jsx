@@ -436,12 +436,12 @@ function RangerDashboard({ selectedRanger = 'red' }) {
         </div>
         <div className="side-menu-content">
           <button className="side-action-btn" onClick={() => { navigate('/capsules'); setIsSideMenuOpen(false); }}>
-            <div className="side-btn-icon">💊</div>
+            <div className="side-btn-icon"><Icon name="pill" size={24} color="#ff8800" /></div>
             <div className="side-btn-text">
               <span className="side-btn-title">Capsules</span>
               <span className="side-btn-subtitle">Medications</span>
             </div>
-            <div className="side-btn-arrow">→</div>
+            <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
           </button>
           <button className="side-action-btn" onClick={() => { navigate('/symptoms'); setIsSideMenuOpen(false); }}>
             <div className="side-btn-icon"><Icon name="info" size={24} color="#ff8800" /></div>
@@ -480,14 +480,6 @@ function RangerDashboard({ selectedRanger = 'red' }) {
             <div className="side-btn-text">
               <span className="side-btn-title">RangerBot AI</span>
               <span className="side-btn-subtitle">Chat assistant</span>
-            </div>
-            <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
-          </button>
-          <button className="side-action-btn" onClick={() => { navigate('/capsules'); setIsSideMenuOpen(false); }}>
-            <div className="side-btn-icon"><Icon name="pill" size={24} color="#ff8800" /></div>
-            <div className="side-btn-text">
-              <span className="side-btn-title">Capsules</span>
-              <span className="side-btn-subtitle">Medications</span>
             </div>
             <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
           </button>

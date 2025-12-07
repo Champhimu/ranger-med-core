@@ -13,7 +13,10 @@ export const markDoseMissed = (doseId) => axios.patch(`/capsules/dose/${doseId}/
 export const snoozeDose = (doseId, snoozeTime) => axios.patch(`/capsules/dose/${doseId}/snooze`, { snoozeTime });
 
 // Get capsule history
-export const getCapsuleHistory = (capsuleId) => axios.get(`/capsules/history/${capsuleId}`);
+export const getCapsuleHistory = () => axios.get(`/capsules/history`);
 
 // Get AI recommendations (from backend)
 export const getRecommendations = () => axios.get("/capsules/recommendations");
+
+// Get medication pattern
+export const getMedicationPatterns = () => axios.get("/capsules/pattern");

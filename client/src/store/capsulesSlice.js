@@ -22,16 +22,37 @@ export const addCapsuleThunk = createAsyncThunk("capsules/add", async (data) => 
 
 export const fetchRecommendationsThunk = createAsyncThunk("capsules/recommendations", async () => {
   const res = await api.getRecommendations();
-  return res.data.recommendations;
+  return res.data;
 });
 
 export const fetchCapsuleHistoryThunk = createAsyncThunk(
   "capsules/history",
-  async (capsuleId) => {
-    const res = await api.getCapsuleHistory(capsuleId);
-    return { capsuleId, history: res.data };
+  async () => {
+    const res = await api.getCapsuleHistory();
+    console.log("Hist Res", res);
+    return res.data;
   }
 );
+
+export const markDoseTakenThunk = createAsyncThunk(
+  "capsules/markDoseTaken",
+  async (doseId, { dispatch }) => {
+    await api.markDoseTaken(doseId);
+
+    // refresh capsules after update
+    dispatch(fetchCapsulesThunk());
+
+    return true;
+  }
+);
+
+export const fetchmedicationPatterns = createAsyncThunk(
+  "capsules/pattern",
+  async () => {
+    const res = await api.getMedicationPatterns();
+    return res.data
+  }
+)
 
 const capsulesSlice = createSlice({
   name: "capsules",
@@ -71,10 +92,18 @@ const capsulesSlice = createSlice({
       })
       // Capsule history
       .addCase(fetchCapsuleHistoryThunk.fulfilled, (state, action) => {
-        const { capsuleId, history } = action.payload;
-        const capsule = state.capsules.find(c => c._id === capsuleId);
-        if (capsule) capsule.history = history;
-      });
+        state.history = action.payload
+      })
+      // Pattern
+      .addCase(fetchmedicationPatterns.pending, (state) => { state.loading = true; })
+    .addCase(fetchmedicationPatterns.fulfilled, (state, action) => {
+      state.loading = false;
+      state.pattern = action.payload; // <- store patterns here
+    })
+    .addCase(fetchmedicationPatterns.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
   },
 });
 

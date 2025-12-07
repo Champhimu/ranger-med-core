@@ -12,11 +12,14 @@ const doseSchema = new mongoose.Schema({
     default: "scheduled"
   },
   snoozeTime: String,   // optional new reminder time
+  actualTime: Date,     // When user actually took the dose
   uniqueKey: {
     type: String,
     unique: true
   },
   notes: String,
+}, {
+  timestamps: true
 });
 
 export default mongoose.model("Dose", doseSchema);

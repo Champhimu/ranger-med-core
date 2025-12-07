@@ -6,27 +6,23 @@ import { generateDoses } from "../utils/doseScheduler.js";
 export const addCapsule = async (req, res) => {
   try {
     const capsule = await Capsule.create({
-      userId: req.user.id,
+      userId: req.user,
       ...req.body
     });
+    capsule.timeSlots = req.body.time;
 
-    const { doses, refillDate, remainingStock } = generateDoses(capsule);
+    const doses = generateDoses(capsule);
 
     // Save all doses
     await Dose.insertMany(doses);
 
     // Update capsule with refillDate and remaining stock
-    capsule.refillDate = refillDate;
-    capsule.stock = remainingStock;
-    capsule.timeSlots = req.body.time;
     await capsule.save();
 
     res.json({
       message: "Capsule created and doses scheduled",
       capsule,
       dosesCount: doses.length,
-      refillDate,
-      remainingStock
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -36,8 +32,27 @@ export const addCapsule = async (req, res) => {
 // GET /api/capsules
 export const getCapsules = async (req, res) => {
   try {
-    const capsules = await Capsule.find({ userId: req.user.id });
-    res.json(capsules);
+    const capsules = await Capsule.find({ userId: req.user });
+
+    // Today's Date
+    const todayStr = new Date().toISOString().split("T")[0];
+
+    const capsulesWithDoses = await Promise.all(
+      capsules.map(async (capsule) => {
+        const todaysDoses = await Dose.find({
+          capsuleId: capsule._id,
+          userId: req.user,
+          date: todayStr
+        }).select("-__v -createdAt -updatedAt"); // remove extra fields if needed
+
+        return {
+          ...capsule.toObject(),
+          todaysDoses
+        };
+      })
+    );
+
+    res.json(capsulesWithDoses);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -45,11 +60,55 @@ export const getCapsules = async (req, res) => {
 
 // PATCH /api/capsule/dose/DOSE_ID/taken
 export const markDoseTaken = async (req, res) => {
-  const id = req.params.id;
-  await Dose.findByIdAndUpdate(id, { status: "taken" });
+  try {
+    const doseId = req.params.id;
 
-  res.json({ message: "Dose marked as taken" });
+    // 1. Find dose
+    const dose = await Dose.findById(doseId);
+    if (!dose) return res.status(404).json({ error: "Dose not found" });
+
+    // 2. Find capsule
+    const capsule = await Capsule.findById(dose.capsuleId);
+    if (!capsule) return res.status(404).json({ error: "Capsule not found" });
+
+    // 3. Determine pill count for this dose
+    const pillsPerDose = capsule.doseAmount ? Number(capsule.doseAmount) : 1;
+
+    // Ensure stock never becomes negative
+    const updatedStock = Math.max((capsule.stock || 0) - pillsPerDose, 0);
+
+    // 4. Update dose
+    const updatedDose = await Dose.findByIdAndUpdate(
+      doseId,
+      {
+        status: "taken",
+        actualTime: new Date(),
+      },
+      { new: true }
+    );
+
+    // 5. Update capsule stock + last taken time
+    const updatedCapsule = await Capsule.findByIdAndUpdate(
+      dose.capsuleId,
+      {
+        lastTaken: new Date(),
+        stock: updatedStock,
+      },
+      { new: true }
+    );
+
+    res.json({
+      message: "Dose marked as taken, stock reduced, capsule updated",
+      dose: updatedDose,
+      capsule: updatedCapsule
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error while marking dose as taken" });
+  }
 };
+
 
 // PATCH /api/capsule/dose/DOSE_ID/missed
 export const markDoseMissed = async (req, res) => {
@@ -84,16 +143,39 @@ export const capsuleHistory = async (req, res) => {
 // GET /api/capsules/history
 export const getAllHistory = async (req, res) => {
   try {
-    const doses = await Dose.find({ userId: req.user.id }).populate("capsuleId");
-    const history = doses.map(dose => ({
-      id: dose._id,
-      name: dose.capsuleId.name,
-      dosage: `${dose.capsuleId.doseAmount} ${dose.capsuleId.doseUnit}`,
-      period: `${dose.capsuleId.startDate.toDateString()} - ${dose.capsuleId.endDate.toDateString()}`,
-      prescribedBy: dose.capsuleId.prescribedBy,
-      reason: dose.reason || "N/A",
-      status: dose.status
-    }));
+    const today = new Date();
+
+    // Fetch all capsules that have ended
+    const capsules = await Capsule.find({ 
+      userId: req.user, 
+      endDate: { $lte: today } 
+    });
+
+    const history = [];
+
+    for (const cap of capsules) {
+      const doses = await Dose.find({ capsuleId: cap._id, userId: req.user });
+
+      const totalDoses = doses.length;
+      const takenDoses = doses.filter(d => d.status === "taken").length;
+      const missedDoses = doses.filter(d => d.status === "missed").length;
+      const skippedDoses = doses.filter(d => d.status === "skipped").length;
+
+      history.push({
+        id: cap._id,
+        name: cap.name,
+        dosage: `${cap.doseAmount} ${cap.doseUnit}`,
+        period: `${cap.startDate.toISOString().split("T")[0]} - ${cap.endDate.toISOString().split("T")[0]}`,
+        prescribedBy: cap.prescribedBy,
+        reason: cap.reason || "N/A",
+        totalDoses,
+        takenDoses,
+        missedDoses,
+        skippedDoses,
+        status: "Completed"
+      });
+    }
+
     res.json(history);
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -129,12 +211,17 @@ export const getReminders = async (req, res) => {
 // AI-POWERED SMART RECOMMENDATIONS
 export const getRecommendations = async (req, res) => {
   try {
-    const capsules = await Capsule.find({ userId: req.user.id });
-    const doses = await Dose.find({ userId: req.user.id });
+    const now = new Date();
+    // Fetch all capsules and doses
+    const capsules = await Capsule.find({ userId: req.user });
+    const doses = await Dose.find({ userId: req.user });
 
-    // Simple AI logic placeholder
-    const recommendations = capsules.map(capsule => {
+    // Filter capsules that are still ongoing or not yet ended
+    const activeCapsules = capsules.filter(capsule => !capsule.endDate || new Date(capsule.endDate) >= now);
+
+    const recommendations = activeCapsules.map(capsule => {
       const missedCount = doses.filter(d => d.capsuleId.toString() === capsule._id.toString() && d.status === "missed").length;
+      
       let type = "consistency-alert";
       let priority = "low";
       let message = "You're taking this medication consistently.";
@@ -154,9 +241,10 @@ export const getRecommendations = async (req, res) => {
         type,
         priority,
         message,
+        endDate: capsule.endDate || null,   // include endDate
         suggestedTime: capsule.timeSlots?.[0] || null,
         suggestedAction: type === "refill-alert" ? "Refill medication" : "Take on schedule",
-        confidence: 90 
+        confidence: 90
       };
     });
 
@@ -165,3 +253,83 @@ export const getRecommendations = async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 };
+
+// GET /api/capsules/pattern
+export const getAdherencePattern = async (req, res) => {
+  try {
+    const today = new Date();
+
+    // Get all active capsules
+    const activeCapsules = await Capsule.find({ endDate: { $gte: today } }).lean();
+
+    const insights = await Promise.all(
+      activeCapsules.map(async (capsule) => {
+        const history = await Dose.find({ capsuleId: capsule._id }).lean();
+
+        if (history.length < 2) {
+          return {
+            capsuleId: capsule._id,
+            name: capsule.name,
+            adherence: {
+              pattern: "insufficient-data",
+              avgDelay: 0,
+              consistency: "unknown",
+              stdDev: 0
+            }
+          };
+        }
+
+        const taken = history.filter(d => d.status === "taken");
+
+        if (taken.length === 0) {
+          return {
+            capsuleId: capsule._id,
+            name: capsule.name,
+            adherence: {
+              pattern: "no-doses-taken",
+              avgDelay: 0,
+              consistency: "unknown",
+              stdDev: 0
+            }
+          };
+        }
+
+        const delays = taken.map(d => {
+          const [schedH, schedM] = d.time.split(":").map(Number);
+          const actual = new Date(d.actualTime);
+          return (actual.getHours() * 60 + actual.getMinutes()) - (schedH * 60 + schedM);
+        });
+
+        const avgDelay = Math.round(delays.reduce((a, b) => a + b, 0) / delays.length);
+        const variance = delays.reduce((sum, d) => sum + Math.pow(d - avgDelay, 2), 0) / delays.length;
+        const stdDev = Math.sqrt(variance);
+
+        let consistency = "excellent";
+        if (stdDev > 15) consistency = "poor";
+        else if (stdDev > 10) consistency = "fair";
+        else if (stdDev > 5) consistency = "good";
+
+        let pattern = "on-time";
+        if (avgDelay > 10) pattern = "consistently-late";
+        else if (avgDelay < -10) pattern = "consistently-early";
+
+        return {
+          capsuleId: capsule._id,
+          name: capsule.name,
+          adherence: {
+            pattern,
+            avgDelay,
+            consistency,
+            stdDev: Math.round(stdDev)
+          }
+        };
+      })
+    );
+
+    res.json(insights);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+}
