@@ -29,7 +29,7 @@ connectDB(); // Your custom Mongo connection
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/capsules", capsuleRoutes);
-// app.use("/api/symptoms", symptomRoutes);
+app.use("/api/symptoms", symptomRoutes);
 // app.use("/api/ai", aiRoutes);
 
 // Health Check

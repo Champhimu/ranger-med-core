@@ -238,6 +238,7 @@
   cursor: pointer;
   font-size: 14px;
   transition: all 0.3s ease;
+  margin: 5px;
 }
 
 .symptom-chip:hover {

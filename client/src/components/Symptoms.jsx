@@ -4,15 +4,34 @@
  * Features: Log New Symptom, View History, Track Progress
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from "react-redux";
 import './Symptoms.css';
+import {
+  fetchSymptomsThunk,
+  addSymptomThunk,
+  updateSymptomThunk,
+  deleteSymptomThunk,
+  fetchProgressThunk
+} from '../store/symptomSlice';
 
 function Symptoms({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('log'); // 'log', 'history', 'progress'
   const [showLogForm, setShowLogForm] = useState(false);
+  const [filteredSymptoms, setFilteredSymptoms] = useState([]);
+  const [severityFilter, setSeverityFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
+  // const dispatch = useDispatch();
+  //  const { list: symptomHistory, progress: symptomProgress, loading, error } = useSelector(state => state.symptoms);
+
+  const dispatch = useDispatch();
+
+  const { symptoms: symptomHistory, progress: symptomProgress, loading, error } = useSelector(
+    (state) => state.symptoms
+  );
 
   const rangerColors = {
     red: '#FF0000',
@@ -37,107 +56,144 @@ function Symptoms({ selectedRanger = 'red' }) {
     time: new Date().toTimeString().split(' ')[0].slice(0, 5)
   });
 
-  // Mock symptom history data
-  const symptomHistory = [
-    {
-      id: 1,
-      symptom: 'Headache',
-      severity: 'moderate',
-      bodyPart: 'Head',
-      description: 'Throbbing pain in temples, started after mission',
-      duration: '2 hours',
-      triggers: 'Loud explosions during battle',
-      date: '2025-12-04',
-      time: '14:30',
-      status: 'active'
-    },
-    {
-      id: 2,
-      symptom: 'Muscle Soreness',
-      severity: 'mild',
-      bodyPart: 'Legs',
-      description: 'General soreness in quadriceps and calves',
-      duration: '1 day',
-      triggers: 'Intense training session',
-      date: '2025-12-03',
-      time: '09:15',
-      status: 'resolved'
-    },
-    {
-      id: 3,
-      symptom: 'Fatigue',
-      severity: 'moderate',
-      bodyPart: 'General',
-      description: 'Overall tiredness and low energy levels',
-      duration: '3 days',
-      triggers: 'Multiple missions, lack of sleep',
-      date: '2025-12-02',
-      time: '18:45',
-      status: 'active'
-    },
-    {
-      id: 4,
-      symptom: 'Joint Pain',
-      severity: 'severe',
-      bodyPart: 'Knees',
-      description: 'Sharp pain when bending knees',
-      duration: '4 hours',
-      triggers: 'High-impact landing from Zord',
-      date: '2025-12-01',
-      time: '16:20',
-      status: 'resolved'
-    },
-    {
-      id: 5,
-      symptom: 'Dizziness',
-      severity: 'mild',
-      bodyPart: 'Head',
-      description: 'Slight vertigo when standing up quickly',
-      duration: '30 minutes',
-      triggers: 'Rapid morphing sequence',
-      date: '2025-11-30',
-      time: '11:00',
-      status: 'resolved'
-    },
-    {
-      id: 6,
-      symptom: 'Nausea',
-      severity: 'moderate',
-      bodyPart: 'Stomach',
-      description: 'Feeling of sickness after teleportation',
-      duration: '1 hour',
-      triggers: 'Multiple rapid teleports',
-      date: '2025-11-29',
-      time: '15:30',
-      status: 'resolved'
+  useEffect(() => {
+    let filtered = symptomHistory || [];
+
+    if (severityFilter !== "All") {
+      filtered = filtered.filter(
+        (s) => s.severity.toLowerCase() === severityFilter.toLowerCase()
+      );
     }
-  ];
+
+    if (statusFilter !== "All") {
+      filtered = filtered.filter(
+        (s) => s.status.toLowerCase() === statusFilter.toLowerCase()
+      );
+    }
+
+    setFilteredSymptoms(filtered);
+  }, [symptomHistory, severityFilter, statusFilter]);
+
+  useEffect(() => {
+    console.log("This is running...")
+    dispatch(fetchSymptomsThunk());
+    dispatch(fetchProgressThunk());
+  }, [dispatch]);
+
+  // if (loading) return <p>Loading...</p>;
+  // if (error) return <p>Error: {error}</p>;
+
+  // Mock symptom history data
+  // const symptomHistory = [
+  //   {
+  //     id: 1,
+  //     symptom: 'Headache',
+  //     severity: 'moderate',
+  //     bodyPart: 'Head',
+  //     description: 'Throbbing pain in temples, started after mission',
+  //     duration: '2 hours',
+  //     triggers: 'Loud explosions during battle',
+  //     date: '2025-12-04',
+  //     time: '14:30',
+  //     status: 'active'
+  //   },
+  //   {
+  //     id: 2,
+  //     symptom: 'Muscle Soreness',
+  //     severity: 'mild',
+  //     bodyPart: 'Legs',
+  //     description: 'General soreness in quadriceps and calves',
+  //     duration: '1 day',
+  //     triggers: 'Intense training session',
+  //     date: '2025-12-03',
+  //     time: '09:15',
+  //     status: 'resolved'
+  //   },
+  //   {
+  //     id: 3,
+  //     symptom: 'Fatigue',
+  //     severity: 'moderate',
+  //     bodyPart: 'General',
+  //     description: 'Overall tiredness and low energy levels',
+  //     duration: '3 days',
+  //     triggers: 'Multiple missions, lack of sleep',
+  //     date: '2025-12-02',
+  //     time: '18:45',
+  //     status: 'active'
+  //   },
+  //   {
+  //     id: 4,
+  //     symptom: 'Joint Pain',
+  //     severity: 'severe',
+  //     bodyPart: 'Knees',
+  //     description: 'Sharp pain when bending knees',
+  //     duration: '4 hours',
+  //     triggers: 'High-impact landing from Zord',
+  //     date: '2025-12-01',
+  //     time: '16:20',
+  //     status: 'resolved'
+  //   },
+  //   {
+  //     id: 5,
+  //     symptom: 'Dizziness',
+  //     severity: 'mild',
+  //     bodyPart: 'Head',
+  //     description: 'Slight vertigo when standing up quickly',
+  //     duration: '30 minutes',
+  //     triggers: 'Rapid morphing sequence',
+  //     date: '2025-11-30',
+  //     time: '11:00',
+  //     status: 'resolved'
+  //   },
+  //   {
+  //     id: 6,
+  //     symptom: 'Nausea',
+  //     severity: 'moderate',
+  //     bodyPart: 'Stomach',
+  //     description: 'Feeling of sickness after teleportation',
+  //     duration: '1 hour',
+  //     triggers: 'Multiple rapid teleports',
+  //     date: '2025-11-29',
+  //     time: '15:30',
+  //     status: 'resolved'
+  //   }
+  // ];
 
   // Symptom progress tracking data
-  const symptomProgress = {
-    'Headache': [
-      { date: '2025-11-25', severity: 'mild', count: 1 },
-      { date: '2025-11-28', severity: 'moderate', count: 1 },
-      { date: '2025-12-01', severity: 'mild', count: 1 },
-      { date: '2025-12-04', severity: 'moderate', count: 1 }
-    ],
-    'Fatigue': [
-      { date: '2025-11-26', severity: 'mild', count: 1 },
-      { date: '2025-11-29', severity: 'moderate', count: 1 },
-      { date: '2025-12-02', severity: 'moderate', count: 1 }
-    ],
-    'Muscle Soreness': [
-      { date: '2025-11-27', severity: 'mild', count: 2 },
-      { date: '2025-11-30', severity: 'moderate', count: 1 },
-      { date: '2025-12-03', severity: 'mild', count: 1 }
-    ]
-  };
+  // const symptomProgress = {
+  //   'Headache': [
+  //     { date: '2025-11-25', severity: 'mild', count: 1 },
+  //     { date: '2025-11-28', severity: 'moderate', count: 1 },
+  //     { date: '2025-12-01', severity: 'mild', count: 1 },
+  //     { date: '2025-12-04', severity: 'moderate', count: 1 }
+  //   ],
+  //   'Fatigue': [
+  //     { date: '2025-11-26', severity: 'mild', count: 1 },
+  //     { date: '2025-11-29', severity: 'moderate', count: 1 },
+  //     { date: '2025-12-02', severity: 'moderate', count: 1 }
+  //   ],
+  //   'Muscle Soreness': [
+  //     { date: '2025-11-27', severity: 'mild', count: 2 },
+  //     { date: '2025-11-30', severity: 'moderate', count: 1 },
+  //     { date: '2025-12-03', severity: 'mild', count: 1 }
+  //   ]
+  // };
+
+  const symptomOptions = [
+    { emoji: "😫", name: "Headache" },
+    { emoji: "😴", name: "Fatigue" },
+    { emoji: "💪", name: "Muscle Pain" },
+    { emoji: "🤢", name: "Nausea" },
+    { emoji: "😵", name: "Dizziness" },
+    { emoji: "🦴", name: "Joint Pain" },
+  ];
+
 
   // Statistics
   const stats = {
-    totalSymptoms: symptomHistory.length,
-    activeSymptoms: symptomHistory.filter(s => s.status === 'active').length,
-    resolvedSymptoms: symptomHistory.filter(s => s.status === 'resolved').length,
+    totalSymptoms: symptomHistory?.length,
+    activeSymptoms: symptomHistory?.filter(s => s.status === 'active').length,
+    resolvedSymptoms: symptomHistory?.filter(s => s.status === 'resolved').length,
     mostCommon: 'Headache',
     avgSeverity: 'Moderate'
   };
@@ -158,49 +214,34 @@ function Symptoms({ selectedRanger = 'red' }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewSymptom(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setNewSymptom(p => ({ ...p, [name]: value }));
   };
 
   const handleSubmitSymptom = (e) => {
     e.preventDefault();
 
     // Validation
-    if (!newSymptom.symptomName.trim()) {
-      toast.error('🩺 Symptom name is required!');
-      return;
-    }
-
-    if (!newSymptom.bodyPart.trim()) {
-      toast.error('🎯 Body part is required!');
-      return;
-    }
-
-    if (!newSymptom.description.trim()) {
-      toast.error('📝 Symptom description is required!');
-      return;
-    }
-
-    if (!newSymptom.duration.trim()) {
-      toast.error('⏱️ Duration is required!');
-      return;
-    }
+    if (!newSymptom.symptomName.trim()) return toast.error("Symptom name required");
+    if (!newSymptom.bodyPart.trim()) return toast.error("Body part required");
+    if (!newSymptom.description.trim()) return toast.error("Description required");
+    if (!newSymptom.duration.trim()) return toast.error('Duration is required!');
 
     console.log('New symptom logged:', newSymptom);
     // Here you would send to API
-    
-    toast.success(`✅ Symptom "${newSymptom.symptomName}" logged successfully!`, {
-      icon: '🩺',
-      duration: 3000,
-      style: {
-        border: '2px solid #00ff00',
-        boxShadow: '0 0 20px rgba(0, 255, 0, 0.5)',
-      }
-    });
+    dispatch(addSymptomThunk(newSymptom))
+      .unwrap()
+      .then(() => {
+        toast.success(`Symptom "${newSymptom.symptomName}" logged successfully!`, {
+          duration: 3000,
+          style: {
+            border: '2px solid #00ff00',
+            boxShadow: '0 0 20px rgba(0, 255, 0, 0.5)',
+          }
+        });
+        setShowLogForm(false);
+      })
+      .catch(() => toast.error("Failed to submit"));
 
-    setShowLogForm(false);
     setNewSymptom({
       symptomName: '',
       severity: 'mild',
@@ -213,23 +254,46 @@ function Symptoms({ selectedRanger = 'red' }) {
     });
   };
 
+  // DELETE HANDLER
+  const handleDelete = (id) => {
+    dispatch(deleteSymptomThunk(id));
+    toast.success("Deleted symptom");
+  };
+
+  // UPDATE STATUS HANDLER
+  const toggleStatus = (sym) => {
+    dispatch(updateSymptomThunk({
+      id: sym._id,
+      updates: { status: sym.status === "active" ? "resolved" : "active" }
+    }));
+  };
+
   const renderLogSymptomTab = () => (
     <div className="symptoms-log-section">
       <div className="quick-log-actions">
         <button className="quick-log-btn" onClick={() => setShowLogForm(true)} style={{ borderColor: currentColor, color: currentColor }}>
           <span className="btn-icon">➕</span>
-          <span className="btn-text">Log New Symptom</span>
+          <span className="btn-text" style={{ color: "white" }}>Log New Symptom</span>
         </button>
-        
+
         <div className="common-symptoms">
           <h4>Quick Log Common Symptoms:</h4>
-          <div className="common-symptom-chips">
-            <button className="symptom-chip">😫 Headache</button>
-            <button className="symptom-chip">😴 Fatigue</button>
-            <button className="symptom-chip">💪 Muscle Pain</button>
-            <button className="symptom-chip">🤢 Nausea</button>
-            <button className="symptom-chip">😵 Dizziness</button>
-            <button className="symptom-chip">🦴 Joint Pain</button>
+          <div className="symptom-chips-container">
+            {symptomOptions.map((symptom) => (
+              <button
+                key={symptom.name}
+                className="symptom-chip"
+                onClick={() => {
+                  setShowLogForm(true);
+                  setNewSymptom((prev) => ({
+                    ...prev,
+                    symptomName: symptom.name,
+                  }));
+                }}
+              >
+                {symptom.emoji} {symptom.name}
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -241,7 +305,7 @@ function Symptoms({ selectedRanger = 'red' }) {
               <h2>🔬 LOG NEW SYMPTOM</h2>
               <button className="close-modal-btn" onClick={() => setShowLogForm(false)}>✕</button>
             </div>
-            
+
             <form className="symptom-log-form" onSubmit={handleSubmitSymptom}>
               <div className="form-row">
                 <div className="form-group">
@@ -365,27 +429,35 @@ function Symptoms({ selectedRanger = 'red' }) {
       <div className="recent-symptoms-preview">
         <h3>Recently Logged Symptoms</h3>
         <div className="symptoms-preview-list">
-          {symptomHistory.slice(0, 3).map(symptom => (
-            <div key={symptom.id} className="symptom-preview-card">
-              <div className="symptom-preview-header">
-                <span className="symptom-name">{symptom.symptom}</span>
-                <span 
-                  className="symptom-severity-badge"
-                  style={{ 
-                    backgroundColor: getSeverityColor(symptom.severity) + '20',
-                    color: getSeverityColor(symptom.severity),
-                    border: `1px solid ${getSeverityColor(symptom.severity)}`
-                  }}
-                >
-                  {symptom.severity.toUpperCase()}
-                </span>
+          {symptomHistory?.length > 0 ? (
+            symptomHistory.slice(0, 3).map((symptom) => (
+              <div key={symptom._id} className="symptom-preview-card">
+                <div className="symptom-preview-header">
+                  <span className="symptom-name">{symptom.symptomName}</span>
+                  <span
+                    className="symptom-severity-badge"
+                    style={{
+                      backgroundColor: getSeverityColor(symptom.severity) + "20",
+                      color: getSeverityColor(symptom.severity),
+                      border: `1px solid ${getSeverityColor(symptom.severity)}`
+                    }}
+                  >
+                    {symptom.severity.toUpperCase()}
+                  </span>
+                </div>
+
+                <div className="symptom-preview-body">
+                  <span className="symptom-date">
+                    📅 {symptom.date} at {symptom.time}
+                  </span>
+                  <span className="symptom-body-part">📍 {symptom.bodyPart}</span>
+                </div>
               </div>
-              <div className="symptom-preview-body">
-                <span className="symptom-date">📅 {symptom.date} at {symptom.time}</span>
-                <span className="symptom-body-part">📍 {symptom.bodyPart}</span>
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="no-symptoms">No recent symptoms added.</p>
+          )}
+
         </div>
       </div>
     </div>
@@ -428,91 +500,123 @@ function Symptoms({ selectedRanger = 'red' }) {
         <div className="filter-group">
           <label>Filter by Severity:</label>
           <div className="filter-buttons">
-            <button className="filter-btn active">All</button>
-            <button className="filter-btn">Mild</button>
-            <button className="filter-btn">Moderate</button>
-            <button className="filter-btn">Severe</button>
+            {["All", "Mild", "Moderate", "Severe"].map((level) => (
+              <button
+                key={level}
+                className={`filter-btn ${severityFilter === level ? "active" : ""}`}
+                onClick={() => setSeverityFilter(level)}
+              >
+                {level}
+              </button>
+            ))}
           </div>
         </div>
         <div className="filter-group">
           <label>Filter by Status:</label>
           <div className="filter-buttons">
-            <button className="filter-btn active">All</button>
-            <button className="filter-btn">Active</button>
-            <button className="filter-btn">Resolved</button>
+            {["All", "Active", "Resolved"].map((status) => (
+              <button
+                key={status}
+                className={`filter-btn ${statusFilter === status ? "active" : ""}`}
+                onClick={() => setStatusFilter(status)}
+              >
+                {status}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
       <div className="symptoms-history-list">
-        {symptomHistory.map(symptom => (
-          <div key={symptom.id} className="symptom-history-card">
-            <div className="symptom-card-header">
-              <div className="symptom-title-section">
-                <h4 className="symptom-title">{symptom.symptom}</h4>
-                <div className="symptom-badges">
-                  <span 
-                    className="severity-badge"
-                    style={{ 
-                      backgroundColor: getSeverityColor(symptom.severity) + '20',
-                      color: getSeverityColor(symptom.severity),
-                      border: `1px solid ${getSeverityColor(symptom.severity)}`
+        {filteredSymptoms && filteredSymptoms?.length > 0 ? (
+          filteredSymptoms.map((symptom) => (
+            <div key={symptom._id} className="symptom-history-card">
+              <div className="symptom-card-header">
+                <div className="symptom-title-section">
+                  <h4 className="symptom-title">{symptom.symptom}</h4>
+                  <div className="symptom-badges">
+                    <span
+                      className="severity-badge"
+                      style={{
+                        backgroundColor: getSeverityColor(symptom.severity) + "20",
+                        color: getSeverityColor(symptom.severity),
+                        border: `1px solid ${getSeverityColor(symptom.severity)}`
+                      }}
+                    >
+                      {symptom.severity.toUpperCase()}
+                    </span>
+                    <span
+                      className={`status-badge status-${symptom.status}`}
+                      style={{ marginTop: "0px" }}
+                    >
+                      {symptom.status === "active" ? "⚠️ ACTIVE" : "✅ RESOLVED"}
+                    </span>
+                  </div>
+                </div>
+                <div className="symptom-severity-bar">
+                  <div
+                    className="severity-fill"
+                    style={{
+                      width: `${(getSeverityLevel(symptom.severity) / 3) * 100}%`,
+                      backgroundColor: getSeverityColor(symptom.severity)
                     }}
-                  >
-                    {symptom.severity.toUpperCase()}
-                  </span>
-                  <span className={`status-badge status-${symptom.status}`}>
-                    {symptom.status === 'active' ? '⚠️ ACTIVE' : '✅ RESOLVED'}
-                  </span>
+                  ></div>
                 </div>
               </div>
-              <div className="symptom-severity-bar">
-                <div 
-                  className="severity-fill"
-                  style={{ 
-                    width: `${(getSeverityLevel(symptom.severity) / 3) * 100}%`,
-                    backgroundColor: getSeverityColor(symptom.severity)
-                  }}
-                ></div>
+
+              <div className="symptom-card-body">
+                <div className="symptom-info-row">
+                  <div className="info-item">
+                    <span className="info-icon">📅</span>
+                    <span className="info-text">
+                      {symptom.date} at {symptom.time}
+                    </span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-icon">📍</span>
+                    <span className="info-text">{symptom.bodyPart}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-icon">⏱️</span>
+                    <span className="info-text">{symptom.duration}</span>
+                  </div>
+                </div>
+
+                <div className="symptom-description">
+                  <strong>Description:</strong>
+                  <p>{symptom.description}</p>
+                </div>
+
+                {symptom.triggers && (
+                  <div className="symptom-triggers">
+                    <strong>Possible Triggers:</strong>
+                    <p>{symptom.triggers}</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="symptom-card-actions">
+                <button
+                  className="action-btn-small"
+                  onClick={() => toggleStatus(symptom)}
+                >
+                  {symptom.status === "active" ? "Mark Resolved" : "Mark Active"}
+                </button>
+                <button
+                  className="action-btn-small"
+                  onClick={() => handleDelete(symptom._id)}
+                >
+                  Delete
+                </button>
               </div>
             </div>
-
-            <div className="symptom-card-body">
-              <div className="symptom-info-row">
-                <div className="info-item">
-                  <span className="info-icon">📅</span>
-                  <span className="info-text">{symptom.date} at {symptom.time}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-icon">📍</span>
-                  <span className="info-text">{symptom.bodyPart}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-icon">⏱️</span>
-                  <span className="info-text">{symptom.duration}</span>
-                </div>
-              </div>
-
-              <div className="symptom-description">
-                <strong>Description:</strong>
-                <p>{symptom.description}</p>
-              </div>
-
-              {symptom.triggers && (
-                <div className="symptom-triggers">
-                  <strong>Possible Triggers:</strong>
-                  <p>{symptom.triggers}</p>
-                </div>
-              )}
-            </div>
-
-            <div className="symptom-card-actions">
-              <button className="action-btn-small">📝 Update Status</button>
-              <button className="action-btn-small">📋 Add Notes</button>
-              <button className="action-btn-small">🗑️ Delete</button>
-            </div>
+          ))
+        ) : (
+          <div className="no-data-message">
+            No data found based on filter. Add a symptom to get started!
           </div>
-        ))}
+        )}
+
       </div>
     </div>
   );
@@ -524,56 +628,63 @@ function Symptoms({ selectedRanger = 'red' }) {
         <p>Monitor how your symptoms change over time</p>
       </div>
 
-      {Object.entries(symptomProgress).map(([symptomName, records]) => (
-        <div key={symptomName} className="progress-chart-container">
-          <div className="progress-chart-header">
-            <h4>{symptomName}</h4>
-            <span className="occurrence-count">{records.length} occurrences</span>
-          </div>
+      {Object.keys(symptomProgress).length > 0 ? (
+        Object.entries(symptomProgress).map(([symptomName, records]) => (
+          <div key={symptomName} className="progress-chart-container">
+            <div className="progress-chart-header">
+              <h4>{symptomName}</h4>
+              <span className="occurrence-count">{records.length} occurrences</span>
+            </div>
 
-          <div className="progress-timeline">
-            {records.map((record, index) => (
-              <div key={index} className="timeline-item">
-                <div className="timeline-date">{record.date}</div>
-                <div 
-                  className="timeline-marker"
-                  style={{ backgroundColor: getSeverityColor(record.severity) }}
-                ></div>
-                <div className="timeline-content">
-                  <span 
-                    className="timeline-severity"
-                    style={{ color: getSeverityColor(record.severity) }}
-                  >
-                    {record.severity.toUpperCase()}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="progress-chart">
-            <div className="chart-bars">
+            <div className="progress-timeline">
               {records.map((record, index) => (
-                <div key={index} className="chart-bar-wrapper">
-                  <div 
-                    className="chart-bar"
-                    style={{ 
-                      height: `${(getSeverityLevel(record.severity) / 3) * 100}%`,
-                      backgroundColor: getSeverityColor(record.severity)
-                    }}
+                <div key={index} className="timeline-item">
+                  <div className="timeline-date">{record.date}</div>
+                  <div
+                    className="timeline-marker"
+                    style={{ backgroundColor: getSeverityColor(record.severity) }}
                   ></div>
-                  <div className="chart-label">{record.date.split('-')[2]}</div>
+                  <div className="timeline-content">
+                    <span
+                      className="timeline-severity"
+                      style={{ color: getSeverityColor(record.severity) }}
+                    >
+                      {record.severity.toUpperCase()}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="chart-y-axis">
-              <span>Severe</span>
-              <span>Moderate</span>
-              <span>Mild</span>
+
+            <div className="progress-chart">
+              <div className="chart-bars">
+                {records.map((record, index) => (
+                  <div key={index} className="chart-bar-wrapper">
+                    <div
+                      className="chart-bar"
+                      style={{
+                        height: `${(getSeverityLevel(record.severity) / 3) * 100}%`,
+                        backgroundColor: getSeverityColor(record.severity),
+                      }}
+                    ></div>
+                    <div className="chart-label">{record.date.split("-")[2]}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="chart-y-axis">
+                <span>Severe</span>
+                <span>Moderate</span>
+                <span>Mild</span>
+              </div>
             </div>
           </div>
+        ))
+      ) : (
+        <div className="no-data-message">
+          No data, add symptoms to start tracking
         </div>
-      ))}
+      )}
+
 
       <div className="progress-insights">
         <h4>📊 Insights & Recommendations</h4>
@@ -616,7 +727,7 @@ function Symptoms({ selectedRanger = 'red' }) {
 
       {/* Tab Navigation */}
       <div className="symptoms-tabs">
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'log' ? 'active' : ''}`}
           onClick={() => setActiveTab('log')}
           style={activeTab === 'log' ? { borderBottomColor: currentColor, color: currentColor } : {}}
@@ -624,7 +735,7 @@ function Symptoms({ selectedRanger = 'red' }) {
           <span className="tab-icon">➕</span>
           <span className="tab-text">Log Symptom</span>
         </button>
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`}
           onClick={() => setActiveTab('history')}
           style={activeTab === 'history' ? { borderBottomColor: currentColor, color: currentColor } : {}}
@@ -632,7 +743,7 @@ function Symptoms({ selectedRanger = 'red' }) {
           <span className="tab-icon">📋</span>
           <span className="tab-text">Symptom History</span>
         </button>
-        <button 
+        <button
           className={`tab-btn ${activeTab === 'progress' ? 'active' : ''}`}
           onClick={() => setActiveTab('progress')}
           style={activeTab === 'progress' ? { borderBottomColor: currentColor, color: currentColor } : {}}
@@ -648,9 +759,6 @@ function Symptoms({ selectedRanger = 'red' }) {
         {activeTab === 'history' && renderHistoryTab()}
         {activeTab === 'progress' && renderProgressTab()}
       </div>
-
-      {/* Cockpit Frame */}
-      <div className="cockpit-frame"></div>
     </div>
   );
 }

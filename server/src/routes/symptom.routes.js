@@ -1,13 +1,24 @@
 import express from "express";
-import { previewSymptomAI, addSymptom, getSymptoms } from "../controllers/symptom.controller.js";
+import { 
+  createSymptom,
+  getSymptoms,
+  getSymptom,
+  updateSymptom,
+  deleteSymptom,
+  getProgress
+ } from "../controllers/symptom.controller.js";
 import { healthDashboard } from "../controllers/dashboard.controller.js";
 import {auth} from "../middlewares/auth.js";
 
 const router = express.Router();
 
-router.post("/ai-preview", auth, previewSymptomAI);
-router.post("/add", auth, addSymptom);
-router.get("/history", auth, getSymptoms);
+router.post('/add', createSymptom);
+router.get('/', getSymptoms);
+router.get('/progress', getProgress);
+router.get('/:id', getSymptom);
+router.put('/:id', updateSymptom);
+router.delete('/:id', deleteSymptom);
+
 router.get("/dashboard", auth, healthDashboard);
 
 export default router;

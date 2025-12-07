@@ -1,69 +1,76 @@
 import Symptom from "../models/Symptom.js";
-import { aiSymptomPreview } from "../utils/aiSymptomPreview.js";
-import { analyzeSymptomAI } from "../utils/aiSymptomPreview.js";
 
-// POST /api/symptoms/ai-preview
-export const previewSymptomAI = async (req, res) => {
+export const createSymptom = async (req, res) => {
   try {
-    const { symptom } = req.body;
-
-    if (!symptom) {
-      return res.status(400).json({ error: "Symptom text is required" });
-    }
-
-    const analysis = await aiSymptomPreview(symptom);
-
-    res.json({
-      message: "AI Symptom Preview Generated",
-      analysis
-    });
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const symptom = await Symptom.create(req.body);
+    res.status(201).json(symptom);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
-// POST /api/symptoms/add
-export const addSymptom = async (req, res) => {
-  try {
-    const { symptom, severity, notes } = req.body;
-    const userId = req.user.id;
-
-    const aiData = await analyzeSymptomAI(symptom, severity);
-
-    const now = new Date();
-
-    const entry = await Symptom.create({
-      userId,
-      symptom,
-      severity: aiData.severity,
-      predictedCondition: aiData.predictedCondition,
-      urgencyLevel: aiData.urgencyLevel,
-      riskLevel: aiData.riskLevel,
-      category: aiData.category,
-      isSerious: aiData.isSerious,
-      explanation: aiData.explanation,
-      notes,
-      date: now.toISOString().split("T")[0],
-      time: now.toTimeString().slice(0, 5)
-    });
-
-    res.json({
-      message: "Symptom logged successfully",
-      entry,
-      analysis: aiData
-    });
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// GET /api/symptoms/history
+// GET — All symptoms
 export const getSymptoms = async (req, res) => {
-  const userId = req.user.id;
+  try {
+    const symptoms = await Symptom.find().sort({ createdAt: -1 });
+    res.json(symptoms);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
-  const list = await Symptom.find({ userId }).sort({ date: -1 });
+// GET — Single symptom
+export const getSymptom = async (req, res) => {
+  try {
+    const symptom = await Symptom.findById(req.params.id);
+    res.json(symptom);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
-  res.json(list);
+// PUT — Update status or fields
+export const updateSymptom = async (req, res) => {
+  try {
+    const updated = await Symptom.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// DELETE — Remove symptom
+export const deleteSymptom = async (req, res) => {
+  try {
+    await Symptom.findByIdAndDelete(req.params.id);
+    res.json({ message: "Symptom deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET — Progress
+export const getProgress = async (req, res) => {
+  try {
+    const symptoms = await Symptom.find();
+
+    const grouped = {};
+    symptoms.forEach(sym => {
+      if (!grouped[sym.symptomName]) {
+        grouped[sym.symptomName] = [];
+      }
+      grouped[sym.symptomName].push({
+        date: sym.date,
+        severity: sym.severity
+      });
+    });
+
+    res.json(grouped);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
