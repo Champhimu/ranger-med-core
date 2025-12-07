@@ -11,10 +11,8 @@ import { processDoseReminders } from "./src/utils/reminderEngine.js";
 // Routes
 import authRoutes from "./src/routes/auth.routes.js";
 import capsuleRoutes from "./src/routes/capsule.routes.js";
-// import symptomRoutes from "./src/routes/symptom.routes.js";
+import symptomRoutes from "./src/routes/symptom.routes.js";
 // import aiRoutes from "./src/routes/ai.routes.js";
-
-dotenv.config();
 
 const app = express();
 
@@ -23,6 +21,7 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
+dotenv.config();
 
 // Database
 connectDB(); // Your custom Mongo connection

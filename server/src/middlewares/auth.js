@@ -10,7 +10,7 @@ export const auth = (req, res, next) => {
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
     // If invalid/expired → returns 403
     if (err) {
-      console.log("HWT", err); 
+      console.log(err); 
       return res.status(403).json({ message: "Invalid token" });
     }
     // If valid req.user = userId and allows the request
