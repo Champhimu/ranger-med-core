@@ -1,18 +1,21 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import Icon from "./Icon";
 import "./ZordonLogin.css";
 
 function ZordonLogin({ onAdminSuccess }) {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ adminId: "", secretKey: "" });
   const [isActivating, setIsActivating] = useState(false);
 
   const validateForm = () => {
     if (!form.adminId.trim()) {
-      toast.error("⚠️ Admin ID required!");
+      toast.error("Admin ID required!");
       return false;
     }
     if (!form.secretKey.trim()) {
-      toast.error("⚠️ Secret Key required!");
+      toast.error("Secret Key required!");
       return false;
     }
     if (form.adminId.length < 4) {
@@ -35,7 +38,7 @@ function ZordonLogin({ onAdminSuccess }) {
     toast.loading("Contacting ZORDON...", { id: "zordon" });
 
     setTimeout(() => {
-      toast.success("ZORDON LINK ESTABLISHED ⚡", {
+      toast.success("ZORDON LINK ESTABLISHED", {
         id: "zordon",
         duration: 2000,
         style: {
@@ -44,11 +47,18 @@ function ZordonLogin({ onAdminSuccess }) {
         },
       });
 
-      onAdminSuccess?.({
+      const adminData = {
         role: "admin",
         name: "Zordon",
         access: "full",
-      });
+      };
+      
+      localStorage.setItem('zordonAuth', JSON.stringify(adminData));
+      onAdminSuccess?.(adminData);
+      
+      setTimeout(() => {
+        navigate('/zordon/dashboard');
+      }, 500);
     }, 1500);
   };
 
@@ -57,7 +67,7 @@ function ZordonLogin({ onAdminSuccess }) {
       {isActivating && (
         <div className="zordon-activation">
           <div className="energy-pulse"></div>
-          <div className="zordon-text">CONNECTING…</div>
+          <div className="zordon-text">OverDrive LINK ESTABLISHING…</div>
         </div>
       )}
 
@@ -65,13 +75,13 @@ function ZordonLogin({ onAdminSuccess }) {
 
       <div className="zordon-title">
         <h1 className="z-title">ZORDON</h1>
-        <p className="z-subtitle">COMMAND ACCESS PORTAL</p>
+        <p className="z-subtitle">OverDrive HEADQUARTERS • COMMAND ACCESS</p>
       </div>
 
       <div className="zordon-panel">
         <form onSubmit={handleSubmit} className="z-form">
           <div className="form-group">
-            <label htmlFor="adminId">ADMIN ID</label>
+            <label htmlFor="adminId">◆ ADMIN IDENTIFICATION</label>
             <input
               id="adminId"
               type="text"
@@ -79,14 +89,14 @@ function ZordonLogin({ onAdminSuccess }) {
               onChange={(e) =>
                 setForm({ ...form, adminId: e.target.value })
               }
-              placeholder="Enter Zordon Admin ID"
+              placeholder="Enter OverDrive Admin ID"
               className="z-input"
               autoComplete="off"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="secretKey">SECRET KEY</label>
+            <label htmlFor="secretKey">◆ SECURITY CLEARANCE</label>
             <input
               id="secretKey"
               type="password"
@@ -94,14 +104,16 @@ function ZordonLogin({ onAdminSuccess }) {
               onChange={(e) =>
                 setForm({ ...form, secretKey: e.target.value })
               }
-              placeholder="Enter Secret Key"
+              placeholder="Enter Clearance Code"
               className="z-input"
               autoComplete="off"
             />
           </div>
 
           <button type="submit" className="zordon-button">
-            <span>ESTABLISH LINK</span>
+            <Icon name="zap" size={20} />
+            <span>INITIATE ACCESS</span>
+            <Icon name="zap" size={20} />
           </button>
         </form>
       </div>

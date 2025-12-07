@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import Icon from './Icon';
 import './DoctorLogin.css';
 
 function DoctorLogin() {
@@ -19,7 +20,7 @@ function DoctorLogin() {
 
   const validateForm = () => {
     if (!form.licenseNumber.trim()) {
-      toast.error('📧 Email or Username is required!', {
+      toast.error('Email or Username is required!', {
         style: {
           background: '#0a1f35',
           border: '2px solid #ef4444',
@@ -30,7 +31,7 @@ function DoctorLogin() {
     }
 
     if (form.licenseNumber.length < 3) {
-      toast.error('📧 Email or Username must be at least 3 characters!', {
+      toast.error('Email or Username must be at least 3 characters!', {
         style: {
           background: '#0a1f35',
           border: '2px solid #ef4444',
