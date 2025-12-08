@@ -7,9 +7,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RangerBot.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchDoctorsThunk } from '../../store/doctorSlice';
 
 function RangerBot() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { doctors } = useSelector((state) => state.doctor);
+
+  useEffect(() => {
+    dispatch(fetchDoctorsThunk());
+  }, [dispatch]);
+
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -25,6 +34,7 @@ function RangerBot() {
       }
     }
   ]);
+
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
@@ -65,12 +75,15 @@ function RangerBot() {
     
     // Appointment queries
     if (lowerMessage.includes('appointment') || lowerMessage.includes('doctor') || lowerMessage.includes('visit')) {
+       // Generate dynamic doctor list
+      const doctorList =
+        doctors.length > 0
+          ? doctors.map((d) => `• ${d.name} - ${d.specialty}`).join("\n")
+          : "• No doctors available right now.";
       return {
         text: "I can help you schedule an appointment! We have the following options:\n\n" +
-              "• Dr. Andrew Hartford - General Medicine\n" +
-              "• Dr. Spencer - Physical Therapy\n" +
-              "• Dr. Manx - Morphin Grid Analysis\n\n" +
-              "Which type of appointment would you like to schedule?",
+              doctorList +
+              "\n Which type of appointment would you like to schedule?",
         suggestions: ['Schedule Now', 'View Availability', 'Emergency'],
         category: 'appointments',
         priority: 'medium',
@@ -113,6 +126,38 @@ function RangerBot() {
       };
     }
     
+    if (lowerMessage.includes("availability") || lowerMessage.includes("available")) {
+
+      if (!doctors || doctors.length === 0) {
+        return {
+          text: "No doctor availability data found.",
+          suggestions: ["Book Appointment", "View Medications"],
+          category: "appointments",
+          priority: "medium"
+        };
+      }
+
+      const availabilityList = doctors
+        .map((doc) => {
+          const schedule = doc.weeklyAvailability
+            .map((slot) => `   • ${slot.day}: ${slot.startTime} - ${slot.endTime}`)
+            .join("\n");
+
+          return `👨‍⚕️ *${doc.name}* (${doc.specialty})\n${schedule}\n`;
+        })
+        .join("\n");
+
+      return {
+        text:
+          "Here is the weekly availability of our doctors:\n\n" +
+          availabilityList +
+          "\nWould you like to book an appointment?",
+        suggestions: ["Book Appointment", "Schedule Now", "Back"],
+        category: "appointments",
+        priority: "medium"
+      };
+    }
+
     // Default response
     return {
       text: "I'm here to help with your health needs! I can assist you with:\n\n" +
@@ -198,6 +243,17 @@ function RangerBot() {
   };
 
   const handleSuggestionClick = (suggestion) => {
+
+    if (suggestion === "Open Symptom Checker") {
+      navigate("/symptom-checker");
+    }else if(suggestion === "Log Symptoms") {
+      navigate("/symptoms");
+    }else if(suggestion === "Book Appointment" || suggestion === "Schedule Now") {
+      navigate("/appointments")
+    }else if(suggestion === "View Medications") {
+      navigate("/capsules")
+    }
+
     setInputText(suggestion);
     handleSendMessage();
   };
