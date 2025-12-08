@@ -1,9 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect , useRef} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Calendar.css';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCalendarByDate } from '../store/calendarSlice';
 
 function Calendar({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {data, loading, error} = useSelector((state) => state.calendar);
+  
   const [currentDate, setCurrentDate] = useState(new Date(2025, 11, 4)); // December 4, 2025
   const [selectedDate, setSelectedDate] = useState(null);
   const [viewMode, setViewMode] = useState('month'); // month, week, day
@@ -17,6 +22,14 @@ function Calendar({ selectedRanger = 'red' }) {
     pink: '#FF69B4',
     mercury: '#C0C0C0'
   };
+
+  useEffect(() => {
+    if (selectedDate) {
+      const dateString = formatDateToString(selectedDate);
+      dispatch(fetchCalendarByDate(dateString));
+    }
+    console.log("SELECTED",selectedDate);
+  }, [selectedDate]);
 
   const currentColor = rangerColors[selectedRanger] || rangerColors.red;
 
@@ -34,9 +47,9 @@ function Calendar({ selectedRanger = 'red' }) {
       { date: '2025-12-06', time: '08:00 AM', title: 'Overdrive Accelerator', dosage: '500mg', type: 'medication' }
     ],
     reminders: [
-      { date: '2025-12-05', time: '09:00 AM', title: 'Hydration Check', description: 'Drink 8 glasses today', type: 'reminder' },
-      { date: '2025-12-07', time: '06:00 PM', title: 'Training Session', description: 'Combat practice at HQ', type: 'reminder' },
-      { date: '2025-12-12', time: '08:00 AM', title: 'Health Assessment', description: 'Monthly vitals review', type: 'reminder' }
+      // { date: '2025-12-05', time: '09:00 AM', title: 'Hydration Check', description: 'Drink 8 glasses today', type: 'reminder' },
+      // { date: '2025-12-07', time: '06:00 PM', title: 'Training Session', description: 'Combat practice at HQ', type: 'reminder' },
+      // { date: '2025-12-12', time: '08:00 AM', title: 'Health Assessment', description: 'Monthly vitals review', type: 'reminder' }
     ],
     symptoms: [
       { date: '2025-12-03', time: '02:30 PM', title: 'Headache', severity: 'mild', type: 'symptom' },
@@ -119,7 +132,7 @@ function Calendar({ selectedRanger = 'red' }) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    alert('📅 Calendar exported successfully! You can now import this file into Google Calendar, Apple Calendar, Outlook, or any other calendar app.');
+    alert('Calendar exported successfully! You can now import this file into Google Calendar, Apple Calendar, Outlook, or any other calendar app.');
   };
 
   const handleImportCalendar = (event) => {
@@ -150,7 +163,7 @@ function Calendar({ selectedRanger = 'red' }) {
       }
     });
 
-    alert(`📥 Successfully imported ${importedCount} events from calendar file!\n\nNote: In a production app, these would be saved to your account.`);
+    alert(`Successfully imported ${importedCount} events from calendar file!\n\nNote: In a production app, these would be saved to your account.`);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -158,7 +171,7 @@ function Calendar({ selectedRanger = 'red' }) {
 
   const handleSyncGoogleCalendar = () => {
     // In production, this would use Google Calendar API
-    alert('🔗 Google Calendar Sync\n\nTo enable sync:\n1. Connect your Google account\n2. Grant calendar permissions\n3. Choose sync direction (one-way or two-way)\n\nThis feature requires backend API integration.');
+    alert('Google Calendar Sync\n\nTo enable sync:\n1. Connect your Google account\n2. Grant calendar permissions\n3. Choose sync direction (one-way or two-way)\n\nThis feature requires backend API integration.');
   };
 
   const handleAddToPhoneCalendar = (event) => {
@@ -218,7 +231,7 @@ function Calendar({ selectedRanger = 'red' }) {
       const dateEvents = getEventsForDate(date);
       const isToday = date.toDateString() === today.toDateString();
       const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
-      
+
       days.push(
         <div
           key={day}
@@ -394,35 +407,28 @@ function Calendar({ selectedRanger = 'red' }) {
                 <span className="category-icon">📅</span>
                 <h3>Appointments</h3>
                 <span className="event-count">
-                  {selectedDate 
-                    ? getEventsForDate(selectedDate).filter(e => e.type === 'appointment').length
-                    : events.appointments.length}
+                  {data?.appointments.length || 0}
                 </span>
               </div>
               <div className="event-list">
-                {(selectedDate 
-                  ? getEventsForDate(selectedDate).filter(e => e.type === 'appointment')
-                  : events.appointments
-                ).map((event, idx) => (
+                {console.log("DATA",data)};
+                {data?.appointments.map((event, idx) => (
                   <div key={idx} className="event-item appointment-event">
                     <div className="event-time">{event.time}</div>
                     <div className="event-content">
-                      <div className="event-title">{event.title}</div>
-                      <div className="event-detail">{event.doctor}</div>
+                      <div className="event-title">{event.type}</div>
+                      <div className="event-detail">{event.doctor.name}</div>
                     </div>
-                    <button 
+                    {/* <button 
                       className="add-to-cal-btn"
                       onClick={() => handleAddToPhoneCalendar(event)}
                       title="Add to your calendar"
                     >
                       📲
-                    </button>
+                    </button> */}
                   </div>
                 ))}
-                {(selectedDate 
-                  ? getEventsForDate(selectedDate).filter(e => e.type === 'appointment')
-                  : events.appointments
-                ).length === 0 && (
+                {data?.appointments.length === 0 && (
                   <div className="no-events">No appointments scheduled</div>
                 )}
               </div>
@@ -434,35 +440,27 @@ function Calendar({ selectedRanger = 'red' }) {
                 <span className="category-icon">💊</span>
                 <h3>Medication Schedule</h3>
                 <span className="event-count">
-                  {selectedDate 
-                    ? getEventsForDate(selectedDate).filter(e => e.type === 'medication').length
-                    : events.medications.length}
+                  {data?.doses.length}
                 </span>
               </div>
               <div className="event-list">
-                {(selectedDate 
-                  ? getEventsForDate(selectedDate).filter(e => e.type === 'medication')
-                  : events.medications
-                ).map((event, idx) => (
-                  <div key={idx} className="event-item medication-event">
+                {data?.doses.map((event) => (
+                  <div key={event._id} className="event-item medication-event">
                     <div className="event-time">{event.time}</div>
                     <div className="event-content">
-                      <div className="event-title">{event.title}</div>
-                      <div className="event-detail">{event.dosage}</div>
+                      <div className="event-title">{event.capsule.name}</div>
+                      <div className="event-detail">{`${event.capsule.doseAmount} ${event.capsule.doseUnit}`}</div>
                     </div>
-                    <button 
+                    {/* <button 
                       className="add-to-cal-btn"
                       onClick={() => handleAddToPhoneCalendar(event)}
                       title="Add to your calendar"
                     >
                       📲
-                    </button>
+                    </button> */}
                   </div>
                 ))}
-                {(selectedDate 
-                  ? getEventsForDate(selectedDate).filter(e => e.type === 'medication')
-                  : events.medications
-                ).length === 0 && (
+                {data?.doses.length === 0 && (
                   <div className="no-events">No medications scheduled</div>
                 )}
               </div>
@@ -507,33 +505,25 @@ function Calendar({ selectedRanger = 'red' }) {
                 <span className="category-icon">📋</span>
                 <h3>Symptom Logs</h3>
                 <span className="event-count">
-                  {selectedDate 
-                    ? getEventsForDate(selectedDate).filter(e => e.type === 'symptom').length
-                    : events.symptoms.length}
+                  {data?.symptoms.length}
                 </span>
               </div>
               <div className="event-list">
-                {(selectedDate 
-                  ? getEventsForDate(selectedDate).filter(e => e.type === 'symptom')
-                  : events.symptoms
-                ).map((event, idx) => (
+                {data?.symptoms.map((event, idx) => (
                   <div key={idx} className="event-item symptom-event">
                     <div className="event-time">{event.time}</div>
                     <div className="event-content">
-                      <div className="event-title">{event.title}</div>
+                      <div className="event-title">{event.symptomName}</div>
                       <div 
                         className="event-detail severity-badge"
-                        style={{ color: getSeverityColor(event.severity) }}
+                        style={{ color: getSeverityColor(event.severity), padding: "0px" }}
                       >
                         {event.severity.toUpperCase()}
                       </div>
                     </div>
                   </div>
                 ))}
-                {(selectedDate 
-                  ? getEventsForDate(selectedDate).filter(e => e.type === 'symptom')
-                  : events.symptoms
-                ).length === 0 && (
+                {data?.symptoms.length === 0 && (
                   <div className="no-events">No symptoms logged</div>
                 )}
               </div>

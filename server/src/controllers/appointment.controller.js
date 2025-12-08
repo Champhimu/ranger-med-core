@@ -3,9 +3,10 @@ import Doctor from '../models/Doctor.js';
 
 export const getAppointments = async (req, res) => {
   try {
+    console.log("REQ",req.user.id);
     const today = new Date().setHours(0, 0, 0, 0);
 
-    let appointments = await Appointment.find({ user: req.user })
+    let appointments = await Appointment.find({ user: req.user.id })
       .sort({ date: 1 })
       .populate("doctor", "name specialty location");
 
@@ -26,7 +27,7 @@ export const getAppointments = async (req, res) => {
     if (updates.length > 0) {
       // Apply the updates and reload fresh data
       await Promise.all(updates);
-      appointments = await Appointment.find({ user: req.user })
+      appointments = await Appointment.find({ user: req.user.id })
         .sort({ date: 1 })
         .populate("doctor", "name specialty location");
     }
@@ -65,7 +66,7 @@ export const getUserAppointments = async (req, res) => {
 export const bookAppointment = async (req, res) => {
   try {
     const { type, doctor, date, time, reason, notes } = req.body;
-    const user = req.user;
+    const user = req.user.id;
     console.log(req.body, user);
     const newAppointment = new Appointment({
       type,

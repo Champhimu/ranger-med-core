@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const symptomSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   symptomName: { type: String, required: true },
   severity: { type: String, enum: ['mild', 'moderate', 'severe'], required: true },
   bodyPart: { type: String, required: true },

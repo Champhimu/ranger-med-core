@@ -6,7 +6,7 @@ import { generateDoses } from "../utils/doseScheduler.js";
 export const addCapsule = async (req, res) => {
   try {
     const capsule = await Capsule.create({
-      userId: req.user,
+      userId: req.user.id,
       ...req.body
     });
     capsule.timeSlots = req.body.time;
@@ -32,7 +32,7 @@ export const addCapsule = async (req, res) => {
 // GET /api/capsules
 export const getCapsules = async (req, res) => {
   try {
-    const capsules = await Capsule.find({ userId: req.user });
+    const capsules = await Capsule.find({ userId: req.user.id });
 
     // Today's Date
     const todayStr = new Date().toISOString().split("T")[0];
@@ -41,7 +41,7 @@ export const getCapsules = async (req, res) => {
       capsules.map(async (capsule) => {
         const todaysDoses = await Dose.find({
           capsuleId: capsule._id,
-          userId: req.user,
+          userId: req.user.id,
           date: todayStr
         }).select("-__v -createdAt -updatedAt"); // remove extra fields if needed
 
@@ -147,14 +147,14 @@ export const getAllHistory = async (req, res) => {
 
     // Fetch all capsules that have ended
     const capsules = await Capsule.find({ 
-      userId: req.user, 
+      userId: req.user.id, 
       endDate: { $lte: today } 
     });
 
     const history = [];
 
     for (const cap of capsules) {
-      const doses = await Dose.find({ capsuleId: cap._id, userId: req.user });
+      const doses = await Dose.find({ capsuleId: cap._id, userId: req.user.id });
 
       const totalDoses = doses.length;
       const takenDoses = doses.filter(d => d.status === "taken").length;
@@ -213,8 +213,8 @@ export const getRecommendations = async (req, res) => {
   try {
     const now = new Date();
     // Fetch all capsules and doses
-    const capsules = await Capsule.find({ userId: req.user });
-    const doses = await Dose.find({ userId: req.user });
+    const capsules = await Capsule.find({ userId: req.user.id });
+    const doses = await Dose.find({ userId: req.user.id });
 
     // Filter capsules that are still ongoing or not yet ended
     const activeCapsules = capsules.filter(capsule => !capsule.endDate || new Date(capsule.endDate) >= now);

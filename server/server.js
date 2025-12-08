@@ -16,6 +16,7 @@ import doctorRoutes from "./src/routes/doctor.routes.js";
 import appointmentRoutes from "./src/routes/appointement.routes.js";
 import symptomAnalysisRoutes from "./src/routes/symptomAnalysis.routes.js";
 import weeklyInsightRoutes from "./src/routes/weeklyInsight.routes.js";
+import calendarRoutes from "./src/routes/calendar.routes.js";
 // import aiRoutes from "./src/routes/ai.routes.js";
 
 const app = express();
@@ -47,6 +48,7 @@ app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use("/api/symptom-analysis", symptomAnalysisRoutes);
 app.use("/api/weekly-insights", weeklyInsightRoutes);
+app.use("/api/calendar", calendarRoutes);
 // app.use("/api/ai", aiRoutes);
 
 // Health Check

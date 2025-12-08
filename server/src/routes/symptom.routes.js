@@ -12,12 +12,12 @@ import {auth} from "../middlewares/auth.js";
 
 const router = express.Router();
 
-router.post('/add', createSymptom);
-router.get('/', getSymptoms);
-router.get('/progress', getProgress);
-router.get('/:id', getSymptom);
-router.put('/:id', updateSymptom);
-router.delete('/:id', deleteSymptom);
+router.post('/add', auth, createSymptom);
+router.get('/', auth, getSymptoms);
+router.get('/progress', auth, getProgress);
+router.get('/:id', auth, getSymptom);
+router.put('/:id', auth,  updateSymptom);
+router.delete('/:id', auth, deleteSymptom);
 
 router.get("/dashboard", auth, healthDashboard);
 

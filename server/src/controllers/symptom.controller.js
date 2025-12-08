@@ -2,17 +2,23 @@ import Symptom from "../models/Symptom.js";
 
 export const createSymptom = async (req, res) => {
   try {
-    const symptom = await Symptom.create(req.body);
+    const symptomData = {
+      ...req.body,
+      userId: req.user.id,
+    };
+
+    const symptom = await Symptom.create(symptomData);
     res.status(201).json(symptom);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+
 // GET — All symptoms
 export const getSymptoms = async (req, res) => {
   try {
-    const symptoms = await Symptom.find().sort({ createdAt: -1 });
+    const symptoms = await Symptom.find({ userId: req.user.id }).sort({ createdAt: -1 });
     res.json(symptoms);
   } catch (error) {
     res.status(500).json({ error: error.message });
