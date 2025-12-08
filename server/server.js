@@ -14,16 +14,27 @@ import capsuleRoutes from "./src/routes/capsule.routes.js";
 import symptomRoutes from "./src/routes/symptom.routes.js";
 import doctorRoutes from "./src/routes/doctor.routes.js";
 import appointmentRoutes from "./src/routes/appointement.routes.js";
+import symptomAnalysisRoutes from "./src/routes/symptomAnalysis.routes.js";
+import weeklyInsightRoutes from "./src/routes/weeklyInsight.routes.js";
 // import aiRoutes from "./src/routes/ai.routes.js";
 
 const app = express();
 
+// Load environment variables first
+dotenv.config();
+
+// CORS Configuration - Allow requests from React app
+const corsOptions = {
+  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
 // Middleware
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-dotenv.config();
 
 // Database
 connectDB(); // Your custom Mongo connection
@@ -34,6 +45,8 @@ app.use("/api/capsules", capsuleRoutes);
 app.use("/api/symptoms", symptomRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use("/api/symptom-analysis", symptomAnalysisRoutes);
+app.use("/api/weekly-insights", weeklyInsightRoutes);
 // app.use("/api/ai", aiRoutes);
 
 // Health Check

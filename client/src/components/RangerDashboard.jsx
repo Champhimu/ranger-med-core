@@ -106,8 +106,10 @@ function RangerDashboard({ selectedRanger = 'red' }) {
     return takenDoses.length >= timesPerDay;
   };
 
-  // Check if capsule has doctor prescription
-  const hasDoctorPrescription = rangerData.capsules.some(c => c.prescribedByDoctor);
+  // Check if ranger has an assigned doctor
+  // TODO: Update this when doctor assignment feature is implemented
+  // This should check if rangerData.assignedDoctorId exists
+  const hasDoctorPrescription = false; // Currently hidden until doctor assignment feature is built
 
 
   const Heartbeat = () => (

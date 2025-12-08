@@ -1,5 +1,7 @@
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
+
 export const registerRanger = async (data) => {
-  const response = await fetch("http://localhost:5000/api/auth/register", {
+  const response = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -9,7 +11,7 @@ export const registerRanger = async (data) => {
 };
 
 export const loginRanger = async (data) => {
-  const res = await fetch(`http://localhost:5000/api/auth/login`, {
+  const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
@@ -18,7 +20,7 @@ export const loginRanger = async (data) => {
 };
 
 export const logoutRanger = async (data) => {
-    const res = await fetch("http://localhost:5000/api/auth/logout", {
+    const res = await fetch(`${API_URL}/auth/logout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
