@@ -7,7 +7,7 @@ import { fetchCalendarByDate } from '../../store/calendarSlice';
 function Calendar({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {data, loading, error} = useSelector((state) => state.calendar);
+  const {data} = useSelector((state) => state.calendar);
   
   const [currentDate, setCurrentDate] = useState(new Date(2025, 11, 4)); // December 4, 2025
   const [selectedDate, setSelectedDate] = useState(null);
@@ -29,7 +29,7 @@ function Calendar({ selectedRanger = 'red' }) {
       dispatch(fetchCalendarByDate(dateString));
     }
     console.log("SELECTED",selectedDate);
-  }, [selectedDate]);
+  }, [selectedDate, dispatch]);
 
   const currentColor = rangerColors[selectedRanger] || rangerColors.red;
 
@@ -154,7 +154,7 @@ function Calendar({ selectedRanger = 'red' }) {
     
     lines.forEach((line, index) => {
       if (line.startsWith('SUMMARY:')) {
-        const summary = line.substring(8);
+        // const summary = line.substring(8);
         const dateLineBefore = lines.slice(0, index).reverse().find(l => l.startsWith('DTSTART'));
         
         if (dateLineBefore) {
@@ -174,33 +174,33 @@ function Calendar({ selectedRanger = 'red' }) {
     alert('Google Calendar Sync\n\nTo enable sync:\n1. Connect your Google account\n2. Grant calendar permissions\n3. Choose sync direction (one-way or two-way)\n\nThis feature requires backend API integration.');
   };
 
-  const handleAddToPhoneCalendar = (event) => {
-    // Generate a single event ICS for quick add
-    const eventDate = new Date(`${event.date} ${event.time || '00:00'}`);
-    const startDate = eventDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-    const endDate = new Date(eventDate.getTime() + 60 * 60 * 1000).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  // const handleAddToPhoneCalendar = (event) => {
+  //   // Generate a single event ICS for quick add
+  //   const eventDate = new Date(`${event.date} ${event.time || '00:00'}`);
+  //   const startDate = eventDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  //   const endDate = new Date(eventDate.getTime() + 60 * 60 * 1000).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
     
-    const icsContent = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//Ranger Med-Core//NONSGML v1.0//EN',
-      'BEGIN:VEVENT',
-      `DTSTART:${startDate}`,
-      `DTEND:${endDate}`,
-      `SUMMARY:${event.title}`,
-      `DESCRIPTION:${event.description || event.doctor || event.dosage || ''}`,
-      'END:VEVENT',
-      'END:VCALENDAR'
-    ].join('\r\n');
+  //   const icsContent = [
+  //     'BEGIN:VCALENDAR',
+  //     'VERSION:2.0',
+  //     'PRODID:-//Ranger Med-Core//NONSGML v1.0//EN',
+  //     'BEGIN:VEVENT',
+  //     `DTSTART:${startDate}`,
+  //     `DTEND:${endDate}`,
+  //     `SUMMARY:${event.title}`,
+  //     `DESCRIPTION:${event.description || event.doctor || event.dosage || ''}`,
+  //     'END:VEVENT',
+  //     'END:VCALENDAR'
+  //   ].join('\r\n');
 
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${event.title.replace(/\s/g, '-')}.ics`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  //   const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  //   const link = document.createElement('a');
+  //   link.href = URL.createObjectURL(blob);
+  //   link.download = `${event.title.replace(/\s/g, '-')}.ics`;
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
 
   // ==================== END EXPORT/IMPORT FUNCTIONS ====================
 
@@ -259,15 +259,15 @@ function Calendar({ selectedRanger = 'red' }) {
     setSelectedDate(null);
   };
 
-  const getEventIcon = (type) => {
-    const icons = {
-      appointment: '📅',
-      medication: '💊',
-      reminder: '🔔',
-      symptom: '📋'
-    };
-    return icons[type] || '•';
-  };
+  // const getEventIcon = (type) => {
+  //   const icons = {
+  //     appointment: '📅',
+  //     medication: '💊',
+  //     reminder: '🔔',
+  //     symptom: '📋'
+  //   };
+  //   return icons[type] || '•';
+  // };
 
   const getSeverityColor = (severity) => {
     const colors = {

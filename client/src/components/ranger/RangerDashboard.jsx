@@ -17,7 +17,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
   const { upcoming: upcomingAppointments } = useSelector((state) => state.appointments);
   
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
-  const [capsuleDoses, setCapsuleDoses] = useState({}); // Track which doses are taken
+  // const [capsuleDoses, setCapsuleDoses] = useState({}); // Track which doses are taken
   const [snoozedCapsules, setSnoozedCapsules] = useState({}); // Track snoozed capsules
 
   // Ranger color mapping
@@ -96,7 +96,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
   const handleTakeDose = async (doseId, medName, doseTime) => {
     try {
     // Call API
-    const res = await dispatch(markDoseTakenThunk(doseId)).unwrap();
+    await dispatch(markDoseTakenThunk(doseId)).unwrap();
 
     // If success → toast success
     toast.success(`Dose taken at ${doseTime} for ${medName}!`, {
@@ -135,7 +135,6 @@ function RangerDashboard({ selectedRanger = 'red' }) {
     
     // Count doses with status 'taken'
     const takenDosesCount = capsuleDoses.filter(d => d.status === 'taken').length;
-    console.log(takenDosesCount);
 
   // If number of taken doses matches timesPerDay, return true
   return takenDosesCount >= timesPerDay.length;
@@ -164,7 +163,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
       refreshToken
     });
 
-    if (res.status == 500) {
+    if (res.status === 500) {
       return alert("Something went wrong! Unable to logout");
     }
     
@@ -332,7 +331,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
               <div className="capsules-list">
                 {capsules.map(capsule => {
                   const isSnoozed = snoozedCapsules[capsule._id];
-                  const takenDoses = capsuleDoses[capsule._id] || [];
+                  // const takenDoses = capsuleDoses[capsule._id] || [];
                   
                   return (
                     <div key={capsule._id} className={`capsule-item ${isSnoozed ? 'snoozed' : ''}`}>
@@ -355,12 +354,12 @@ function RangerDashboard({ selectedRanger = 'red' }) {
                                 {capsule.todaysDoses.map(doseNum => (
                                   <button
                                     key={doseNum._id}
-                                    className={`dose-btn ${doseNum.status == 'taken' ? 'taken' : ''}`}
+                                    className={`dose-btn ${doseNum.status === 'taken' ? 'taken' : ''}`}
                                     onClick={() => handleTakeDose(doseNum._id, capsule.name, doseNum.time)}
-                                    disabled={doseNum.status == 'taken'}
+                                    disabled={doseNum.status === 'taken'}
                                     style={(doseNum.status !== 'taken') ? { borderColor: currentColor, color: currentColor } : {}}
                                   >
-                                    <Icon name={doseNum.status == "taken" ? "check" : "pill"} size={14} />
+                                    <Icon name={doseNum.status === "taken" ? "check" : "pill"} size={14} />
                                     Dose: {doseNum.time}
                                   </button>
                                 ))}
@@ -454,7 +453,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
                     </div>
                     <div className="appointment-details">
                       <div className="appointment-type">{appointment.type}</div>
-                      <div className="appointment-doctor">Dr. {appointment.doctor.name}</div>
+                      <div className="appointment-doctor">{appointment.doctor.name}</div>
                       <div className="appointment-time"><Icon name="bell" size={16} color="#ff8800" /> {appointment.time}</div>
                     </div>
                     <div className={`appointment-status status-${appointment.status}`}>

@@ -219,7 +219,7 @@ function Register({ onBack }) {
           <p className="register-subtitle">OPERATOR REGISTRATION</p>
           <div className="ranger-info" style={{ color: currentRanger.color }}>
             <span>{currentRanger.name}</span>
-            <span className="vehicle-name">// {currentRanger.vehicle}</span>
+            <span className="vehicle-name">{currentRanger.vehicle}</span>
           </div>
         </div>
 
@@ -238,7 +238,7 @@ function Register({ onBack }) {
 
         <div className="back-link">
           <span>Already registered?</span>
-          <a href="#" onClick={(e) => { e.preventDefault(); onBack?.(); }}>RETURN TO LOGIN</a>
+          <a href="/login" onClick={(e) => { e.preventDefault(); onBack?.(); }}>RETURN TO LOGIN</a>
         </div>
       </div>
 

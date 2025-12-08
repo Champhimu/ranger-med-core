@@ -71,6 +71,7 @@ function Symptoms({ selectedRanger = 'red' }) {
     setFilteredSymptoms(filtered);
   }, [symptomHistory, severityFilter, statusFilter]);
 
+
   useEffect(() => {
     dispatch(fetchSymptomsThunk());
     dispatch(fetchProgressThunk());
@@ -219,7 +220,6 @@ function Symptoms({ selectedRanger = 'red' }) {
     if (!newSymptom.description.trim()) return toast.error("Description required");
     if (!newSymptom.duration.trim()) return toast.error('Duration is required!');
 
-    console.log('New symptom logged:', newSymptom);
     // Here you would send to API
     dispatch(addSymptomThunk(newSymptom))
       .unwrap()
@@ -245,11 +245,16 @@ function Symptoms({ selectedRanger = 'red' }) {
       date: new Date().toISOString().split('T')[0],
       time: new Date().toTimeString().split(' ')[0].slice(0, 5)
     });
+
+    dispatch(fetchSymptomsThunk());
+    dispatch(fetchProgressThunk());
   };
 
   // DELETE HANDLER
   const handleDelete = (id) => {
     dispatch(deleteSymptomThunk(id));
+    dispatch(fetchSymptomsThunk());
+    dispatch(fetchProgressThunk());
     toast.success("Deleted symptom");
   };
 
@@ -526,7 +531,7 @@ function Symptoms({ selectedRanger = 'red' }) {
             <div key={symptom._id} className="symptom-history-card">
               <div className="symptom-card-header">
                 <div className="symptom-title-section">
-                  <h4 className="symptom-title">{symptom.symptom}</h4>
+                  <h4 className="symptom-title">{symptom.symptomName}</h4>
                   <div className="symptom-badges">
                     <span
                       className="severity-badge"

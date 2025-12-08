@@ -32,9 +32,10 @@ export const getAppointments = async (req, res) => {
         .populate("doctor", "name specialty location");
     }
 
+    console.log(appointments);
     // Now split upcoming vs past
     const upcoming = appointments.filter(
-      a => new Date(a.date).setHours(0, 0, 0, 0) > today && (a.status === "pending" || a.status === "confirmed")
+      a => new Date(a.date).setHours(0, 0, 0, 0) >= today && (a.status === "pending" || a.status === "confirmed")
     );
 
     const past = appointments.filter(

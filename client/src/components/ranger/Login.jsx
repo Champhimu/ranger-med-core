@@ -222,7 +222,7 @@ function Login({ onLoginSuccess, onRegister }) {
           <p className="login-subtitle">COMMAND CENTER</p>
           <div className="ranger-info">
             <span style={{ color: currentRanger.color }}>{currentRanger.name}</span>
-            <span className="zord-name">// {currentRanger.power}</span>
+            <span className="zord-name">{currentRanger.power}</span>
           </div>
         </div>
 
@@ -252,7 +252,7 @@ function Login({ onLoginSuccess, onRegister }) {
 
           <div className="register-link">
             <span>New Ranger? </span>
-            <a href="#" onClick={(e) => { e.preventDefault(); onRegister?.() }}>
+            <a href="/register" onClick={(e) => { e.preventDefault(); onRegister?.() }}>
               REGISTER HERE
             </a>
           </div>

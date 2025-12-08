@@ -16,7 +16,6 @@ export const fetchSymptomsThunk = createAsyncThunk(
   "symptoms",
   async () => {
     const res = await api.fetchSymptoms();
-    console.log("res",res.data);
     return res.data;
   }
 );

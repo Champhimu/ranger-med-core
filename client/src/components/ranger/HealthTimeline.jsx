@@ -126,13 +126,13 @@ function HealthTimeline({ selectedRanger = 'red' }) {
     filteredEvents.forEach(event => {
       if (event.type === 'medication') {
         stats.medications.total++;
-        if (event.status === 'completed') stats.medications.completed++;
+        if (event.status === 'taken') stats.medications.completed++;
         if (event.status === 'missed') stats.medications.missed++;
       } else if (event.type === 'symptom') {
         stats.symptoms.total++;
       } else if (event.type === 'appointment') {
         stats.appointments.total++;
-        if (event.status === 'upcoming') stats.appointments.upcoming++;
+        if (event.status === 'scheduled') stats.appointments.upcoming++;
         if (event.status === 'completed') stats.appointments.completed++;
       }
     });

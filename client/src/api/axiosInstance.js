@@ -35,6 +35,7 @@ instance.interceptors.response.use(
 
     // If token expired
     if (error.response?.status === 403 && !originalRequest._retry) {
+
       originalRequest._retry = true;
 
       // If refresh already in progress → wait
@@ -54,6 +55,14 @@ instance.interceptors.response.use(
       refreshPromise = instance.post("/auth/refresh", {
         refreshToken: localStorage.getItem("refreshToken"),
       });
+
+      if(error.response?.data.message === "Invalid refresh token"){
+        //remove
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+        return Promise.reject(error);
+      }
 
       try {
         const res = await refreshPromise;

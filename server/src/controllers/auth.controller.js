@@ -70,12 +70,11 @@ export const login = async (req, res) => {
 export const refresh = async (req, res) => {
   try {
     const { refreshToken } = req.body;
-    console.log("R",refreshToken);
     if (!refreshToken) return res.status(401).json({ message: "No token" });
     
     // Check if refresh token exists in DB
     const user = await User.findOne({ refreshToken });
-    if (!user) return res.status(403).json({ message: "Invalid token" });
+    if (!user) return res.status(403).json({ message: "Invalid refresh token" });
 
     // Verify refresh token using REFRESH_TOKEN_SECRET
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, data) => {

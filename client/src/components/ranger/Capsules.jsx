@@ -21,124 +21,127 @@ const Capsules = ({ ranger = 'red' }) => {
 
   const [activeTab, setActiveTab] = useState('current');
   const [showAddForm, setShowAddForm] = useState(false);
-  const [capsuleDoses, setCapsuleDoses] = useState({}); // Track which doses are taken
+  // const [capsuleDoses, setCapsuleDoses] = useState({}); // Track which doses are taken
   const [snoozedCapsules, setSnoozedCapsules] = useState({}); // Track snoozed capsules
-  const [medications, setMedications] = useState([
+  const medications = [
     {
       id: 1,
-      name: 'Morphinium-12',
-      dosage: '500mg',
-      frequency: 'Twice Daily',
+      name: "Morphinium-12",
+      dosage: "500mg",
+      frequency: "Twice Daily",
       timesPerDay: 2,
-      prescribedByDoctor: true,
-      time: ['08:00', '20:00'],
+      schedule: ["08:00", "20:00"],
+      prescribedBy: "Dr. Hartley",
+      condition: "Core Energy Stabilization",
       stock: 45,
-      refillDate: '2025-02-15',
-      prescribedBy: 'Dr. Hartley',
-      condition: 'Core Energy Stabilization',
-      lastTaken: '2025-01-25 08:00',
-      status: 'active',
-      sideEffects: 'May cause mild drowsiness',
-      instructions: 'Take with food'
+      refillDate: "2025-02-15",
+      lastTaken: "2025-01-25T08:00",
+      status: "active", // active | low-stock | missed
+      sideEffects: "May cause mild drowsiness",
+      instructions: "Take with food",
+      alert: { reminder: true, notifyBefore: 15 }, // minutes before
     },
     {
       id: 2,
-      name: 'Neural-Sync Plus',
-      dosage: '250mg',
-      frequency: 'Thrice Daily',
+      name: "Neural-Sync Plus",
+      dosage: "250mg",
+      frequency: "Thrice Daily",
       timesPerDay: 3,
-      prescribedByDoctor: true,
-      time: ['09:00', '15:00', '21:00'],
+      schedule: ["09:00", "15:00", "21:00"],
+      prescribedBy: "Dr. Spencer",
+      condition: "Enhanced Cognitive Function",
       stock: 12,
-      refillDate: '2025-01-30',
-      prescribedBy: 'Dr. Spencer',
-      condition: 'Enhanced Cognitive Function',
-      lastTaken: '2025-01-25 09:00',
-      status: 'low-stock',
-      sideEffects: 'None reported',
-      instructions: 'Take in the morning'
+      refillDate: "2025-01-30",
+      lastTaken: "2025-01-25T09:00",
+      status: "low-stock",
+      sideEffects: "None reported",
+      instructions: "Take in the morning",
+      alert: { reminder: true, notifyBefore: 10 },
     },
     {
       id: 3,
-      name: 'Ranger Vitamins Complex',
-      dosage: '1 Tablet',
-      frequency: 'Once Daily',
+      name: "Ranger Vitamins Complex",
+      dosage: "1 Tablet",
+      frequency: "Once Daily",
       timesPerDay: 1,
-      prescribedByDoctor: true,
-      time: ['07:00'],
+      schedule: ["07:00"],
+      prescribedBy: "Dr. Hartley",
+      condition: "General Health Maintenance",
       stock: 60,
-      refillDate: '2025-03-01',
-      prescribedBy: 'Dr. Hartley',
-      condition: 'General Health Maintenance',
-      lastTaken: '2025-01-25 07:00',
-      status: 'active',
-      sideEffects: 'None',
-      instructions: 'Take before breakfast'
-    }
-  ]);
+      refillDate: "2025-03-01",
+      lastTaken: "2025-01-25T07:00",
+      status: "active",
+      sideEffects: "None",
+      instructions: "Take before breakfast",
+      alert: { reminder: true, notifyBefore: 5 },
+    },
+  ];
 
-  const [medicationHistory] = useState([
-    {
-      id: 101,
-      name: 'Bio-Sync Capsules',
-      dosage: '100mg',
-      period: '2024-06 to 2024-12',
-      reason: 'Completed treatment cycle',
-      prescribedBy: 'Dr. Hartley'
-    },
-    {
-      id: 102,
-      name: 'Power Stabilizer-X',
-      dosage: '300mg',
-      period: '2024-03 to 2024-08',
-      reason: 'Switched to newer formula',
-      prescribedBy: 'Dr. Spencer'
-    }
-  ]);
 
-  const [reminders] = useState([
-    {
-      id: 1,
-      medication: 'Morphinium-12',
-      time: '08:00',
-      status: 'pending',
-      date: '2025-01-26'
-    },
-    {
-      id: 2,
-      medication: 'Neural-Sync Plus',
-      time: '09:00',
-      status: 'pending',
-      date: '2025-01-26'
-    },
-    {
-      id: 3,
-      medication: 'Ranger Vitamins Complex',
-      time: '07:00',
-      status: 'upcoming',
-      date: '2025-01-26'
-    }
-  ]);
+
+  // const [medicationHistory] = useState([
+  //   {
+  //     id: 101,
+  //     name: 'Bio-Sync Capsules',
+  //     dosage: '100mg',
+  //     period: '2024-06 to 2024-12',
+  //     reason: 'Completed treatment cycle',
+  //     prescribedBy: 'Dr. Hartley'
+  //   },
+  //   {
+  //     id: 102,
+  //     name: 'Power Stabilizer-X',
+  //     dosage: '300mg',
+  //     period: '2024-03 to 2024-08',
+  //     reason: 'Switched to newer formula',
+  //     prescribedBy: 'Dr. Spencer'
+  //   }
+  // ]);
+
+  // const [reminders] = useState([
+  //   {
+  //     id: 1,
+  //     medication: 'Morphinium-12',
+  //     time: '08:00',
+  //     status: 'pending',
+  //     date: '2025-01-26'
+  //   },
+  //   {
+  //     id: 2,
+  //     medication: 'Neural-Sync Plus',
+  //     time: '09:00',
+  //     status: 'pending',
+  //     date: '2025-01-26'
+  //   },
+  //   {
+  //     id: 3,
+  //     medication: 'Ranger Vitamins Complex',
+  //     time: '07:00',
+  //     status: 'upcoming',
+  //     date: '2025-01-26'
+  //   }
+  // ]);
 
   // Handler for taking capsule dose
+
   const handleTakeDose = async (doseId, medName, doseTime) => {
     try {
-    // Call API
-    const res = await dispatch(markDoseTakenThunk(doseId)).unwrap();
+      // Call API
+      await dispatch(markDoseTakenThunk(doseId)).unwrap();
 
-    // If success → toast success
-    toast.success(`Dose taken at ${doseTime} for ${medName}!`, {
-      icon: '💊',
-      duration: 2000,
-    });
+      // If success → toast success
+      toast.success(`Dose taken at ${doseTime} for ${medName}!`, {
+        icon: '💊',
+        duration: 2000,
+      });
 
-  } catch (error) {
-    // If API fails → toast error
-    toast.error(`Failed to mark dose as taken. Please try again.`, {
-      icon: '⚠️',
-      duration: 2500,
-    });
-  }
+    } catch (error) {
+      // If API fails → toast error
+      toast.error(`Failed to mark dose as taken. Please try again.`, {
+        icon: '⚠️',
+        duration: 2500,
+      });
+    }
     // Check for low stock warning
     // const newStock = medication.stock - 1;
     // if (newStock <= 10 && newStock > 0) {
@@ -157,7 +160,7 @@ const Capsules = ({ ranger = 'red' }) => {
       ...prev,
       [medId]: true
     }));
-    
+
     const medication = medications.find(med => med.id === medId);
     toast.success(`🔕 ${medication?.name} snoozed for 10 minutes`, {
       duration: 2000,
@@ -184,7 +187,7 @@ const Capsules = ({ ranger = 'red' }) => {
 
   };
 
-  const mergedDoses = capsules.flatMap(cap => 
+  const mergedDoses = capsules.flatMap(cap =>
     cap.todaysDoses.map(dose => ({
       ...dose,
       capsuleName: cap.name,
@@ -222,8 +225,8 @@ const Capsules = ({ ranger = 'red' }) => {
     }, 0);
 
     const avgMinutes = Math.round(totalMinutes / medHistory.length);
-    const avgHours = Math.floor(avgMinutes / 60);
-    const avgMins = avgMinutes % 60;
+    // const avgHours = Math.floor(avgMinutes / 60);
+    // const avgMins = avgMinutes % 60;
 
     // Suggest reminder 10 minutes before average time
     const reminderMinutes = avgMinutes - 10;
@@ -266,55 +269,55 @@ const Capsules = ({ ranger = 'red' }) => {
   // };
 
   const analyzeAdherencePattern = (capsule) => {
-    console.log("AN",capsule);
+    console.log("AN", capsule);
     if (!capsule || !capsule.todaysDoses) {
       return { pattern: 'insufficient-data', avgDelay: 0, consistency: 'unknown' };
     }
 
-  // Filter only taken doses
-  const takenDoses = capsule.todaysDoses.filter(d => d.status === "taken");
+    // Filter only taken doses
+    const takenDoses = capsule.todaysDoses.filter(d => d.status === "taken");
 
-  if (takenDoses.length < 2) {
-    return { pattern: 'insufficient-data', avgDelay: 0, consistency: 'unknown' };
-  }
+    if (takenDoses.length < 2) {
+      return { pattern: 'insufficient-data', avgDelay: 0, consistency: 'unknown' };
+    }
 
-  // Convert scheduled + actual time to minutes
-  const delays = takenDoses.map(dose => {
-    const [schedH, schedM] = dose.time.split(":").map(Number);
+    // Convert scheduled + actual time to minutes
+    const delays = takenDoses.map(dose => {
+      const [schedH, schedM] = dose.time.split(":").map(Number);
 
-    // actualTime is ISO: "2025-12-07T08:03:14.693Z"
-    const actual = new Date(dose.actualTime);
-    const actualH = actual.getHours();
-    const actualM = actual.getMinutes();
+      // actualTime is ISO: "2025-12-07T08:03:14.693Z"
+      const actual = new Date(dose.actualTime);
+      const actualH = actual.getHours();
+      const actualM = actual.getMinutes();
 
-    const scheduledMinutes = schedH * 60 + schedM;
-    const actualMinutes = actualH * 60 + actualM;
+      const scheduledMinutes = schedH * 60 + schedM;
+      const actualMinutes = actualH * 60 + actualM;
 
-    return actualMinutes - scheduledMinutes; // delay
-  });
+      return actualMinutes - scheduledMinutes; // delay
+    });
 
-  const avgDelay = Math.round(delays.reduce((a, b) => a + b, 0) / delays.length);
+    const avgDelay = Math.round(delays.reduce((a, b) => a + b, 0) / delays.length);
 
-  // Standard deviation = consistency
-  const variance = delays.reduce((sum, d) => sum + Math.pow(d - avgDelay, 2), 0) / delays.length;
-  const stdDev = Math.sqrt(variance);
+    // Standard deviation = consistency
+    const variance = delays.reduce((sum, d) => sum + Math.pow(d - avgDelay, 2), 0) / delays.length;
+    const stdDev = Math.sqrt(variance);
 
-  let consistency = 'excellent';
-  if (stdDev > 15) consistency = 'poor';
-  else if (stdDev > 10) consistency = 'fair';
-  else if (stdDev > 5) consistency = 'good';
+    let consistency = 'excellent';
+    if (stdDev > 15) consistency = 'poor';
+    else if (stdDev > 10) consistency = 'fair';
+    else if (stdDev > 5) consistency = 'good';
 
-  let pattern = 'on-time';
-  if (avgDelay > 10) pattern = 'consistently-late';
-  else if (avgDelay < -10) pattern = 'consistently-early';
+    let pattern = 'on-time';
+    if (avgDelay > 10) pattern = 'consistently-late';
+    else if (avgDelay < -10) pattern = 'consistently-early';
 
-  return {
-    pattern,
-    avgDelay,
-    consistency,
-    stdDev: Math.round(stdDev)
+    return {
+      pattern,
+      avgDelay,
+      consistency,
+      stdDev: Math.round(stdDev)
+    };
   };
-};
 
 
   // Generate smart recommendations
@@ -422,7 +425,7 @@ const Capsules = ({ ranger = 'red' }) => {
     }
 
     if (!newMedication.endDate.trim() || !(newMedication.endDate >= newMedication.startDate)) {
-      if(!(newMedication.endDate >= newMedication.startDate)){
+      if (!(newMedication.endDate >= newMedication.startDate)) {
         toast.error('End Date should be equal or greater than Start Date');
         return;
       }
@@ -465,53 +468,53 @@ const Capsules = ({ ranger = 'red' }) => {
     }
   };
 
-  const calculateRefillDate = (stock, frequency, startDate = new Date()) => {
-    console.log();
-    const pillsPerDay = frequencyMap[frequency];
+  // const calculateRefillDate = (stock, frequency, startDate = new Date()) => {
+  //   console.log();
+  //   const pillsPerDay = frequencyMap[frequency];
 
-    if (!pillsPerDay || pillsPerDay <= 0) return null; // cannot calculate
+  //   if (!pillsPerDay || pillsPerDay <= 0) return null; // cannot calculate
 
-    const daysLeft = stock / pillsPerDay;
+  //   const daysLeft = stock / pillsPerDay;
 
-    const refillDate = new Date(startDate);
-    refillDate.setDate(refillDate.getDate() + Math.floor(daysLeft));
+  //   const refillDate = new Date(startDate);
+  //   refillDate.setDate(refillDate.getDate() + Math.floor(daysLeft));
 
-    return refillDate.toISOString().split('T')[0];
-  };
+  //   return refillDate.toISOString().split('T')[0];
+  // };
 
-  const handleMarkTaken = (medId) => {
-    const medication = medications.find(med => med.id === medId);
-    if (!medication) return;
+  // const handleMarkTaken = (medId) => {
+  //   const medication = medications.find(med => med.id === medId);
+  //   if (!medication) return;
 
-    if (medication.stock <= 0) {
-      toast.error('⚠️ No stock available! Please refill medication.', {
-        icon: '📦',
-      });
-      return;
-    }
+  //   if (medication.stock <= 0) {
+  //     toast.error('⚠️ No stock available! Please refill medication.', {
+  //       icon: '📦',
+  //     });
+  //     return;
+  //   }
 
-    setMedications(medications.map(med =>
-      med.id === medId
-        ? { ...med, lastTaken: new Date().toISOString().slice(0, 16).replace('T', ' '), stock: med.stock - 1 }
-        : med
-    ));
+  //   setMedications(medications.map(med =>
+  //     med.id === medId
+  //       ? { ...med, lastTaken: new Date().toISOString().slice(0, 16).replace('T', ' '), stock: med.stock - 1 }
+  //       : med
+  //   ));
 
-    toast.success(`✅ ${medication.name} marked as taken!`, {
-      icon: '💊',
-      duration: 2000,
-    });
+  //   toast.success(`✅ ${medication.name} marked as taken!`, {
+  //     icon: '💊',
+  //     duration: 2000,
+  //   });
 
-    // Check for low stock warning
-    const newStock = medication.stock - 1;
-    if (newStock <= 10 && newStock > 0) {
-      setTimeout(() => {
-        toast.warning(`⚠️ Low stock alert for ${medication.name}! Only ${newStock} left.`, {
-          duration: 3000,
-          icon: '📦',
-        });
-      }, 500);
-    }
-  };
+  //   // Check for low stock warning
+  //   const newStock = medication.stock - 1;
+  //   if (newStock <= 10 && newStock > 0) {
+  //     setTimeout(() => {
+  //       toast.warning(`⚠️ Low stock alert for ${medication.name}! Only ${newStock} left.`, {
+  //         duration: 3000,
+  //         icon: '📦',
+  //       });
+  //     }, 500);
+  //   }
+  // };
 
 
   const getStockStatus = (stock, frequency) => {
@@ -551,11 +554,11 @@ const Capsules = ({ ranger = 'red' }) => {
     "Every 4 Hours": 6,   // 24 / 4 = 6 times/day
     "Every 6 Hours": 4,   // 24 / 6 = 4 times/day
     "Every 8 Hours": 3,   // 24 / 8 = 3 times/day
-    "Once Weekly": 1/7,   // 1 pill per week → 0.142857 per day
-    "Twice Weekly": 2/7,  // 2 pills per week → 0.2857 per day
-    "Every Other Day": 0.5, 
-    "Once Monthly": 1/30, 
-    "Twice Monthly": 2/30,
+    "Once Weekly": 1 / 7,   // 1 pill per week → 0.142857 per day
+    "Twice Weekly": 2 / 7,  // 2 pills per week → 0.2857 per day
+    "Every Other Day": 0.5,
+    "Once Monthly": 1 / 30,
+    "Twice Monthly": 2 / 30,
     "As Needed (PRN)": 0,   // cannot calculate → return null or default
     "Before Meals": 3,       // assuming 3 meals/day
     "After Meals": 3,        // assuming 3 meals/day
@@ -675,24 +678,24 @@ const Capsules = ({ ranger = 'red' }) => {
                   placeholder="Doctor name"
                 />
               </div>
-                <div class="form-group">
-                  <label>Start Date</label>
-                  <input
-                    type="date"
-                    value={newMedication.startDate}
-                    onChange={(e) => setNewMedication({ ...newMedication, startDate: e.target.value })}
-                    required
-                  />
-                </div>
-                <div class="form-group">
-                  <label>End Date</label>
-                  <input
-                    type="date"
-                    value={newMedication.endDate}
-                    onChange={(e) => setNewMedication({ ...newMedication, endDate: e.target.value })}
-                    required
-                  />
-                </div>
+              <div class="form-group">
+                <label>Start Date</label>
+                <input
+                  type="date"
+                  value={newMedication.startDate}
+                  onChange={(e) => setNewMedication({ ...newMedication, startDate: e.target.value })}
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>End Date</label>
+                <input
+                  type="date"
+                  value={newMedication.endDate}
+                  onChange={(e) => setNewMedication({ ...newMedication, endDate: e.target.value })}
+                  required
+                />
+              </div>
               <div className="form-group full-width">
                 <label>Condition/Purpose</label>
                 <input
@@ -766,121 +769,121 @@ const Capsules = ({ ranger = 'red' }) => {
           {activeTab === 'current' && (
             <div className="medications-grid">
               {capsules
-              .filter(med => !allDosesTaken(med._id))   // <-- hide completed medications
-              .map(med => {
-                const stockStatus = getStockStatus(med.stock, med.frequency);
-                return (
-                  <div key={med.id} className="medication-card">
-                    <div className="med-header">
-                      <div className="pill-icon" style={{ background: currentColor }}>💊</div>
-                      <div className="med-title">
-                        <h3>{med.name}</h3>
-                        <span className="dosage">{`${med.doseAmount} ${med.doseUnit}`}</span>
+                .filter(med => !allDosesTaken(med._id))   // <-- hide completed medications
+                .map(med => {
+                  const stockStatus = getStockStatus(med.stock, med.frequency);
+                  return (
+                    <div key={med.id} className="medication-card">
+                      <div className="med-header">
+                        <div className="pill-icon" style={{ background: currentColor }}>💊</div>
+                        <div className="med-title">
+                          <h3>{med.name}</h3>
+                          <span className="dosage">{`${med.doseAmount} ${med.doseUnit}`}</span>
+                        </div>
+                        <div className={`stock-badge ${stockStatus}`}>
+                          {med.stock} pills
+                        </div>
                       </div>
-                      <div className={`stock-badge ${stockStatus}`}>
-                        {med.stock} pills
-                      </div>
-                    </div>
-                    <div className="med-details">
-                      <div className="detail-row">
-                        <span className="label">Frequency:</span>
-                        <span className="value">{med.frequency}</span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="label">Schedule:</span>
-                        {/* <span className="value">{med.time.join(', ')}</span> */}
-                        <span className="value">{med.timeSlots?.join(", ")}</span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="label">Prescribed by:</span>
-                        <span className="value">{med.prescribedBy}</span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="label">Condition:</span>
-                        <span className="value">{med.condition}</span>
-                      </div>
-                      <div className="detail-row">
-                        <span className="label">Refill by:</span>
-                        <span className="value">{med.endDate?.split("T")[0]}</span>
+                      <div className="med-details">
+                        <div className="detail-row">
+                          <span className="label">Frequency:</span>
+                          <span className="value">{med.frequency}</span>
+                        </div>
+                        <div className="detail-row">
+                          <span className="label">Schedule:</span>
+                          {/* <span className="value">{med.time.join(', ')}</span> */}
+                          <span className="value">{med.timeSlots?.join(", ")}</span>
+                        </div>
+                        <div className="detail-row">
+                          <span className="label">Prescribed by:</span>
+                          <span className="value">{med.prescribedBy}</span>
+                        </div>
+                        <div className="detail-row">
+                          <span className="label">Condition:</span>
+                          <span className="value">{med.condition}</span>
+                        </div>
+                        <div className="detail-row">
+                          <span className="label">Refill by:</span>
+                          <span className="value">{med.endDate?.split("T")[0]}</span>
                           {/* <span className="value">{"-"}</span> */}
+                        </div>
+                        <div className="detail-row">
+                          <span className="label">Last taken:</span>
+                          <span className="value">{med.lastTaken?.replace("T", " ").split(".")[0] || '-'}</span>
+                        </div>
                       </div>
-                      <div className="detail-row">
-                        <span className="label">Last taken:</span>
-                        <span className="value">{med.lastTaken?.replace("T", " ").split(".")[0] || '-'}</span>
+                      <div className="med-notes">
+                        <p><strong>Instructions:</strong> {med.instructions}</p>
+                        <p><strong>Side Effects:</strong> {med.sideEffects}</p>
                       </div>
-                    </div>
-                    <div className="med-notes">
-                      <p><strong>Instructions:</strong> {med.instructions}</p>
-                      <p><strong>Side Effects:</strong> {med.sideEffects}</p>
-                    </div>
 
-                    {/* Dose tracking and snooze controls */}
-                    <div className="capsule-controls">
-                      {(() => {
-                        const isSnoozed = snoozedCapsules[med.id];
-                        const takenDoses = capsuleDoses[med.id] || [];
-                        
-                        return (
-                          <>
-                            {/* Dose tracking buttons for multiple daily doses */}
-                            {med.todaysDoses.length >= 2 && !isSnoozed && !allDosesTaken(med.id, med.timesPerDay) && (
-                              <div className="dose-buttons">
-                                {med.todaysDoses.map(doseNum => (
+                      {/* Dose tracking and snooze controls */}
+                      <div className="capsule-controls">
+                        {(() => {
+                          const isSnoozed = snoozedCapsules[med.id];
+                          // const takenDoses = capsuleDoses[med.id] || [];
+
+                          return (
+                            <>
+                              {/* Dose tracking buttons for multiple daily doses */}
+                              {med.todaysDoses.length >= 2 && !isSnoozed && !allDosesTaken(med.id, med.timesPerDay) && (
+                                <div className="dose-buttons">
+                                  {med.todaysDoses.map(doseNum => (
+                                    <button
+                                      key={doseNum._id}
+                                      className={`dose-btn ${doseNum.status === 'taken' ? 'taken' : ''}`}
+                                      onClick={() => handleTakeDose(doseNum._id, med.name, doseNum.time)}
+                                      disabled={doseNum.status === 'taken'}
+                                      style={(doseNum.status !== 'taken') ? { borderColor: currentColor, color: currentColor } : {}}
+                                    >
+                                      <Icon name={doseNum.status === "taken" ? "check" : "pill"} size={14} />
+                                      Dose: {doseNum.time}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* Single dose button for once-daily medications */}
+                              {med.todaysDoses.length === 1 && !isSnoozed && !allDosesTaken(med._id) && (
+                                med.todaysDoses.map(doseNum => (
                                   <button
-                                    key={doseNum._id}
-                                    className={`dose-btn ${doseNum.status == 'taken' ? 'taken' : ''}`}
+                                    className="mark-taken-btn"
                                     onClick={() => handleTakeDose(doseNum._id, med.name, doseNum.time)}
-                                    disabled={doseNum.status == 'taken'}
-                                    style={(doseNum.status !== 'taken') ? { borderColor: currentColor, color: currentColor } : {}}
+                                    style={{ background: currentColor }}
                                   >
-                                    <Icon name={doseNum.status == "taken" ? "check" : "pill"} size={14} />
-                                    Dose: {doseNum.time}
+                                    <Icon name="check" size={16} />
+                                    Mark as Taken
                                   </button>
-                                ))}
-                              </div>
-                            )}
-                            
-                            {/* Single dose button for once-daily medications */}
-                            {med.todaysDoses.length === 1 && !isSnoozed && !allDosesTaken(med._id) && (
-                              med.todaysDoses.map(doseNum => (
-                              <button 
-                                className="mark-taken-btn"
-                                onClick={() => handleTakeDose(doseNum._id, med.name, doseNum.time)}
-                                style={{ background: currentColor }}
-                              >
-                                <Icon name="check" size={16} />
-                                Mark as Taken
-                              </button>
-                              ))
-                            )}
-                            
-                            {/* Snooze button */}
-                            {!allDosesTaken(med.id, med.timesPerDay) && (
-                              <button 
-                                className="snooze-btn"
-                                onClick={() => handleSnoozeCapsule(med.id)}
-                                disabled={isSnoozed}
-                                style={!isSnoozed ? { borderColor: '#ffaa00', color: '#ffaa00' } : {}}
-                              >
-                                <Icon name="bell" size={14} color={isSnoozed ? '#999' : '#ffaa00'} />
-                                {isSnoozed ? 'Snoozed (10min)' : 'Snooze'}
-                              </button>
-                            )}
-                            
-                            {/* Completed indicator */}
-                            {allDosesTaken(med.id, med.timesPerDay) && (
-                              <div className="all-doses-taken">
-                                <Icon name="check" size={20} color="#00d26a" />
-                                <span>All doses taken today!</span>
-                              </div>
-                            )}
-                          </>
-                        );
-                      })()}
+                                ))
+                              )}
+
+                              {/* Snooze button */}
+                              {!allDosesTaken(med.id, med.timesPerDay) && (
+                                <button
+                                  className="snooze-btn"
+                                  onClick={() => handleSnoozeCapsule(med.id)}
+                                  disabled={isSnoozed}
+                                  style={!isSnoozed ? { borderColor: '#ffaa00', color: '#ffaa00' } : {}}
+                                >
+                                  <Icon name="bell" size={14} color={isSnoozed ? '#999' : '#ffaa00'} />
+                                  {isSnoozed ? 'Snoozed (10min)' : 'Snooze'}
+                                </button>
+                              )}
+
+                              {/* Completed indicator */}
+                              {allDosesTaken(med.id, med.timesPerDay) && (
+                                <div className="all-doses-taken">
+                                  <Icon name="check" size={20} color="#00d26a" />
+                                  <span>All doses taken today!</span>
+                                </div>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           )}
 
@@ -896,7 +899,7 @@ const Capsules = ({ ranger = 'red' }) => {
                   .filter(med => med.status !== 'taken')
                   .sort((a, b) => a.time.localeCompare(b.time))
                   .map(reminder => (
-                    <div key={reminder._id} className={`reminder-card ${reminder.status == "scheduled" ? "upcoming" : reminder.status}`}>
+                    <div key={reminder._id} className={`reminder-card ${reminder.status === "scheduled" ? "upcoming" : reminder.status}`}>
                       <div className="time-badge" style={{ borderColor: currentColor }}>
                         {reminder.time}
                       </div>
@@ -911,7 +914,7 @@ const Capsules = ({ ranger = 'red' }) => {
                           )
                         ))}
                       </div>
-                      <div className={`status-indicator ${reminder.status == "scheduled" ? "upcoming" : reminder.status}`}>
+                      <div className={`status-indicator ${reminder.status === "scheduled" ? "upcoming" : reminder.status}`}>
                         {reminder.status === 'pending' ? '⏰ Pending' : '🕐 Upcoming'}
                       </div>
                     </div>
@@ -926,7 +929,7 @@ const Capsules = ({ ranger = 'red' }) => {
                     <p>Personalized recommendations based on your medication patterns</p>
                   </div>
                   <div className="recommendations-list">
-                    {console.log("recommendation",recommendations)}
+                    {console.log("recommendation", recommendations)}
                     {recommendations?.map((rec, idx) => (
                       <div key={idx} className={`recommendation-card priority-${rec.priority}`}>
                         <div className="rec-header">
@@ -938,7 +941,7 @@ const Capsules = ({ ranger = 'red' }) => {
                               {rec.type.replace(/-/g, ' ').toUpperCase()}
                             </span>
                           </div>
-                          <div className={`rec-priority ${rec.priority}`} style={{marginTop: "10px", width: "fit-content"}}>
+                          <div className={`rec-priority ${rec.priority}`} style={{ marginTop: "10px", width: "fit-content" }}>
                             {rec.priority.toUpperCase()}
                           </div>
                         </div>
@@ -985,9 +988,9 @@ const Capsules = ({ ranger = 'red' }) => {
                   <div className="adherence-analytics">
                     <h3>📈 Your Medication Patterns</h3>
                     <div className="analytics-grid">
-                      {console.log("PATTERN",pattern)}
+                      {console.log("PATTERN", pattern)}
                       {pattern.map(med => {
-                        const analysis = analyzeAdherencePattern(med);
+                        // const analysis = analyzeAdherencePattern(med);
                         return (
                           <div key={med.capsuleId} className="analytics-card">
                             <h4>{med.name}</h4>
@@ -1025,7 +1028,7 @@ const Capsules = ({ ranger = 'red' }) => {
             <div className="history-section">
               <h2>Medication History</h2>
               <div className="history-timeline">
-                {console.log("History: ",history)}
+                {console.log("History: ", history)}
                 {history.map(item => (
                   <div key={item.id} className="history-card">
                     <div className="timeline-dot" style={{ background: currentColor }}></div>
@@ -1063,7 +1066,7 @@ const Capsules = ({ ranger = 'red' }) => {
                       <h4>{med.name}</h4>
                       <p>{med.stock} pills left</p>
                       <p className="refill-date">Refill by: {new Date(med.endDate).toLocaleDateString() || "-"}</p>
-                      
+
                       {/* <p className="refill-date">Refill by: {"-"}</p> */}
                     </div>
                   </div>

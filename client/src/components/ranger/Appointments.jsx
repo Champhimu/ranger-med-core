@@ -10,7 +10,7 @@ function Appointments({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   
-  const { doctors, loading: doctorsLoading, error: doctorsError } = useSelector((state) => state.doctor);
+  const { doctors } = useSelector((state) => state.doctor);
   const { upcoming: upcomingAppointments, past: pastAppointments, loading: appointmentsLoading, error: appointmentsError } = useSelector((state) => state.appointments);
 
   const [activeTab, setActiveTab] = useState('upcoming');
@@ -128,27 +128,27 @@ function Appointments({ selectedRanger = 'red' }) {
 
     // Validation
     if (!bookingData.type) {
-      toast.error('📋 Please select an appointment type!');
+      toast.error('Please select an appointment type!');
       return;
     }
 
     if (!bookingData.doctor) {
-      toast.error('👨‍⚕️ Please select a doctor!');
+      toast.error('Please select a doctor!');
       return;
     }
 
     if (!bookingData.date) {
-      toast.error('📅 Please select a date!');
+      toast.error('Please select a date!');
       return;
     }
 
     if (!bookingData.time) {
-      toast.error('⏰ Please select a time!');
+      toast.error('Please select a time!');
       return;
     }
 
     if (!bookingData.reason.trim()) {
-      toast.error('📝 Please provide a reason for visit!');
+      toast.error('Please provide a reason for visit!');
       return;
     }
 
@@ -163,7 +163,6 @@ function Appointments({ selectedRanger = 'red' }) {
         toast.success('Appointment booking request sent! You will receive confirmation shortly.', {
           id: 'booking',
           duration: 4000,
-          icon: '📅',
           style: {
             border: '2px solid #00ff00',
             boxShadow: '0 0 20px rgba(0, 255, 0, 0.5)',
@@ -178,7 +177,10 @@ function Appointments({ selectedRanger = 'red' }) {
           time: '',
           reason: ''
         });
+        
       }, 1500);
+    dispatch(fetchAppointmentsThunk());
+
     }catch (error) {
       toast.error(error.message || "Something went wrong!", {
         id: "booking",
@@ -201,6 +203,7 @@ function Appointments({ selectedRanger = 'red' }) {
 
 
       toast.success("Appointment cancelled successfully!", { id: "cancel" });
+      dispatch(fetchAppointmentsThunk());
     } catch (err) {
       toast.error(err?.message || "Failed to cancel appointment.", { id: "cancel" });
     }
@@ -257,49 +260,49 @@ function Appointments({ selectedRanger = 'red' }) {
         <div className="appointments-content">
           {activeTab === 'upcoming' ? (
             <div className="appointments-grid">
-              {upcomingAppointments.map(appointment => (
-                <div key={appointment._id} className="appointment-detail-card">
+              {upcomingAppointments?.map(appointment => (
+                <div key={appointment?._id} className="appointment-detail-card">
                   <div className="card-header">
                     <div className="appointment-date-large">
-                      <div className="day">{new Date(appointment.date).getDate()}</div>
-                      <div className="month">{new Date(appointment.date).toLocaleString('default', { month: 'short' }).toUpperCase()}</div>
+                      <div className="day">{new Date(appointment?.date).getDate()}</div>
+                      <div className="month">{new Date(appointment?.date).toLocaleString('default', { month: 'short' }).toUpperCase()}</div>
                     </div>
-                    <div className={`status-badge status-${appointment.status}`}>
-                      {appointment.status.toUpperCase()}
+                    <div className={`status-badge status-${appointment?.status}`}>
+                      {appointment?.status.toUpperCase()}
                     </div>
                   </div>
                   
                   <div className="card-body">
-                    <h3 className="appointment-type">{appointment.type}</h3>
+                    <h3 className="appointment-type">{appointment?.type}</h3>
                     <div className="appointment-info">
                       <div className="info-row">
                         <span className="info-icon">👨‍⚕️</span>
                         <div className="info-text">
                           <div className="info-label">Doctor</div>
-                          <div className="info-value">{appointment.doctor.name}</div>
-                          <div className="info-sub">{appointment.doctor.specialty}</div>
+                          <div className="info-value">{appointment?.doctor.name}</div>
+                          <div className="info-sub">{appointment?.doctor.specialty}</div>
                         </div>
                       </div>
                       <div className="info-row">
                         <span className="info-icon">⏰</span>
                         <div className="info-text">
                           <div className="info-label">Time</div>
-                          <div className="info-value">{appointment.time}</div>
+                          <div className="info-value">{appointment?.time}</div>
                         </div>
                       </div>
                       <div className="info-row">
                         <span className="info-icon">📍</span>
                         <div className="info-text">
                           <div className="info-label">Location</div>
-                          <div className="info-value">{appointment.doctor.location}</div>
+                          <div className="info-value">{appointment?.doctor.location}</div>
                         </div>
                       </div>
-                      {appointment.notes && (
+                      {appointment?.notes && (
                         <div className="info-row notes-row">
                           <span className="info-icon">📝</span>
                           <div className="info-text">
                             <div className="info-label">Notes</div>
-                            <div className="info-value">{appointment.notes}</div>
+                            <div className="info-value">{appointment?.notes}</div>
                           </div>
                         </div>
                       )}
@@ -322,42 +325,42 @@ function Appointments({ selectedRanger = 'red' }) {
             </div>
           ) : (
             <div className="appointments-grid">
-              {pastAppointments.map(appointment => (
+              {pastAppointments?.map(appointment => (
                 <div key={appointment.id} className="appointment-detail-card past">
                   <div className="card-header">
                     <div className="appointment-date-large">
-                      <div className="day">{new Date(appointment.date).getDate()}</div>
-                      <div className="month">{new Date(appointment.date).toLocaleString('default', { month: 'short' }).toUpperCase()}</div>
+                      <div className="day">{new Date(appointment?.date).getDate()}</div>
+                      <div className="month">{new Date(appointment?.date).toLocaleString('default', { month: 'short' }).toUpperCase()}</div>
                     </div>
-                    <div className={`status-badge status-${appointment.status}`}>
-                      {appointment.status.toUpperCase()}
+                    <div className={`status-badge status-${appointment?.status}`}>
+                      {appointment?.status.toUpperCase()}
                     </div>
                   </div>
                   
                   <div className="card-body">
-                    <h3 className="appointment-type">{appointment.type}</h3>
+                    <h3 className="appointment-type">{appointment?.type}</h3>
                     <div className="appointment-info">
                       <div className="info-row">
                         <span className="info-icon">👨‍⚕️</span>
                         <div className="info-text">
                           <div className="info-label">Doctor</div>
-                          <div className="info-value">{appointment.doctor.name}</div>
-                          <div className="info-sub">{appointment.doctor.specialty}</div>
+                          <div className="info-value">{appointment?.doctor.name}</div>
+                          <div className="info-sub">{appointment?.doctor.specialty}</div>
                         </div>
                       </div>
                       <div className="info-row">
                         <span className="info-icon">⏰</span>
                         <div className="info-text">
                           <div className="info-label">Time</div>
-                          <div className="info-value">{appointment.time}</div>
+                          <div className="info-value">{appointment?.time}</div>
                         </div>
                       </div>
-                      {appointment.notes && (
+                      {appointment?.notes && (
                         <div className="info-row notes-row">
                           <span className="info-icon">📝</span>
                           <div className="info-text">
                             <div className="info-label">Notes</div>
-                            <div className="info-value">{appointment.notes}</div>
+                            <div className="info-value">{appointment?.notes}</div>
                           </div>
                         </div>
                       )}
@@ -365,7 +368,7 @@ function Appointments({ selectedRanger = 'red' }) {
                   </div>
                     
                   {
-                    appointment.status !== 'cancelled' && (
+                    appointment?.status !== 'cancelled' && (
                   <div className="card-footer">
                     <button className="action-link">View Summary</button>
                     <button className="action-link">Book Follow-up</button>
@@ -421,7 +424,7 @@ function Appointments({ selectedRanger = 'red' }) {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Preferred Date</label>
+                  <label>Preferred Date (24 hour format)</label>
                   <input 
                     type="date" 
                     required 
