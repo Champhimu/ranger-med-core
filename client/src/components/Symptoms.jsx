@@ -75,7 +75,6 @@ function Symptoms({ selectedRanger = 'red' }) {
   }, [symptomHistory, severityFilter, statusFilter]);
 
   useEffect(() => {
-    console.log("This is running...")
     dispatch(fetchSymptomsThunk());
     dispatch(fetchProgressThunk());
   }, [dispatch]);

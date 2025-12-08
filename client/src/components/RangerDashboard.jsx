@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import './RangerDashboard.css';
 import { logoutRanger } from '../api/auth';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSymptomsThunk } from '../store/symptomSlice';
+import { fetchCapsulesThunk, markDoseTakenThunk } from '../store/capsulesSlice';
+import toast from 'react-hot-toast';
+import { fetchAppointmentsThunk } from '../store/appointmentsSlice';
 
 function RangerDashboard({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { symptoms, loading, error } = useSelector((state) => state.symptoms);
+  const { capsules } = useSelector((state) => state.capsules);
+  const { upcoming: upcomingAppointments } = useSelector((state) => state.appointments);
+  
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [capsuleDoses, setCapsuleDoses] = useState({}); // Track which doses are taken
   const [snoozedCapsules, setSnoozedCapsules] = useState({}); // Track snoozed capsules
@@ -20,6 +30,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
     mercury: '#c0c0c0'
   };
 
+  const currentColor = rangerColors[selectedRanger] || rangerColors.red;
   const rangerNames = {
     red: 'Mack Hartford',
     blue: 'Dax Lo',
@@ -37,6 +48,12 @@ function RangerDashboard({ selectedRanger = 'red' }) {
     black: 'Black Ranger',
     mercury: 'Mercury Ranger'
   };
+
+  useEffect(() => {
+      dispatch(fetchSymptomsThunk());
+      dispatch(fetchCapsulesThunk());
+      dispatch(fetchAppointmentsThunk());
+  }, [dispatch]);
 
   // Mock data - would come from API
   const rangerData = {
@@ -76,13 +93,24 @@ function RangerDashboard({ selectedRanger = 'red' }) {
   };
 
   // Handler for taking capsule dose
-  const handleTakeDose = (capsuleId, doseNumber) => {
-    setCapsuleDoses(prev => ({
-      ...prev,
-      [capsuleId]: [...(prev[capsuleId] || []), doseNumber]
-    }));
-    // In real app, this would call API to log dose
-    console.log(`Dose ${doseNumber} taken for capsule ${capsuleId}`);
+  const handleTakeDose = async (doseId, medName, doseTime) => {
+    try {
+    // Call API
+    const res = await dispatch(markDoseTakenThunk(doseId)).unwrap();
+
+    // If success → toast success
+    toast.success(`Dose taken at ${doseTime} for ${medName}!`, {
+      icon: '💊',
+      duration: 2000,
+    });
+
+  } catch (error) {
+    // If API fails → toast error
+    toast.error(`Failed to mark dose as taken. Please try again.`, {
+      icon: '⚠️',
+      duration: 2500,
+    });
+  }
   };
 
   // Handler for snoozing capsule
@@ -101,9 +129,16 @@ function RangerDashboard({ selectedRanger = 'red' }) {
   };
 
   // Check if all doses are taken for a capsule
-  const allDosesTaken = (capsuleId, timesPerDay) => {
-    const takenDoses = capsuleDoses[capsuleId] || [];
-    return takenDoses.length >= timesPerDay;
+  const allDosesTaken = (capsuleId, timesPerDay, doses) => {
+    // Filter doses for this capsule
+    const capsuleDoses = doses.filter(d => d.capsuleId === capsuleId);
+    
+    // Count doses with status 'taken'
+    const takenDosesCount = capsuleDoses.filter(d => d.status === 'taken').length;
+    console.log(takenDosesCount);
+
+  // If number of taken doses matches timesPerDay, return true
+  return takenDosesCount >= timesPerDay.length;
   };
 
   // Check if ranger has an assigned doctor
@@ -263,14 +298,14 @@ function RangerDashboard({ selectedRanger = 'red' }) {
             </div>
             <div className="panel-body">
               <div className="symptoms-list">
-                {rangerData.symptoms.map(symptom => (
-                  <div key={symptom.id} className="symptom-item">
+                {symptoms.map(symptom => (
+                  <div key={symptom._id} className="symptom-item">
                     <div 
                       className="severity-indicator" 
                       style={{ backgroundColor: getSeverityColor(symptom.severity) }}
                     ></div>
                     <div className="symptom-content">
-                      <div className="symptom-name">{symptom.symptom}</div>
+                      <div className="symptom-name">{symptom.symptomName}</div>
                       <div className="symptom-meta">
                         <span className="symptom-severity" style={{ color: getSeverityColor(symptom.severity) }}>
                           {symptom.severity.toUpperCase()}
@@ -281,7 +316,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
                   </div>
                 ))}
               </div>
-              <button className="view-all-btn" onClick={() => navigate('/symptoms')}>View All Symptoms →</button>
+              <button className="view-all-btn" onClick={() => navigate('/symptoms')}> {symptoms.length > 0 ? "View All Symptoms →" : "Add Symptom to view recent →"}</button>
             </div>
           </div>
 
@@ -293,17 +328,17 @@ function RangerDashboard({ selectedRanger = 'red' }) {
             </div>
             <div className="panel-body">
               <div className="capsules-list">
-                {rangerData.capsules.map(capsule => {
-                  const isSnoozed = snoozedCapsules[capsule.id];
-                  const takenDoses = capsuleDoses[capsule.id] || [];
+                {capsules.map(capsule => {
+                  const isSnoozed = snoozedCapsules[capsule._id];
+                  const takenDoses = capsuleDoses[capsule._id] || [];
                   
                   return (
-                    <div key={capsule.id} className={`capsule-item ${isSnoozed ? 'snoozed' : ''}`}>
+                    <div key={capsule._id} className={`capsule-item ${isSnoozed ? 'snoozed' : ''}`}>
                       <div className="capsule-icon"><Icon name="zap" size={20} color="#ff8800" /></div>
                       <div className="capsule-content">
                         <div className="capsule-name">{capsule.name}</div>
                         <div className="capsule-details">
-                          <span className="capsule-dosage">{capsule.dosage}</span>
+                          <span className="capsule-dosage">{capsule.doseAmount} {capsule.doseUnit}</span>
                           <span className="capsule-frequency">• {capsule.frequency}</span>
                         </div>
                         <div className="capsule-schedule">
@@ -312,24 +347,61 @@ function RangerDashboard({ selectedRanger = 'red' }) {
                         </div>
                         
                         {/* Dose confirmation buttons for multiple daily doses */}
-                        {capsule.timesPerDay >= 2 && !isSnoozed && (
-                          <div className="dose-buttons">
-                            {Array.from({ length: capsule.timesPerDay }, (_, i) => i + 1).map(doseNum => (
-                              <button
-                                key={doseNum}
-                                className={`dose-btn ${takenDoses.includes(doseNum) ? 'taken' : ''}`}
-                                onClick={() => handleTakeDose(capsule.id, doseNum)}
-                                disabled={takenDoses.includes(doseNum)}
+                        {/* Dose tracking buttons for multiple daily doses */}
+                            {capsule.todaysDoses.length >= 2 && !isSnoozed && !allDosesTaken(capsule._id, capsule.timeSlots, capsule.todaysDoses) && (
+                              <div className="dose-buttons">
+                                {capsule.todaysDoses.map(doseNum => (
+                                  <button
+                                    key={doseNum._id}
+                                    className={`dose-btn ${doseNum.status == 'taken' ? 'taken' : ''}`}
+                                    onClick={() => handleTakeDose(doseNum._id, capsule.name, doseNum.time)}
+                                    disabled={doseNum.status == 'taken'}
+                                    style={(doseNum.status !== 'taken') ? { borderColor: currentColor, color: currentColor } : {}}
+                                  >
+                                    <Icon name={doseNum.status == "taken" ? "check" : "pill"} size={14} />
+                                    Dose: {doseNum.time}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {/* Single dose button for once-daily capsuleications */}
+                            {capsule.todaysDoses.length === 1 && !isSnoozed && !allDosesTaken(capsule._id, capsule.timeSlots, capsule.todaysDoses) && (
+                              capsule.todaysDoses.map(doseNum => (
+                              <button 
+                                className="mark-taken-btn"
+                                onClick={() => handleTakeDose(doseNum._id, capsule.name, doseNum.time)}
+                                style={{ background: currentColor }}
                               >
-                                <Icon name={takenDoses.includes(doseNum) ? "check" : "pill"} size={14} />
-                                Dose {doseNum}
+                                <Icon name="check" size={16} />
+                                Mark as Taken
                               </button>
-                            ))}
-                          </div>
-                        )}
+                              ))
+                            )}
+                            
+                            {/* Snooze button */}
+                            {!allDosesTaken(capsule._id, capsule.timeSlots, capsule.todaysDoses) && (
+                              <button 
+                                className="snooze-btn"
+                                onClick={() => handleSnoozeCapsule(capsule.id)}
+                                disabled={isSnoozed}
+                                style={!isSnoozed ? { borderColor: '#ffaa00', color: '#ffaa00' } : {}}
+                              >
+                                <Icon name="bell" size={14} color={isSnoozed ? '#999' : '#ffaa00'} />
+                                {isSnoozed ? 'Snoozed (10min)' : 'Snooze'}
+                              </button>
+                            )}
+                            
+                            {/* Completed indicator */}
+                            {allDosesTaken(capsule._id, capsule.timeSlots, capsule.todaysDoses) && (
+                              <div className="all-doses-taken">
+                                <Icon name="check" size={20} color="#00d26a" />
+                                <span>All doses taken today!</span>
+                              </div>
+                            )}
 
                         {/* Snooze button - only for active capsules */}
-                        {capsule.status === 'active' && !allDosesTaken(capsule.id, capsule.timesPerDay) && (
+                        {capsule.status === 'active' && !allDosesTaken(capsule._id, capsule.timeSlots, capsule.todaysDoses) && (
                           <div className="capsule-actions">
                             <button 
                               className="snooze-btn"
@@ -342,20 +414,21 @@ function RangerDashboard({ selectedRanger = 'red' }) {
                           </div>
                         )}
                       </div>
-                      <div className={`capsule-status status-${capsule.status}`}>
-                        {capsule.status === 'active' ? (
-                          allDosesTaken(capsule.id, capsule.timesPerDay) ? (
-                            <><Icon name="check" size={16} color="#00ff00" /> COMPLETED</>
+                        {
+                          allDosesTaken(capsule._id, capsule.timeSlots, capsule.todaysDoses) ? (
+                            <div className={`capsule-status status-completed`}>
+                              <><Icon name="check" size={16} color="#00ff00" /> COMPLETED</>
+                            </div>
                           ) : (
-                            <><Icon name="zap" size={16} color="#00ff00" /> ACTIVE</>
-                          )
-                        ) : 'PRN'}
-                      </div>
+                            <div className={`capsule-status status-active`}>
+                              <><Icon name="zap" size={16} color="#00ff00" /> ACTIVE</>
+                            </div>
+                          )}
                     </div>
                   );
                 })}
               </div>
-              <button className="view-all-btn" onClick={() => navigate('/capsules')}>Manage Capsules →</button>
+              <button className="view-all-btn" onClick={() => navigate('/capsules')}> { capsules.length > 0 ? "Manage Capsules →" : "Add Capsules to view →"}</button>
             </div>
           </div>
         </div>
@@ -371,15 +444,15 @@ function RangerDashboard({ selectedRanger = 'red' }) {
             </div>
             <div className="panel-body">
               <div className="appointments-list">
-                {rangerData.appointments.map(appointment => (
-                  <div key={appointment.id} className="appointment-card">
+                {upcomingAppointments.map(appointment => (
+                  <div key={appointment._id} className="appointment-card">
                     <div className="appointment-date">
                       <div className="date-day">{new Date(appointment.date).getDate()}</div>
                       <div className="date-month">{new Date(appointment.date).toLocaleString('default', { month: 'short' }).toUpperCase()}</div>
                     </div>
                     <div className="appointment-details">
                       <div className="appointment-type">{appointment.type}</div>
-                      <div className="appointment-doctor">Dr. {appointment.doctor}</div>
+                      <div className="appointment-doctor">Dr. {appointment.doctor.name}</div>
                       <div className="appointment-time"><Icon name="bell" size={16} color="#ff8800" /> {appointment.time}</div>
                     </div>
                     <div className={`appointment-status status-${appointment.status}`}>
@@ -388,7 +461,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
                   </div>
                 ))}
               </div>
-              <button className="view-all-btn" onClick={() => navigate('/appointments')}>View All Appointments →</button>
+              <button className="view-all-btn" onClick={() => navigate('/appointments')}>{ upcomingAppointments.length > 0 ? "View All Appointments →" : "Add Appointment to view →"}</button>
             </div>
           </div>
 
