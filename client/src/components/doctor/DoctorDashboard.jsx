@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Icon from './Icon';
+import Icon from '../shared/Icon';
 import './DoctorDashboard.css';
 
 const DoctorDashboard = () => {
@@ -27,7 +27,6 @@ const DoctorDashboard = () => {
     license: doctorAuth.licenseNumber || 'MD-2024-5678',
     patients: 156,
     appointments: 24,
-    avatar: '👩‍⚕️'
   };
 
   // Mock data
@@ -322,7 +321,12 @@ const DoctorDashboard = () => {
             {alerts.map(alert => (
               <div key={alert.id} className={`alert-card ${alert.type}`}>
                 <div className="alert-icon">
-                  {alert.type === 'critical' ? '🔴' : alert.type === 'warning' ? '🟡' : '🔵'}
+                  {alert.type === 'critical' ? 
+                    <Icon name="alertCircle" size={24} color="#ff0044" /> : 
+                    alert.type === 'warning' ? 
+                    <Icon name="alertTriangle" size={24} color="#ffaa00" /> : 
+                    <Icon name="info" size={24} color="#0088ff" />
+                  }
                 </div>
                 <div className="alert-content">
                   <h4>{alert.patient}</h4>
@@ -768,7 +772,7 @@ const DoctorDashboard = () => {
                 <div key={idx} className="prescribed-med">
                   <span>{med.name} - {med.dosage}</span>
                   <button onClick={() => setPrescription({...prescription, medications: prescription.medications.filter((_, i) => i !== idx)})}>
-                    ✗
+                    <Icon name="x" size={16} />
                   </button>
                 </div>
               ))}
@@ -779,7 +783,10 @@ const DoctorDashboard = () => {
                 onChange={(e) => setPrescription({...prescription, instructions: e.target.value})}
               />
 
-              <button className="save-prescription-btn">💾 Save Prescription</button>
+              <button className="save-prescription-btn">
+                <Icon name="save" size={18} />
+                Save Prescription
+              </button>
             </div>
           </div>
         </div>
@@ -796,7 +803,9 @@ const DoctorDashboard = () => {
       {/* Header */}
       <header className="doctor-header">
         <div className="header-left">
-          <div className="doctor-avatar">{doctorInfo.avatar}</div>
+          <div className="doctor-avatar">
+            <Icon name="doctor" size={40} color="#00ff88" />
+          </div>
           <div className="doctor-info">
             <h1>{doctorInfo.name}</h1>
             <p>{doctorInfo.specialty} • License: {doctorInfo.license}</p>
@@ -805,18 +814,22 @@ const DoctorDashboard = () => {
 
         <div className="header-right">
           <button className="header-btn">
-            📧 Messages
+            <Icon name="mail" size={18} />
+            Messages
             <span className="badge">{messages.filter(m => !m.read).length}</span>
           </button>
           <button className="header-btn">
-            📹 Video
+            <Icon name="video" size={18} />
+            Video
           </button>
           <button className="header-btn">
-            🔔 Notifications
+            <Icon name="bell" size={18} />
+            Notifications
             <span className="badge">{alerts.length}</span>
           </button>
           <button className="logout-btn" onClick={handleLogout}>
-            🚪 Logout
+            <Icon name="logout" size={18} />
+            Logout
           </button>
         </div>
       </header>
@@ -833,7 +846,7 @@ const DoctorDashboard = () => {
                 setConsultationMode(false);
               }}
             >
-              <span className="nav-icon">📊</span>
+              <span className="nav-icon"><Icon name="chart" size={20} /></span>
               Dashboard
             </button>
             
@@ -844,7 +857,7 @@ const DoctorDashboard = () => {
                 setConsultationMode(false);
               }}
             >
-              <span className="nav-icon">👥</span>
+              <span className="nav-icon"><Icon name="users" size={20} /></span>
               Patients
             </button>
             
@@ -852,7 +865,7 @@ const DoctorDashboard = () => {
               className={`nav-btn ${activeSection === 'appointments' ? 'active' : ''}`}
               onClick={() => setActiveSection('appointments')}
             >
-              <span className="nav-icon">📅</span>
+              <span className="nav-icon"><Icon name="calendar" size={20} /></span>
               Appointments
             </button>
             
@@ -860,7 +873,7 @@ const DoctorDashboard = () => {
               className={`nav-btn ${activeSection === 'prescriptions' ? 'active' : ''}`}
               onClick={() => setActiveSection('prescriptions')}
             >
-              <span className="nav-icon">💊</span>
+              <span className="nav-icon"><Icon name="pill" size={20} /></span>
               Prescriptions
             </button>
             
@@ -868,7 +881,7 @@ const DoctorDashboard = () => {
               className={`nav-btn ${activeSection === 'analytics' ? 'active' : ''}`}
               onClick={() => setActiveSection('analytics')}
             >
-              <span className="nav-icon">📊</span>
+              <span className="nav-icon"><Icon name="chart" size={20} /></span>
               Analytics
             </button>
             
@@ -876,7 +889,7 @@ const DoctorDashboard = () => {
               className={`nav-btn ${activeSection === 'communication' ? 'active' : ''}`}
               onClick={() => setActiveSection('communication')}
             >
-              <span className="nav-icon">💬</span>
+              <span className="nav-icon"><Icon name="message" size={20} /></span>
               Communication
             </button>
             
@@ -884,7 +897,7 @@ const DoctorDashboard = () => {
               className={`nav-btn ${activeSection === 'tasks' ? 'active' : ''}`}
               onClick={() => setActiveSection('tasks')}
             >
-              <span className="nav-icon">✓</span>
+              <span className="nav-icon"><Icon name="check" size={20} /></span>
               Tasks
             </button>
             
@@ -892,7 +905,7 @@ const DoctorDashboard = () => {
               className={`nav-btn ${activeSection === 'profile' ? 'active' : ''}`}
               onClick={() => setActiveSection('profile')}
             >
-              <span className="nav-icon">👤</span>
+              <span className="nav-icon"><Icon name="user" size={20} /></span>
               Profile
             </button>
           </nav>
@@ -910,7 +923,7 @@ const DoctorDashboard = () => {
            activeSection === 'tasks' ? renderTasks() :
            activeSection === 'profile' ? renderProfile() :
            <div className="coming-soon">
-             <h2>🚧 Coming Soon</h2>
+             <h2><Icon name="construction" size={32} color="#ffaa00" /> Coming Soon</h2>
              <p>This section is under development</p>
            </div>
           }

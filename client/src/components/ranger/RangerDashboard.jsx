@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Icon from './Icon';
+import Icon from '../shared/Icon';
 import './RangerDashboard.css';
-import { logoutRanger } from '../api/auth';
+import { logoutRanger } from '../../api/auth';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSymptomsThunk } from '../store/symptomSlice';
-import { fetchCapsulesThunk, markDoseTakenThunk } from '../store/capsulesSlice';
+import { fetchSymptomsThunk } from '../../store/symptomSlice';
+import { fetchCapsulesThunk, markDoseTakenThunk } from '../../store/capsulesSlice';
 import toast from 'react-hot-toast';
-import { fetchAppointmentsThunk } from '../store/appointmentsSlice';
+import { fetchAppointmentsThunk } from '../../store/appointmentsSlice';
 
 function RangerDashboard({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
@@ -174,6 +174,8 @@ function RangerDashboard({ selectedRanger = 'red' }) {
     navigate('/welcome'); // Redirect to welcome/login page
   };
 
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="ranger-dashboard" data-ranger={selectedRanger}>
@@ -494,7 +496,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
           </div>
         </div>
         <div className="hud-item">
-          <button className="logout-btn" onClick={() => navigate('/welcome')}>
+          <button className="logout-btn" onClick={() => handleLogout()}>
             <span>⏏️ LOGOUT</span>
           </button>
         </div>

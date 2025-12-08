@@ -32,18 +32,42 @@ export const addCapsule = async (req, res) => {
 // GET /api/capsules
 export const getCapsules = async (req, res) => {
   try {
-    const capsules = await Capsule.find({ userId: req.user.id });
+    const userId = req.user.id;
 
-    // Today's Date
-    const todayStr = new Date().toISOString().split("T")[0];
+    const today = new Date();
+    const todayStr = today.toISOString().split("T")[0];
 
+    // Step 1: Find all past doses which are not taken
+    const pendingPastDoses = await Dose.find({
+      userId,
+      status: { $in: ["scheduled", "snoozed"] },
+      $expr: {
+        $lte: [
+          { $dateFromString: { dateString: { $concat: ["$date", "T", "$time"] } } },
+          today
+        ]
+      }
+    });
+
+    // Step 2: Mark them as missed
+    await Dose.updateMany(
+      {
+        _id: { $in: pendingPastDoses.map(d => d._id) }
+      },
+      { $set: { status: "missed" } }
+    );
+
+    // Step 3: Fetch user's capsules
+    const capsules = await Capsule.find({ userId });
+
+    // Step 4: Include today's doses
     const capsulesWithDoses = await Promise.all(
       capsules.map(async (capsule) => {
         const todaysDoses = await Dose.find({
           capsuleId: capsule._id,
-          userId: req.user.id,
+          userId,
           date: todayStr
-        }).select("-__v -createdAt -updatedAt"); // remove extra fields if needed
+        }).select("-__v -createdAt -updatedAt");
 
         return {
           ...capsule.toObject(),
@@ -53,10 +77,12 @@ export const getCapsules = async (req, res) => {
     );
 
     res.json(capsulesWithDoses);
+
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 };
+
 
 // PATCH /api/capsule/dose/DOSE_ID/taken
 export const markDoseTaken = async (req, res) => {

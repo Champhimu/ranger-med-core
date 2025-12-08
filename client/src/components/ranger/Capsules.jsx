@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import Icon from './Icon';
+import Icon from '../shared/Icon';
 import './Capsules.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -11,7 +11,7 @@ import {
   fetchRecommendationsThunk,
   fetchmedicationPatterns,
   fetchCapsuleHistoryThunk
-} from '../store/capsulesSlice';
+} from '../../store/capsulesSlice';
 
 const Capsules = ({ ranger = 'red' }) => {
   const navigate = useNavigate();

@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import Icon from '../shared/Icon';
 import './DoctorLogin.css';
 
 function DoctorLogin() {
@@ -19,7 +20,7 @@ function DoctorLogin() {
 
   const validateForm = () => {
     if (!form.licenseNumber.trim()) {
-      toast.error('📧 Email or Username is required!', {
+      toast.error('Email or Username is required!', {
         style: {
           background: '#0a1f35',
           border: '2px solid #ef4444',
@@ -30,7 +31,7 @@ function DoctorLogin() {
     }
 
     if (form.licenseNumber.length < 3) {
-      toast.error('📧 Email or Username must be at least 3 characters!', {
+      toast.error('Email or Username must be at least 3 characters!', {
         style: {
           background: '#0a1f35',
           border: '2px solid #ef4444',
@@ -41,7 +42,8 @@ function DoctorLogin() {
     }
 
     if (!form.password.trim()) {
-      toast.error('🔒 Password is required!', {
+      toast.error('Password is required!', {
+        icon: <Icon name="lock" size={20} />,
         style: {
           background: '#0a1f35',
           border: '2px solid #ef4444',
@@ -52,7 +54,8 @@ function DoctorLogin() {
     }
 
     if (form.password.length < 6) {
-      toast.error('🔒 Password must be at least 6 characters!', {
+      toast.error('Password must be at least 6 characters!', {
+        icon: <Icon name="lock" size={20} />,
         style: {
           background: '#0a1f35',
           border: '2px solid #ef4444',
@@ -73,7 +76,10 @@ function DoctorLogin() {
     }
 
     setIsAuthenticating(true);
-    toast.loading('🔐 Authenticating Medical Credentials...', { id: 'doctor-auth' });
+    toast.loading('Authenticating Medical Credentials...', { 
+      id: 'doctor-auth',
+      icon: <Icon name="unlock" size={20} />
+    });
     
     // Simulate authentication
     setTimeout(() => {
@@ -83,9 +89,10 @@ function DoctorLogin() {
         loginTime: new Date().toISOString()
       }));
       
-      toast.success(`✅ Welcome Dr. ${form.licenseNumber}`, {
+      toast.success(`Welcome Dr. ${form.licenseNumber}`, {
         id: 'doctor-auth',
         duration: 2000,
+        icon: <Icon name="checkCircle" size={20} />,
         style: {
           background: '#0a1f35',
           border: '2px solid #22c55e',
@@ -161,7 +168,10 @@ function DoctorLogin() {
       {/* Login Card */}
       <div className="doctor-login-card">
         <div className="card-header">
-          <h2>🩺 Doctor Authentication</h2>
+          <h2>
+            <Icon name="stethoscope" size={24} className="title-icon" />
+            Doctor Authentication
+          </h2>
           <p>Enter your medical credentials to access the patient dashboard</p>
         </div>
 
@@ -169,7 +179,7 @@ function DoctorLogin() {
           {/* Email or Username */}
           <div className="form-group">
             <label htmlFor="licenseNumber">
-              <span className="label-icon">📧</span>
+              <Icon name="mail" size={18} className="label-icon" />
               Email or Username
             </label>
             <div className="input-wrapper">
@@ -190,7 +200,7 @@ function DoctorLogin() {
           {/* Password */}
           <div className="form-group">
             <label htmlFor="password">
-              <span className="label-icon">🔒</span>
+              <Icon name="lock" size={18} className="label-icon" />
               Password
             </label>
             <div className="input-wrapper">
@@ -209,7 +219,7 @@ function DoctorLogin() {
                 className="toggle-password"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? '👁️' : '👁️‍🗨️'}
+                <Icon name={showPassword ? "eye" : "eyeOff"} size={18} />
               </button>
               <div className="input-glow"></div>
             </div>
@@ -227,7 +237,7 @@ function DoctorLogin() {
 
           {/* Submit Button */}
           <button type="submit" className="login-button">
-            <span className="button-icon">🔐</span>
+            <Icon name="unlock" size={20} className="button-icon" />
             <span className="button-text">Access Medical Portal</span>
             <div className="button-glow"></div>
           </button>
@@ -236,7 +246,7 @@ function DoctorLogin() {
         {/* Footer Links */}
         <div className="card-footer">
           <button onClick={handleBackToWelcome} className="back-button">
-            ← Back to Welcome
+            <Icon name="arrowLeft" size={16} /> Back to Welcome
           </button>
         </div>
       </div>
@@ -262,9 +272,15 @@ function DoctorLogin() {
         <div className="panel-section">
           <h3>Quick Access</h3>
           <div className="quick-links">
-            <a href="#guidelines" className="quick-link">📋 Clinical Guidelines</a>
-            <a href="#protocols" className="quick-link">📊 Emergency Protocols</a>
-            <a href="#support" className="quick-link">💬 IT Support</a>
+            <a href="#guidelines" className="quick-link">
+              <Icon name="clipboardList" size={16} /> Clinical Guidelines
+            </a>
+            <a href="#protocols" className="quick-link">
+              <Icon name="chartBar" size={16} /> Emergency Protocols
+            </a>
+            <a href="#support" className="quick-link">
+              <Icon name="message" size={16} /> IT Support
+            </a>
           </div>
         </div>
       </div>

@@ -9,24 +9,36 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "r
 import { Toaster } from "react-hot-toast";
 
 // ==================== Components ====================
-import Login from "./components/Login.jsx";
-import Register from "./components/Register.jsx";
-import Welcome from "./components/Welcome.jsx";
 
-import DoctorLogin from "./components/DoctorLogin.jsx";
-import DoctorDashboard from "./components/DoctorDashboard.jsx";
+// ==================== Ranger Components ====================
+import Login from "./components/ranger/Login.jsx";
+import Register from "./components/ranger/Register.jsx";
+import RangerDashboard from "./components/ranger/RangerDashboard";
 
-import ZordonPage from "./components/ZordonPage.jsx";
-import RangerDashboard from "./components/RangerDashboard";
-import Appointments from "./components/Appointments";
-import Calendar from "./components/Calendar";
-import Symptoms from "./components/Symptoms";
-import SymptomChecker from "./components/SymptomChecker";
-import RangerBot from "./components/RangerBot";
-import Capsules from "./components/Capsules";
-import Profile from "./components/Profile";
-import HealthTimeline from "./components/HealthTimeline";
-import WeeklyInsights from "./components/WeeklyInsights";
+import Appointments from "./components/ranger/Appointments";
+import Calendar from "./components/ranger/Calendar";
+
+import Symptoms from './components/ranger/Symptoms';
+import SymptomChecker from "./components/ranger/SymptomChecker";
+import RangerBot from "./components/ranger/RangerBot";
+import Capsules from "./components/ranger/Capsules";
+import Profile from "./components/ranger/Profile";
+import HealthTimeline from "./components/ranger/HealthTimeline";
+import WeeklyInsights from "./components/ranger/WeeklyInsights";
+
+// ==================== Doctor Components ====================
+import DoctorLogin from "./components/doctor/DoctorLogin.jsx";
+import DoctorDashboard from './components/doctor/DoctorDashboard.jsx';
+
+// ==================== Zordon Components ====================
+import ZordonLogin from "./components/zordon/ZordonLogin.jsx";
+import ZordonDashboard from "./components/zordon/ZordonDashboard.jsx";
+import UserManagement from "./components/zordon/UserManagement.jsx";
+import PatientManagement from "./components/zordon/PatientManagement.jsx";
+import DoctorManagement from './components/zordon/DoctorManagement.jsx';
+
+// ==================== Shared Components ====================
+import Welcome from "./components/shared/Welcome.jsx";
 
 // ==================== Helper Components ====================
 
@@ -127,7 +139,12 @@ function App() {
           {/* Public Pages */}
           <Route path="/" element={<Welcome />} />
           <Route path="/welcome" element={<Welcome />} />
-          <Route path="/zordon" element={<ZordonPage />} />
+          <Route path="/doctor/login" element={<DoctorLogin />} />
+          <Route path="/zordon" element={<ZordonLogin />} />
+          <Route path="/zordon/dashboard" element={<ZordonDashboard />} />
+          <Route path="/zordon/users" element={<UserManagement />} />
+          <Route path="/zordon/users/patients" element={<PatientManagement />} />
+          <Route path="/zordon/users/doctors" element={<DoctorManagement />} />
 
           {/* Doctor Authentication */}
           <Route path="/doctor/login" element={<DoctorLogin />} />

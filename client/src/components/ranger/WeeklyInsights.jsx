@@ -3,7 +3,7 @@
  * Provides weekly health trends, risk analysis, and personalized recommendations
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './WeeklyInsights.css';
 

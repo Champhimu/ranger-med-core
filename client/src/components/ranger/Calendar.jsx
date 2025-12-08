@@ -2,7 +2,7 @@ import React, { useState, useEffect , useRef} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Calendar.css';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCalendarByDate } from '../store/calendarSlice';
+import { fetchCalendarByDate } from '../../store/calendarSlice';
 
 function Calendar({ selectedRanger = 'red' }) {
   const navigate = useNavigate();

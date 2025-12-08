@@ -43,7 +43,7 @@ export const updateSymptomThunk = createAsyncThunk(
 export const deleteSymptomThunk = createAsyncThunk(
   "symptoms/delete",
   async (id) => {
-    const res = await api.deleteSymptom(id);
+    await api.deleteSymptom(id);
     return id;
   }
 );

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import './Login.css'
-import { loginRanger } from '../api/auth'
+import { loginRanger } from '../../api/auth'
 
 function Login({ onLoginSuccess, onRegister }) {
   const [form, setForm] = useState({ operatorId: '', accessCode: '' })
@@ -22,23 +22,43 @@ function Login({ onLoginSuccess, onRegister }) {
   // Form Validation
   const validateForm = () => {
     if (!form.operatorId.trim()) {
-      toast.error('⚠️ Operator ID is required!')
-      return false
+      toast.error('Operator ID is required!', {
+        style: {
+          border: '2px solid #ff0000',
+          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
+        }
+      });
+      return false;
     }
 
     if (!form.accessCode.trim()) {
-      toast.error('⚠️ Access Code is required!')
-      return false
+      toast.error('Access Code is required!', {
+        style: {
+          border: '2px solid #ff0000',
+          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
+        }
+      });
+      return false;
     }
 
     if (form.operatorId.length < 3) {
-      toast.error('⚠️ Operator ID must be at least 3 characters!')
-      return false
+      toast.error('Operator ID must be at least 3 characters!', {
+        style: {
+          border: '2px solid #ff0000',
+          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
+        }
+      });
+      return false;
     }
 
     if (form.accessCode.length < 6) {
-      toast.error('⚠️ Access Code must be at least 6 characters!')
-      return false
+      toast.error('Access Code must be at least 6 characters!', {
+        style: {
+          border: '2px solid #ff0000',
+          boxShadow: '0 0 20px rgba(255, 0, 0, 0.5)',
+        }
+      });
+      return false;
     }
 
     return true

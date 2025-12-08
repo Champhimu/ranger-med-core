@@ -15,7 +15,7 @@ import {
   updateSymptomThunk,
   deleteSymptomThunk,
   fetchProgressThunk
-} from '../store/symptomSlice';
+} from '../../store/symptomSlice';
 
 function Symptoms({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
@@ -24,9 +24,6 @@ function Symptoms({ selectedRanger = 'red' }) {
   const [filteredSymptoms, setFilteredSymptoms] = useState([]);
   const [severityFilter, setSeverityFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
-  // const dispatch = useDispatch();
-  //  const { list: symptomHistory, progress: symptomProgress, loading, error } = useSelector(state => state.symptoms);
-
   const dispatch = useDispatch();
 
   const { symptoms: symptomHistory, progress: symptomProgress, loading, error } = useSelector(
@@ -78,9 +75,6 @@ function Symptoms({ selectedRanger = 'red' }) {
     dispatch(fetchSymptomsThunk());
     dispatch(fetchProgressThunk());
   }, [dispatch]);
-
-  // if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error: {error}</p>;
 
   // Mock symptom history data
   // const symptomHistory = [
@@ -704,6 +698,9 @@ function Symptoms({ selectedRanger = 'red' }) {
       </div>
     </div>
   );
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="symptoms-page" data-ranger={selectedRanger}>

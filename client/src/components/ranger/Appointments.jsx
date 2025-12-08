@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import './Appointments.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppointmentsThunk, addAppointmentThunk, cancelAppointmentThunk, updateAppointmentThunk } from '../store/appointmentsSlice';
-import { fetchDoctorsThunk } from '../store/doctorSlice';
+import { fetchAppointmentsThunk, addAppointmentThunk, updateAppointmentThunk } from '../../store/appointmentsSlice';
+import { fetchDoctorsThunk } from '../../store/doctorSlice';
 
 function Appointments({ selectedRanger = 'red' }) {
   const navigate = useNavigate();

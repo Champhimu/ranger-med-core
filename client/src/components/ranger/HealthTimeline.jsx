@@ -7,7 +7,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HealthTimeline.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTimeline } from '../store/timelineSlice';
+import { fetchTimeline } from '../../store/timelineSlice';
 
 function HealthTimeline({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
