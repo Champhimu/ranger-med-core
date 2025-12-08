@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import './Appointments.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAppointmentsThunk, addAppointmentThunk, cancelAppointmentThunk, updateAppointmentThunk } from '../store/appointmentsSlice';
+import { fetchDoctorsThunk } from '../store/doctorSlice';
 
 function Appointments({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  const { doctors, loading: doctorsLoading, error: doctorsError } = useSelector((state) => state.doctor);
+  const { upcoming: upcomingAppointments, past: pastAppointments, loading: appointmentsLoading, error: appointmentsError } = useSelector((state) => state.appointments);
+
   const [activeTab, setActiveTab] = useState('upcoming');
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [bookingData, setBookingData] = useState({
@@ -14,6 +22,13 @@ function Appointments({ selectedRanger = 'red' }) {
     time: '',
     reason: ''
   });
+
+  
+  useEffect(() => {
+    dispatch(fetchDoctorsThunk());
+    dispatch(fetchAppointmentsThunk());
+  }, [dispatch]);
+
 
   const rangerColors = {
     red: '#FF0000',
@@ -27,73 +42,73 @@ function Appointments({ selectedRanger = 'red' }) {
   const currentColor = rangerColors[selectedRanger] || rangerColors.red;
 
   // Mock data
-  const upcomingAppointments = [
-    { 
-      id: 1, 
-      type: 'Annual Check-up', 
-      doctor: 'Dr. Andrew Hartford', 
-      specialty: 'General Practitioner',
-      date: '2025-12-10', 
-      time: '10:00 AM', 
-      status: 'confirmed',
-      location: 'Operation Overdrive Medical Bay',
-      notes: 'Bring previous health records'
-    },
-    { 
-      id: 2, 
-      type: 'Physical Therapy', 
-      doctor: 'Dr. Spencer', 
-      specialty: 'Sports Medicine',
-      date: '2025-12-15', 
-      time: '02:00 PM', 
-      status: 'pending',
-      location: 'Rehabilitation Center',
-      notes: 'Post-mission recovery session'
-    },
-    { 
-      id: 3, 
-      type: 'Morphin Grid Analysis', 
-      doctor: 'Dr. Katherine Manx', 
-      specialty: 'Ranger Specialist',
-      date: '2025-12-18', 
-      time: '09:30 AM', 
-      status: 'confirmed',
-      location: 'Zord Command Center',
-      notes: 'Energy level assessment'
-    }
-  ];
+  // const upcomingAppointments = [
+  //   { 
+  //     id: 1, 
+  //     type: 'Annual Check-up', 
+  //     doctor: 'Dr. Andrew Hartford', 
+  //     specialty: 'General Practitioner',
+  //     date: '2025-12-10', 
+  //     time: '10:00 AM', 
+  //     status: 'confirmed',
+  //     location: 'Operation Overdrive Medical Bay',
+  //     notes: 'Bring previous health records'
+  //   },
+  //   { 
+  //     id: 2, 
+  //     type: 'Physical Therapy', 
+  //     doctor: 'Dr. Spencer', 
+  //     specialty: 'Sports Medicine',
+  //     date: '2025-12-15', 
+  //     time: '02:00 PM', 
+  //     status: 'pending',
+  //     location: 'Rehabilitation Center',
+  //     notes: 'Post-mission recovery session'
+  //   },
+  //   { 
+  //     id: 3, 
+  //     type: 'Morphin Grid Analysis', 
+  //     doctor: 'Dr. Katherine Manx', 
+  //     specialty: 'Ranger Specialist',
+  //     date: '2025-12-18', 
+  //     time: '09:30 AM', 
+  //     status: 'confirmed',
+  //     location: 'Zord Command Center',
+  //     notes: 'Energy level assessment'
+  //   }
+  // ];
 
-  const pastAppointments = [
-    { 
-      id: 4, 
-      type: 'Injury Assessment', 
-      doctor: 'Dr. Hartford', 
-      specialty: 'Emergency Medicine',
-      date: '2025-11-28', 
-      time: '03:00 PM', 
-      status: 'completed',
-      location: 'Medical Bay',
-      notes: 'Combat training injury - fully recovered'
-    },
-    { 
-      id: 5, 
-      type: 'Routine Blood Work', 
-      doctor: 'Dr. Spencer', 
-      specialty: 'Laboratory',
-      date: '2025-11-15', 
-      time: '11:00 AM', 
-      status: 'completed',
-      location: 'Medical Laboratory',
-      notes: 'All results normal'
-    }
-  ];
+  // const pastAppointments = [
+  //   { 
+  //     id: 4, 
+  //     type: 'Injury Assessment', 
+  //     doctor: 'Dr. Hartford', 
+  //     specialty: 'Emergency Medicine',
+  //     date: '2025-11-28', 
+  //     time: '03:00 PM', 
+  //     status: 'completed',
+  //     location: 'Medical Bay',
+  //     notes: 'Combat training injury - fully recovered'
+  //   },
+  //   { 
+  //     id: 5, 
+  //     type: 'Routine Blood Work', 
+  //     doctor: 'Dr. Spencer', 
+  //     specialty: 'Laboratory',
+  //     date: '2025-11-15', 
+  //     time: '11:00 AM', 
+  //     status: 'completed',
+  //     location: 'Medical Laboratory',
+  //     notes: 'All results normal'
+  //   }
+  // ];
 
-  const doctors = [
-    { id: 1, name: 'Dr. Andrew Hartford', specialty: 'General Practitioner' },
-    { id: 2, name: 'Dr. Spencer', specialty: 'Sports Medicine' },
-    { id: 3, name: 'Dr. Katherine Manx', specialty: 'Ranger Specialist' },
-    { id: 4, name: 'Dr. William Mitchell', specialty: 'Psychiatry' }
-  ];
+  // const doctors = [
+  //   { id: 1, name: 'Dr. Andrew Hartford', specialty: 'General Practitioner' },
+  //   { id: 2, name: 'Dr. Spencer', specialty: 'Sports Medicine' },
+  //   { id: 3, name: 'Dr. Katherine Manx', specialty: 'Ranger Specialist' },
+  //   { id: 4, name: 'Dr. William Mitchell', specialty: 'Psychiatry' }
+  // ];
 
   const appointmentTypes = [
     'Annual Check-up',
@@ -105,7 +120,10 @@ function Appointments({ selectedRanger = 'red' }) {
     'Emergency Visit'
   ];
 
-  const handleBookAppointment = (e) => {
+  if (appointmentsLoading) return <p>Loading...</p>;
+  if (appointmentsError) return <p>Error: {appointmentsError}</p>;
+
+  const handleBookAppointment = async(e) => {
     e.preventDefault();
 
     // Validation
@@ -135,28 +153,57 @@ function Appointments({ selectedRanger = 'red' }) {
     }
 
     // Handle booking logic here
-    toast.loading('📋 Sending appointment request...', { id: 'booking' });
+    toast.loading('Sending appointment request...', { id: 'booking' });
     
-    setTimeout(() => {
-      toast.success('✅ Appointment booking request sent! You will receive confirmation shortly.', {
-        id: 'booking',
-        duration: 4000,
-        icon: '📅',
-        style: {
-          border: '2px solid #00ff00',
-          boxShadow: '0 0 20px rgba(0, 255, 0, 0.5)',
-        }
-      });
+    // Call API
+    try{
+      await dispatch(addAppointmentThunk(bookingData)).unwrap();
       
-      setShowBookingForm(false);
-      setBookingData({
-        type: '',
-        doctor: '',
-        date: '',
-        time: '',
-        reason: ''
+      setTimeout(() => {
+        toast.success('Appointment booking request sent! You will receive confirmation shortly.', {
+          id: 'booking',
+          duration: 4000,
+          icon: '📅',
+          style: {
+            border: '2px solid #00ff00',
+            boxShadow: '0 0 20px rgba(0, 255, 0, 0.5)',
+          }
+        });
+        
+        setShowBookingForm(false);
+        setBookingData({
+          type: '',
+          doctor: '',
+          date: '',
+          time: '',
+          reason: ''
+        });
+      }, 1500);
+    }catch (error) {
+      toast.error(error.message || "Something went wrong!", {
+        id: "booking",
       });
-    }, 1500);
+    }
+    
+  };
+
+  const handleCancel = async (id) => {
+    // alert(id);
+    if (!window.confirm("Are you sure you want to cancel this appointment?")) return;
+
+    toast.loading("Cancelling appointment...", { id: "cancel" });
+
+    try {
+      await dispatch(updateAppointmentThunk({ 
+        id, 
+        data: { status: "cancelled" } 
+      })).unwrap();
+
+
+      toast.success("Appointment cancelled successfully!", { id: "cancel" });
+    } catch (err) {
+      toast.error(err?.message || "Failed to cancel appointment.", { id: "cancel" });
+    }
   };
 
   return (
@@ -176,8 +223,8 @@ function Appointments({ selectedRanger = 'red' }) {
           <h1 className="page-title">APPOINTMENT CENTER</h1>
           <p className="page-subtitle">OPERATION OVERDRIVE - MEDICAL SCHEDULING</p>
         </div>
-        <button className="book-new-btn" onClick={() => setShowBookingForm(true)} style={{ borderColor: currentColor, color: currentColor }}>
-          + Book New Appointment
+        <button className="book-new-btn" onClick={() => setShowBookingForm(true)} style={{ borderColor: currentColor, color: "white" }}>
+          Book New Appointment
         </button>
       </div>
 
@@ -211,7 +258,7 @@ function Appointments({ selectedRanger = 'red' }) {
           {activeTab === 'upcoming' ? (
             <div className="appointments-grid">
               {upcomingAppointments.map(appointment => (
-                <div key={appointment.id} className="appointment-detail-card">
+                <div key={appointment._id} className="appointment-detail-card">
                   <div className="card-header">
                     <div className="appointment-date-large">
                       <div className="day">{new Date(appointment.date).getDate()}</div>
@@ -229,8 +276,8 @@ function Appointments({ selectedRanger = 'red' }) {
                         <span className="info-icon">👨‍⚕️</span>
                         <div className="info-text">
                           <div className="info-label">Doctor</div>
-                          <div className="info-value">{appointment.doctor}</div>
-                          <div className="info-sub">{appointment.specialty}</div>
+                          <div className="info-value">{appointment.doctor.name}</div>
+                          <div className="info-sub">{appointment.doctor.specialty}</div>
                         </div>
                       </div>
                       <div className="info-row">
@@ -244,7 +291,7 @@ function Appointments({ selectedRanger = 'red' }) {
                         <span className="info-icon">📍</span>
                         <div className="info-text">
                           <div className="info-label">Location</div>
-                          <div className="info-value">{appointment.location}</div>
+                          <div className="info-value">{appointment.doctor.location}</div>
                         </div>
                       </div>
                       {appointment.notes && (
@@ -266,7 +313,7 @@ function Appointments({ selectedRanger = 'red' }) {
                     <button className="action-link call-btn">
                       📞 Schedule Call
                     </button>
-                    <button className="action-link cancel-btn">
+                    <button className="action-link cancel-btn" style={{padding: "7px 30px"}} onClick={() => handleCancel(appointment._id)}>
                       ❌ Cancel
                     </button>
                   </div>
@@ -294,8 +341,8 @@ function Appointments({ selectedRanger = 'red' }) {
                         <span className="info-icon">👨‍⚕️</span>
                         <div className="info-text">
                           <div className="info-label">Doctor</div>
-                          <div className="info-value">{appointment.doctor}</div>
-                          <div className="info-sub">{appointment.specialty}</div>
+                          <div className="info-value">{appointment.doctor.name}</div>
+                          <div className="info-sub">{appointment.doctor.specialty}</div>
                         </div>
                       </div>
                       <div className="info-row">
@@ -316,11 +363,15 @@ function Appointments({ selectedRanger = 'red' }) {
                       )}
                     </div>
                   </div>
-
+                    
+                  {
+                    appointment.status !== 'cancelled' && (
                   <div className="card-footer">
-                    <button className="action-link">📄 View Summary</button>
-                    <button className="action-link">🔄 Book Follow-up</button>
+                    <button className="action-link">View Summary</button>
+                    <button className="action-link">Book Follow-up</button>
                   </div>
+                    )
+                  }
                 </div>
               ))}
             </div>
@@ -361,7 +412,7 @@ function Appointments({ selectedRanger = 'red' }) {
                 >
                   <option value="">Choose a doctor</option>
                   {doctors.map(doctor => (
-                    <option key={doctor.id} value={doctor.id}>
+                    <option key={doctor._id} value={doctor._id}>
                       {doctor.name} - {doctor.specialty}
                     </option>
                   ))}
@@ -424,8 +475,6 @@ function Appointments({ selectedRanger = 'red' }) {
         </div>
       )}
 
-      {/* Cockpit Frame */}
-      <div className="cockpit-frame"></div>
     </div>
   );
 }

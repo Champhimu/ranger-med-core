@@ -271,6 +271,13 @@
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
 }
 
+.status-cancelled {
+  background: rgba(255, 0, 0, 0.2);
+  color: #ff0000;
+  border: 1px solid #ff0000;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
 .card-body {
   padding: 20px;
 }

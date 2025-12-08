@@ -12,6 +12,8 @@ import { processDoseReminders } from "./src/utils/reminderEngine.js";
 import authRoutes from "./src/routes/auth.routes.js";
 import capsuleRoutes from "./src/routes/capsule.routes.js";
 import symptomRoutes from "./src/routes/symptom.routes.js";
+import doctorRoutes from "./src/routes/doctor.routes.js";
+import appointmentRoutes from "./src/routes/appointement.routes.js";
 // import aiRoutes from "./src/routes/ai.routes.js";
 
 const app = express();
@@ -30,6 +32,8 @@ connectDB(); // Your custom Mongo connection
 app.use("/api/auth", authRoutes);
 app.use("/api/capsules", capsuleRoutes);
 app.use("/api/symptoms", symptomRoutes);
+app.use('/api/doctors', doctorRoutes);
+app.use('/api/appointments', appointmentRoutes);
 // app.use("/api/ai", aiRoutes);
 
 // Health Check
