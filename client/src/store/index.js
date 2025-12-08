@@ -5,6 +5,7 @@ import symptomReducer from './symptomSlice';
 import doctorsReducer from './doctorSlice';
 import appointmentsReducer from './appointmentsSlice';
 import calendarReducer from "./calendarSlice";
+import timelineReducer from './timelineSlice';
 
 export const store = configureStore({
   reducer: {
@@ -13,5 +14,6 @@ export const store = configureStore({
     doctor: doctorsReducer,
     appointments: appointmentsReducer,
     calendar: calendarReducer,
+    timeline: timelineReducer,
   },
 });

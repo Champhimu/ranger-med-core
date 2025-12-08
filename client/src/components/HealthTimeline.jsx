@@ -3,12 +3,20 @@
  * Combines Capsules, Symptoms, and Appointments in chronological order
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HealthTimeline.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchTimeline } from '../store/timelineSlice';
 
 function HealthTimeline({ selectedRanger = 'red' }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { events: timelineEvents, loading, error } = useSelector(state => state.timeline);
+
+  useEffect(() => {
+    dispatch(fetchTimeline());
+  }, [dispatch]);
   
   const rangerColors = {
     red: '#FF0000',
@@ -22,27 +30,27 @@ function HealthTimeline({ selectedRanger = 'red' }) {
   const currentColor = rangerColors[selectedRanger] || rangerColors.red;
 
   // Mock data - In real app, this would come from backend/state
-  const [timelineEvents] = useState([
-    // Medications
-    { id: 1, type: 'medication', date: '2025-12-05', time: '08:00', title: 'Morphinium-12 Taken', description: '500mg - Morning dose', status: 'completed', icon: '💊' },
-    { id: 2, type: 'medication', date: '2025-12-04', time: '20:00', title: 'Morphinium-12 Missed', description: '500mg - Evening dose', status: 'missed', icon: '⚠️' },
-    { id: 3, type: 'medication', date: '2025-12-04', time: '08:00', title: 'Morphinium-12 Taken', description: '500mg - Morning dose', status: 'completed', icon: '💊' },
+  // const [timelineEvents] = useState([
+  //   // Medications
+  //   { id: 1, type: 'medication', date: '2025-12-05', time: '08:00', title: 'Morphinium-12 Taken', description: '500mg - Morning dose', status: 'completed', icon: '💊' },
+  //   { id: 2, type: 'medication', date: '2025-12-04', time: '20:00', title: 'Morphinium-12 Missed', description: '500mg - Evening dose', status: 'missed', icon: '⚠️' },
+  //   { id: 3, type: 'medication', date: '2025-12-04', time: '08:00', title: 'Morphinium-12 Taken', description: '500mg - Morning dose', status: 'completed', icon: '💊' },
     
-    // Symptoms
-    { id: 4, type: 'symptom', date: '2025-12-04', time: '21:30', title: 'Headache Logged', description: 'Severity: 7/10 - Post-mission fatigue', status: 'logged', icon: '🤕' },
-    { id: 5, type: 'symptom', date: '2025-12-03', time: '14:00', title: 'Muscle Soreness', description: 'Severity: 5/10 - Training recovery', status: 'logged', icon: '💪' },
-    { id: 6, type: 'symptom', date: '2025-12-02', time: '10:00', title: 'Fatigue', description: 'Severity: 4/10 - Improved from yesterday', status: 'logged', icon: '😴' },
+  //   // Symptoms
+  //   { id: 4, type: 'symptom', date: '2025-12-04', time: '21:30', title: 'Headache Logged', description: 'Severity: 7/10 - Post-mission fatigue', status: 'logged', icon: '🤕' },
+  //   { id: 5, type: 'symptom', date: '2025-12-03', time: '14:00', title: 'Muscle Soreness', description: 'Severity: 5/10 - Training recovery', status: 'logged', icon: '💪' },
+  //   { id: 6, type: 'symptom', date: '2025-12-02', time: '10:00', title: 'Fatigue', description: 'Severity: 4/10 - Improved from yesterday', status: 'logged', icon: '😴' },
     
-    // Appointments
-    { id: 7, type: 'appointment', date: '2025-12-10', time: '10:30', title: 'Check-up with Dr. Hartford', description: 'General Medicine - Routine health check', status: 'upcoming', icon: '👨‍⚕️' },
-    { id: 8, type: 'appointment', date: '2025-12-03', time: '14:30', title: 'Physical Therapy', description: 'Dr. Spencer - Post-mission recovery', status: 'completed', icon: '🏥' },
-    { id: 9, type: 'appointment', date: '2025-11-28', time: '09:00', title: 'Morphin Grid Analysis', description: 'Dr. Manx - Energy level assessment', status: 'completed', icon: '⚡' },
+  //   // Appointments
+  //   { id: 7, type: 'appointment', date: '2025-12-10', time: '10:30', title: 'Check-up with Dr. Hartford', description: 'General Medicine - Routine health check', status: 'upcoming', icon: '👨‍⚕️' },
+  //   { id: 8, type: 'appointment', date: '2025-12-03', time: '14:30', title: 'Physical Therapy', description: 'Dr. Spencer - Post-mission recovery', status: 'completed', icon: '🏥' },
+  //   { id: 9, type: 'appointment', date: '2025-11-28', time: '09:00', title: 'Morphin Grid Analysis', description: 'Dr. Manx - Energy level assessment', status: 'completed', icon: '⚡' },
     
-    // Additional events for context
-    { id: 10, type: 'medication', date: '2025-12-03', time: '09:00', title: 'Neural-Sync Plus Taken', description: '250mg - Morning dose', status: 'completed', icon: '💊' },
-    { id: 11, type: 'symptom', date: '2025-12-01', time: '16:00', title: 'Dizziness', description: 'Severity: 6/10 - After morphing sequence', status: 'logged', icon: '🌀' },
-    { id: 12, type: 'appointment', date: '2025-11-25', time: '11:00', title: 'Lab Work', description: 'Dr. Hartford - Blood work and vitals', status: 'completed', icon: '🔬' },
-  ]);
+  //   // Additional events for context
+  //   { id: 10, type: 'medication', date: '2025-12-03', time: '09:00', title: 'Neural-Sync Plus Taken', description: '250mg - Morning dose', status: 'completed', icon: '💊' },
+  //   { id: 11, type: 'symptom', date: '2025-12-01', time: '16:00', title: 'Dizziness', description: 'Severity: 6/10 - After morphing sequence', status: 'logged', icon: '🌀' },
+  //   { id: 12, type: 'appointment', date: '2025-11-25', time: '11:00', title: 'Lab Work', description: 'Dr. Hartford - Blood work and vitals', status: 'completed', icon: '🔬' },
+  // ]);
 
   const [filterType, setFilterType] = useState('all');
   const [dateRange, setDateRange] = useState('week'); // week, month, all
@@ -133,6 +141,9 @@ function HealthTimeline({ selectedRanger = 'red' }) {
   };
 
   const stats = getStats();
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="timeline-page" data-ranger={selectedRanger}>
@@ -289,7 +300,8 @@ function HealthTimeline({ selectedRanger = 'red' }) {
                           style={{ 
                             backgroundColor: getEventColor(event.type, event.status) + '20',
                             borderColor: getEventColor(event.type, event.status),
-                            color: getEventColor(event.type, event.status)
+                            color: getEventColor(event.type, event.status),
+                            marginTop: "0px"
                           }}
                         >
                           {event.status.charAt(0).toUpperCase() + event.status.slice(1)}

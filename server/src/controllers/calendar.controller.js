@@ -67,3 +67,54 @@ export const getCalendarData = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+export const getTimelineData = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // --------- Appointments ---------
+    const appointments = await Appointment.find({
+      user: userId,
+    }).select("-__v").populate('doctor', 'name specialty');
+
+    // --------- Capsules ---------
+    const capsules = await Capsule.find({ userId });
+
+    // Flatten all doses with capsule info
+    let allDoses = [];
+    for (let capsule of capsules) {
+      const todaysDoses = await Dose.find({
+        capsuleId: capsule._id,
+        userId,
+        status: { $in: ['taken', 'missed'] }
+      }).select("-__v -createdAt -updatedAt");
+
+      todaysDoses.forEach(dose => {
+        allDoses.push({
+          ...dose.toObject(),
+          capsule: {
+            _id: capsule._id,
+            name: capsule.name,
+            doseAmount: capsule.doseAmount,
+            doseUnit: capsule.doseUnit,
+            frequency: capsule.frequency
+          }
+        });
+      });
+    }
+
+    // --------- Symptoms ---------
+    const symptoms = await Symptom.find({ userId }).select("-__v");
+
+    // --------- Send Response ---------
+    res.json({
+      appointments,
+      doses: allDoses,   // now flat sorted array
+      symptoms
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
