@@ -26,13 +26,14 @@ dotenv.config();
 
 // CORS Configuration - Allow requests from React app
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'https://ranger-med-core.netlify.app/'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'https://ranger-med-core.netlify.app'],
   credentials: true,
   optionsSuccessStatus: 200
 };
 
 // Middleware
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // IMPORTANT
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
