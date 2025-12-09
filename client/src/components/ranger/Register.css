@@ -1,0 +1,245 @@
+/* Base - inherits most styles from Login.css */
+.register-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
+  --ranger-glow: #ff0000;
+}
+.register-container[data-ranger="red"] { --ranger-glow: #ff0000; }
+.register-container[data-ranger="blue"] { --ranger-glow: #0066ff; }
+.register-container[data-ranger="yellow"] { --ranger-glow: #ffcc00; }
+.register-container[data-ranger="pink"] { --ranger-glow: #ff69b4; }
+.register-container[data-ranger="black"] { --ranger-glow: #666666; }
+.register-container[data-ranger="mercury"] { --ranger-glow: #c0c0c0; }
+
+/* HUD Panels */
+.hud-panel { position: absolute; background: rgba(0, 20, 30, 0.85); border: 2px solid rgba(0, 255, 255, 0.4); border-radius: 10px; padding: 20px; backdrop-filter: blur(10px); box-shadow: 0 0 30px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.05); z-index: 10; overflow: hidden; }
+.hud-left { top: 18%; left: 3%; width: 280px; max-height: 400px; }
+.hud-right { top: 18%; right: 3%; width: 280px; max-height: 400px; }
+.panel-header { color: #00ffff; font-size: 13px; font-weight: bold; letter-spacing: 2px; margin-bottom: 15px; text-shadow: 0 0 15px rgba(0, 255, 255, 0.8); border-bottom: 2px solid rgba(0, 255, 255, 0.3); padding-bottom: 10px; }
+.vital-chart { height: 60px; margin-bottom: 20px; position: relative; overflow: hidden; }
+.heartbeat { position: absolute; width: 100%; height: 100%; top: 0; left: 0; animation: heartbeatAnim 2s linear infinite; }
+@keyframes heartbeatAnim { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; }}
+.vital-stats { display: flex; flex-direction: column; gap: 8px; }
+.stat-item { display: flex; justify-content: space-between; align-items: center; font-size: 10px; padding: 6px 10px; background: rgba(0, 255, 255, 0.05); border-radius: 5px; border-left: 3px solid var(--ranger-glow); }
+.stat-label { color: #00ffff; letter-spacing: 1px; font-weight: 600; flex-shrink: 0; font-size: 9px; }
+.stat-value { font-weight: bold; font-size: 9px !important; text-align: right; word-break: break-word; line-height: 1.2; }
+.power-circle { position: relative; width: 120px; height: 120px; margin: 20px auto; }
+.power-circle svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+.power-progress { animation: powerPulse 3s ease-in-out infinite; }
+@keyframes powerPulse { 0%, 100% { stroke: var(--ranger-glow); filter: drop-shadow(0 0 5px var(--ranger-glow)); } 50% { filter: drop-shadow(0 0 10px var(--ranger-glow)); }}
+.power-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; font-weight: bold; color: var(--ranger-glow); text-shadow: 0 0 10px var(--ranger-glow); }
+.power-label { text-align: center; font-size: 10px; color: #00ffff; letter-spacing: 2px; margin-top: 10px; font-weight: 600; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
+
+/* Registration Panel - larger than login */
+.register-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 40px;
+  background: rgba(5, 20, 35, 0.85);
+  border: 3px solid var(--ranger-glow);
+  border-radius: 15px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 0 50px var(--ranger-glow), inset 0 0 30px rgba(0, 255, 255, 0.1);
+  z-index: 20;
+}
+
+.register-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.register-panel::-webkit-scrollbar-track {
+  background: rgba(0, 20, 30, 0.5);
+  border-radius: 4px;
+}
+
+.register-panel::-webkit-scrollbar-thumb {
+  background: var(--ranger-glow);
+  border-radius: 4px;
+  box-shadow: 0 0 10px var(--ranger-glow);
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.register-title {
+  font-size: 52px;
+  font-weight: bold;
+  color: #00ffff;
+  letter-spacing: 12px;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.5);
+  margin-bottom: 5px;
+}
+
+.register-subtitle {
+  font-size: 16px;
+  color: #00ffff;
+  letter-spacing: 6px;
+  opacity: 0.8;
+  margin-bottom: 15px;
+}
+
+.ranger-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 14px;
+  margin-top: 15px;
+  align-items: center;
+  pointer-events: none;
+}
+
+.ranger-info span:first-child {
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+.vehicle-name {
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  font-weight: 500;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px var(--ranger-glow);
+  opacity: 0.95;
+}
+
+/* Form Styles */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Back Link */
+.back-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #888;
+}
+
+.back-link span {
+  color: #aaa;
+  letter-spacing: 1px;
+}
+
+.back-link a {
+  color: var(--ranger-glow);
+  text-decoration: none;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-left: 5px;
+  text-shadow: 0 0 5px var(--ranger-glow);
+  transition: all 0.3s ease;
+}
+
+.back-link a:hover {
+  color: #fff;
+  text-shadow: 0 0 10px var(--ranger-glow), 0 0 20px var(--ranger-glow);
+  transform: scale(1.05);
+  display: inline-block;
+}
+
+.register-button {
+  margin-top: 20px;
+  padding: 18px;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #000;
+  background: linear-gradient(135deg, var(--ranger-glow), var(--ranger-glow));
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px var(--ranger-glow), inset 0 0 10px rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+  filter: brightness(1.2);
+}
+
+.register-button:hover {
+  transform: scale(1.05);
+}
+
+.register-button:active {
+  transform: scale(0.98);
+}
+
+/* Subtitle adjustment for registration */
+.recruitment-subtitle {
+  position: absolute;
+  top: 13%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+  letter-spacing: 6px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 1), 
+               0 0 30px rgba(0, 255, 255, 0.8),
+               0 0 40px rgba(0, 255, 255, 0.6),
+               0 2px 8px rgba(0, 0, 0, 1);
+  background: rgba(0, 20, 30, 0.95);
+  padding: 14px 35px;
+  border-radius: 8px;
+  z-index: 40;
+  border: 3px solid #00ffff;
+  white-space: nowrap;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.6),
+              0 0 50px rgba(0, 255, 255, 0.4),
+              inset 0 0 20px rgba(0, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  font-family: 'Orbitron', sans-serif;
+}
+
+.register-container .pr-subtitle {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .register-panel {
+    width: 90%;
+    padding: 30px 20px;
+    max-height: 80vh;
+  }
+  
+  .register-title {
+    font-size: 40px;
+  }
+  
+  .hud-panel {
+    display: none;
+  }
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--ranger-glow, #00ffff);
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.link-button:hover {
+  text-shadow: 0 0 10px currentColor;
+  transform: translateX(5px);
+}
+
