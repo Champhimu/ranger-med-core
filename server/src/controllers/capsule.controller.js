@@ -20,7 +20,7 @@ export const addCapsule = async (req, res) => {
         error: "Invalid dose schedule. No doses generated.",
       });
     }
-    
+
     // Save all doses
     await Dose.insertMany(doses);
 
@@ -66,7 +66,13 @@ export const getCapsules = async (req, res) => {
     );
 
     // Step 3: Fetch user's capsules
-    const capsules = await Capsule.find({ userId });
+    const capsules = await Capsule.find({ 
+      userId,
+      $or: [
+        { endDate: { $gte: today } },  // active capsules
+        { endDate: { $exists: false } } // capsules with no end date
+      ]
+    });
 
     // Step 4: Include today's doses
     const capsulesWithDoses = await Promise.all(
