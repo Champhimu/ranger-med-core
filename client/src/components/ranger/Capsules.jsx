@@ -161,7 +161,7 @@ const Capsules = ({ ranger = 'red' }) => {
       [medId]: true
     }));
 
-    const medication = medications.find(med => med.id === medId);
+    const medication = medications?.find(med => med.id === medId);
     toast.success(`🔕 ${medication?.name} snoozed for 10 minutes`, {
       duration: 2000,
     });
@@ -180,21 +180,29 @@ const Capsules = ({ ranger = 'red' }) => {
 
   // Check if all doses are taken for a medication
   const allDosesTaken = (medId) => {
-    const med = capsules.find(c => c._id === medId);
+    const med = capsules?.find(c => c?._id === medId);
     if (!med) return false;
 
-    return med.todaysDoses.every(dose => dose.status === "taken");
+    // If todaysDoses missing → not taken
+    if (!Array.isArray(med.todaysDoses)) return false;
 
+    return med.todaysDoses.length > 0 &&
+      med.todaysDoses.every(dose => dose?.status === "taken");
   };
 
-  const mergedDoses = capsules.flatMap(cap =>
-    cap.todaysDoses.map(dose => ({
-      ...dose,
-      capsuleName: cap.name,
-      doseUnit: cap.doseUnit,
-      instructions: cap.instructions
-    }))
-  );
+  const mergedDoses = Array.isArray(capsules)
+    ? capsules.flatMap(cap =>
+      Array.isArray(cap?.todaysDoses)
+        ? cap.todaysDoses.map(dose => ({
+          ...dose,
+          capsuleName: cap?.name || "",
+          doseUnit: cap?.doseUnit || "",
+          instructions: cap?.instructions || ""
+        }))
+        : []
+    )
+    : [];
+
 
   // Smart Reminders: Track dose history and patterns
   const [doseHistory] = useState([
@@ -214,8 +222,8 @@ const Capsules = ({ ranger = 'red' }) => {
 
     if (medHistory.length < 3) {
       // Not enough data, use scheduled time
-      const med = medications.find(m => m.name === medication);
-      return med?.time[0] || '08:00';
+      const med = medications?.find(m => m.name === medication);
+      return med?.schedule[0] || '08:00';
     }
 
     // Calculate average actual taking time
@@ -269,7 +277,6 @@ const Capsules = ({ ranger = 'red' }) => {
   // };
 
   const analyzeAdherencePattern = (capsule) => {
-    console.log("AN", capsule);
     if (!capsule || !capsule.todaysDoses) {
       return { pattern: 'insufficient-data', avgDelay: 0, consistency: 'unknown' };
     }
@@ -324,12 +331,12 @@ const Capsules = ({ ranger = 'red' }) => {
   const getSmartRecommendations = () => {
     const recommendations = [];
 
-    medications.forEach(med => {
-      const analysis = analyzeAdherencePattern(med.name);
-      const smartTime = calculateSmartReminderTime(med.name);
-      const scheduledTime = med.time[0];
+    medications?.forEach(med => {
+      const analysis = analyzeAdherencePattern(med?.name);
+      const smartTime = calculateSmartReminderTime(med?.name);
+      const scheduledTime = med?.schedule;
 
-      if (analysis.pattern === 'consistently-late' && analysis.avgDelay > 15) {
+      if (analysis?.pattern === 'consistently-late' && analysis?.avgDelay > 15) {
         recommendations.push({
           medication: med.name,
           type: 'timing-adjustment',
@@ -340,7 +347,7 @@ const Capsules = ({ ranger = 'red' }) => {
         });
       }
 
-      if (analysis.consistency === 'poor') {
+      if (analysis?.consistency === 'poor') {
         recommendations.push({
           medication: med.name,
           type: 'consistency-alert',
@@ -351,8 +358,8 @@ const Capsules = ({ ranger = 'red' }) => {
         });
       }
 
-      if (med.status === 'low-stock') {
-        const daysLeft = med.frequency === 'Once Daily' ? med.stock : med.stock / 2;
+      if (med?.status === 'low-stock') {
+        const daysLeft = med?.frequency === 'Once Daily' ? med.stock : med.stock / 2;
         recommendations.push({
           medication: med.name,
           type: 'refill-alert',
@@ -463,6 +470,11 @@ const Capsules = ({ ranger = 'red' }) => {
         startDate: new Date().toISOString().split('T')[0],
         endDate: '',
       });
+
+      dispatch(fetchCapsulesThunk);
+      dispatch(fetchRecommendationsThunk());
+      dispatch(fetchmedicationPatterns());
+      dispatch(fetchCapsuleHistoryThunk());
     } catch (err) {
       toast.error('Failed to add medication');
     }
@@ -820,35 +832,48 @@ const Capsules = ({ ranger = 'red' }) => {
                       {/* Dose tracking and snooze controls */}
                       <div className="capsule-controls">
                         {(() => {
-                          const isSnoozed = snoozedCapsules[med.id];
-                          // const takenDoses = capsuleDoses[med.id] || [];
+                          const medId = med?._id;   // Always use _id
+                          const doses = med?.todaysDoses || [];
+                          const isSnoozed = snoozedCapsules?.[medId] || false;
+                          const areAllTaken = allDosesTaken(medId);
+
+                          // If med not loaded yet → show nothing
+                          if (!med || !Array.isArray(doses)) return null;
 
                           return (
                             <>
-                              {/* Dose tracking buttons for multiple daily doses */}
-                              {med.todaysDoses.length >= 2 && !isSnoozed && !allDosesTaken(med.id, med.timesPerDay) && (
+                              {/* MULTIPLE DOSES (2 or more) */}
+                              {doses.length >= 2 && !isSnoozed && !areAllTaken && (
                                 <div className="dose-buttons">
-                                  {med.todaysDoses.map(doseNum => (
+                                  {doses.map((dose) => (
                                     <button
-                                      key={doseNum._id}
-                                      className={`dose-btn ${doseNum.status === 'taken' ? 'taken' : ''}`}
-                                      onClick={() => handleTakeDose(doseNum._id, med.name, doseNum.time)}
-                                      disabled={doseNum.status === 'taken'}
-                                      style={(doseNum.status !== 'taken') ? { borderColor: currentColor, color: currentColor } : {}}
+                                      key={dose._id}
+                                      className={`dose-btn ${dose.status === "taken" ? "taken" : ""}`}
+                                      onClick={() => handleTakeDose(dose._id, med.name, dose.time)}
+                                      disabled={dose.status === "taken"}
+                                      style={
+                                        dose.status !== "taken"
+                                          ? { borderColor: currentColor, color: currentColor }
+                                          : {}
+                                      }
                                     >
-                                      <Icon name={doseNum.status === "taken" ? "check" : "pill"} size={14} />
-                                      Dose: {doseNum.time}
+                                      <Icon
+                                        name={dose.status === "taken" ? "check" : "pill"}
+                                        size={14}
+                                      />
+                                      Dose: {dose.time}
                                     </button>
                                   ))}
                                 </div>
                               )}
 
-                              {/* Single dose button for once-daily medications */}
-                              {med.todaysDoses.length === 1 && !isSnoozed && !allDosesTaken(med._id) && (
-                                med.todaysDoses.map(doseNum => (
+                              {/* SINGLE DAILY DOSE */}
+                              {doses.length === 1 && !isSnoozed && !areAllTaken && (
+                                doses.map((dose) => (
                                   <button
+                                    key={dose._id}
                                     className="mark-taken-btn"
-                                    onClick={() => handleTakeDose(doseNum._id, med.name, doseNum.time)}
+                                    onClick={() => handleTakeDose(dose._id, med.name, dose.time)}
                                     style={{ background: currentColor }}
                                   >
                                     <Icon name="check" size={16} />
@@ -857,21 +882,21 @@ const Capsules = ({ ranger = 'red' }) => {
                                 ))
                               )}
 
-                              {/* Snooze button */}
-                              {!allDosesTaken(med.id, med.timesPerDay) && (
+                              {/* SNOOZE BUTTON */}
+                              {!areAllTaken && (
                                 <button
                                   className="snooze-btn"
-                                  onClick={() => handleSnoozeCapsule(med.id)}
+                                  onClick={() => handleSnoozeCapsule(medId)}
                                   disabled={isSnoozed}
-                                  style={!isSnoozed ? { borderColor: '#ffaa00', color: '#ffaa00' } : {}}
+                                  style={!isSnoozed ? { borderColor: "#ffaa00", color: "#ffaa00" } : {}}
                                 >
-                                  <Icon name="bell" size={14} color={isSnoozed ? '#999' : '#ffaa00'} />
-                                  {isSnoozed ? 'Snoozed (10min)' : 'Snooze'}
+                                  <Icon name="bell" size={14} color={isSnoozed ? "#999" : "#ffaa00"} />
+                                  {isSnoozed ? "Snoozed (10min)" : "Snooze"}
                                 </button>
                               )}
 
-                              {/* Completed indicator */}
-                              {allDosesTaken(med.id, med.timesPerDay) && (
+                              {/* ALL DOSES COMPLETE */}
+                              {areAllTaken && (
                                 <div className="all-doses-taken">
                                   <Icon name="check" size={20} color="#00d26a" />
                                   <span>All doses taken today!</span>
@@ -881,6 +906,7 @@ const Capsules = ({ ranger = 'red' }) => {
                           );
                         })()}
                       </div>
+
                     </div>
                   );
                 })}

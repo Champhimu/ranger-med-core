@@ -15,7 +15,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
   const { symptoms, loading, error } = useSelector((state) => state.symptoms);
   const { capsules } = useSelector((state) => state.capsules);
   const { upcoming: upcomingAppointments } = useSelector((state) => state.appointments);
-  
+
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   // const [capsuleDoses, setCapsuleDoses] = useState({}); // Track which doses are taken
   const [snoozedCapsules, setSnoozedCapsules] = useState({}); // Track snoozed capsules
@@ -50,9 +50,9 @@ function RangerDashboard({ selectedRanger = 'red' }) {
   };
 
   useEffect(() => {
-      dispatch(fetchSymptomsThunk());
-      dispatch(fetchCapsulesThunk());
-      dispatch(fetchAppointmentsThunk());
+    dispatch(fetchSymptomsThunk());
+    dispatch(fetchCapsulesThunk());
+    dispatch(fetchAppointmentsThunk());
   }, [dispatch]);
 
   // Mock data - would come from API
@@ -95,22 +95,22 @@ function RangerDashboard({ selectedRanger = 'red' }) {
   // Handler for taking capsule dose
   const handleTakeDose = async (doseId, medName, doseTime) => {
     try {
-    // Call API
-    await dispatch(markDoseTakenThunk(doseId)).unwrap();
+      // Call API
+      await dispatch(markDoseTakenThunk(doseId)).unwrap();
 
-    // If success → toast success
-    toast.success(`Dose taken at ${doseTime} for ${medName}!`, {
-      icon: '💊',
-      duration: 2000,
-    });
+      // If success → toast success
+      toast.success(`Dose taken at ${doseTime} for ${medName}!`, {
+        icon: '💊',
+        duration: 2000,
+      });
 
-  } catch (error) {
-    // If API fails → toast error
-    toast.error(`Failed to mark dose as taken. Please try again.`, {
-      icon: '⚠️',
-      duration: 2500,
-    });
-  }
+    } catch (error) {
+      // If API fails → toast error
+      toast.error(`Failed to mark dose as taken. Please try again.`, {
+        icon: '⚠️',
+        duration: 2500,
+      });
+    }
   };
 
   // Handler for snoozing capsule
@@ -132,12 +132,12 @@ function RangerDashboard({ selectedRanger = 'red' }) {
   const allDosesTaken = (capsuleId, timesPerDay, doses) => {
     // Filter doses for this capsule
     const capsuleDoses = doses.filter(d => d.capsuleId === capsuleId);
-    
+
     // Count doses with status 'taken'
     const takenDosesCount = capsuleDoses.filter(d => d.status === 'taken').length;
 
-  // If number of taken doses matches timesPerDay, return true
-  return takenDosesCount >= timesPerDay.length;
+    // If number of taken doses matches timesPerDay, return true
+    return takenDosesCount >= timesPerDay.length;
   };
 
   // Check if ranger has an assigned doctor
@@ -157,7 +157,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
     </svg>
   );
 
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     const refreshToken = localStorage.getItem("refreshToken");
     const res = await logoutRanger({
       refreshToken
@@ -166,7 +166,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
     if (res.status === 500) {
       return alert("Something went wrong! Unable to logout");
     }
-    
+
     // Clear everything
     localStorage.clear();
 
@@ -190,11 +190,11 @@ function RangerDashboard({ selectedRanger = 'red' }) {
           <div className="logo-text">OPERATION OVERDRIVE</div>
           <div className="logo-subtitle">HEADQUARTERS - MEDICAL BAY</div>
         </div>
-        
+
         <div className="header-right">
           {/* Hamburger Menu Button */}
-          <button 
-            className="hamburger-menu-btn" 
+          <button
+            className="hamburger-menu-btn"
             onClick={() => setIsSideMenuOpen(!isSideMenuOpen)}
             aria-label="Toggle Quick Actions Menu"
           >
@@ -202,7 +202,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
             <span className="hamburger-line"></span>
             <span className="hamburger-line"></span>
           </button>
-          
+
           <div className="ranger-info" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
             <div className="ranger-avatar"></div>
             <div className="ranger-details">
@@ -215,10 +215,10 @@ function RangerDashboard({ selectedRanger = 'red' }) {
 
       {/* Main Content */}
       <div className="dashboard-content">
-        
+
         {/* Left Column */}
         <div className="left-column">
-          
+
           {/* Health Summary - Only show if doctor has prescribed capsules */}
           {hasDoctorPrescription && (
             <div className="dash-panel health-summary">
@@ -256,39 +256,39 @@ function RangerDashboard({ selectedRanger = 'red' }) {
                     </div>
                   </div>
                 </div>
-              
-              <div className="vitals-grid">
-                <div className="vital-item">
-                  <div className="vital-icon"><Icon name="hospital" size={20} color="#ff8800" /></div>
-                  <div className="vital-info">
-                    <span className="vital-label">Heart Rate</span>
-                    <span className="vital-value">{rangerData.vitals.heartRate} BPM</span>
+
+                <div className="vitals-grid">
+                  <div className="vital-item">
+                    <div className="vital-icon"><Icon name="hospital" size={20} color="#ff8800" /></div>
+                    <div className="vital-info">
+                      <span className="vital-label">Heart Rate</span>
+                      <span className="vital-value">{rangerData.vitals.heartRate} BPM</span>
+                    </div>
                   </div>
-                </div>
-                <div className="vital-item">
-                  <div className="vital-icon"><Icon name="hospital" size={20} color="#ff8800" /></div>
-                  <div className="vital-info">
-                    <span className="vital-label">Blood Pressure</span>
-                    <span className="vital-value">{rangerData.vitals.bloodPressure}</span>
+                  <div className="vital-item">
+                    <div className="vital-icon"><Icon name="hospital" size={20} color="#ff8800" /></div>
+                    <div className="vital-info">
+                      <span className="vital-label">Blood Pressure</span>
+                      <span className="vital-value">{rangerData.vitals.bloodPressure}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="vital-item">
-                  <div className="vital-icon"><Icon name="alert" size={20} color="#ff8800" /></div>
-                  <div className="vital-info">
-                    <span className="vital-label">Temperature</span>
-                    <span className="vital-value">{rangerData.vitals.temperature}°F</span>
+                  <div className="vital-item">
+                    <div className="vital-icon"><Icon name="alert" size={20} color="#ff8800" /></div>
+                    <div className="vital-info">
+                      <span className="vital-label">Temperature</span>
+                      <span className="vital-value">{rangerData.vitals.temperature}°F</span>
+                    </div>
                   </div>
-                </div>
-                <div className="vital-item">
-                  <div className="vital-icon"><Icon name="zap" size={20} color="#ff8800" /></div>
-                  <div className="vital-info">
-                    <span className="vital-label">Oxygen</span>
-                    <span className="vital-value">{rangerData.vitals.oxygen}%</span>
+                  <div className="vital-item">
+                    <div className="vital-icon"><Icon name="zap" size={20} color="#ff8800" /></div>
+                    <div className="vital-info">
+                      <span className="vital-label">Oxygen</span>
+                      <span className="vital-value">{rangerData.vitals.oxygen}%</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
           )}
 
           {/* Recent Symptoms */}
@@ -301,8 +301,8 @@ function RangerDashboard({ selectedRanger = 'red' }) {
               <div className="symptoms-list">
                 {symptoms.map(symptom => (
                   <div key={symptom._id} className="symptom-item">
-                    <div 
-                      className="severity-indicator" 
+                    <div
+                      className="severity-indicator"
                       style={{ backgroundColor: getSeverityColor(symptom.severity) }}
                     ></div>
                     <div className="symptom-content">
@@ -329,114 +329,129 @@ function RangerDashboard({ selectedRanger = 'red' }) {
             </div>
             <div className="panel-body">
               <div className="capsules-list">
-                {capsules.map(capsule => {
-                  const isSnoozed = snoozedCapsules[capsule._id];
-                  // const takenDoses = capsuleDoses[capsule._id] || [];
-                  
+                {capsules?.map((capsule) => {
+                  if (!capsule) return null;
+
+                  const medId = capsule._id;
+                  const doses = capsule.todaysDoses || [];
+                  const isSnoozed = snoozedCapsules?.[medId] || false;
+
+                  const allTaken = allDosesTaken(medId, capsule.timeSlots, doses);
+
                   return (
-                    <div key={capsule._id} className={`capsule-item ${isSnoozed ? 'snoozed' : ''}`}>
-                      <div className="capsule-icon"><Icon name="zap" size={20} color="#ff8800" /></div>
+                    <div key={medId} className={`capsule-item ${isSnoozed ? "snoozed" : ""}`}>
+                      <div className="capsule-icon">
+                        <Icon name="zap" size={20} color="#ff8800" />
+                      </div>
+
                       <div className="capsule-content">
+                        {/* NAME */}
                         <div className="capsule-name">{capsule.name}</div>
+
+                        {/* DETAILS */}
                         <div className="capsule-details">
-                          <span className="capsule-dosage">{capsule.doseAmount} {capsule.doseUnit}</span>
+                          <span className="capsule-dosage">
+                            {capsule.doseAmount} {capsule.doseUnit}
+                          </span>
                           <span className="capsule-frequency">• {capsule.frequency}</span>
                         </div>
-                        <div className="capsule-schedule">
-                          <span className="last-taken">Last: {capsule.lastTaken}</span>
-                          <span className="next-due">Next: {capsule.nextDue}</span>
-                        </div>
-                        
-                        {/* Dose confirmation buttons for multiple daily doses */}
-                        {/* Dose tracking buttons for multiple daily doses */}
-                            {capsule.todaysDoses.length >= 2 && !isSnoozed && !allDosesTaken(capsule._id, capsule.timeSlots, capsule.todaysDoses) && (
-                              <div className="dose-buttons">
-                                {capsule.todaysDoses.map(doseNum => (
-                                  <button
-                                    key={doseNum._id}
-                                    className={`dose-btn ${doseNum.status === 'taken' ? 'taken' : ''}`}
-                                    onClick={() => handleTakeDose(doseNum._id, capsule.name, doseNum.time)}
-                                    disabled={doseNum.status === 'taken'}
-                                    style={(doseNum.status !== 'taken') ? { borderColor: currentColor, color: currentColor } : {}}
-                                  >
-                                    <Icon name={doseNum.status === "taken" ? "check" : "pill"} size={14} />
-                                    Dose: {doseNum.time}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-                            
-                            {/* Single dose button for once-daily capsuleications */}
-                            {capsule.todaysDoses.length === 1 && !isSnoozed && !allDosesTaken(capsule._id, capsule.timeSlots, capsule.todaysDoses) && (
-                              capsule.todaysDoses.map(doseNum => (
-                              <button 
-                                className="mark-taken-btn"
-                                onClick={() => handleTakeDose(doseNum._id, capsule.name, doseNum.time)}
-                                style={{ background: currentColor }}
-                              >
-                                <Icon name="check" size={16} />
-                                Mark as Taken
-                              </button>
-                              ))
-                            )}
-                            
-                            {/* Snooze button */}
-                            {!allDosesTaken(capsule._id, capsule.timeSlots, capsule.todaysDoses) && (
-                              <button 
-                                className="snooze-btn"
-                                onClick={() => handleSnoozeCapsule(capsule.id)}
-                                disabled={isSnoozed}
-                                style={!isSnoozed ? { borderColor: '#ffaa00', color: '#ffaa00' } : {}}
-                              >
-                                <Icon name="bell" size={14} color={isSnoozed ? '#999' : '#ffaa00'} />
-                                {isSnoozed ? 'Snoozed (10min)' : 'Snooze'}
-                              </button>
-                            )}
-                            
-                            {/* Completed indicator */}
-                            {allDosesTaken(capsule._id, capsule.timeSlots, capsule.todaysDoses) && (
-                              <div className="all-doses-taken">
-                                <Icon name="check" size={20} color="#00d26a" />
-                                <span>All doses taken today!</span>
-                              </div>
-                            )}
 
-                        {/* Snooze button - only for active capsules */}
-                        {capsule.status === 'active' && !allDosesTaken(capsule._id, capsule.timeSlots, capsule.todaysDoses) && (
-                          <div className="capsule-actions">
-                            <button 
-                              className="snooze-btn"
-                              onClick={() => handleSnoozeCapsule(capsule.id)}
-                              disabled={isSnoozed}
-                            >
-                              <Icon name="bell" size={14} color="#ffaa00" />
-                              {isSnoozed ? 'Snoozed (10min)' : 'Snooze'}
-                            </button>
+                        {/* LAST TAKEN */}
+                        <div className="capsule-schedule">
+                          <span className="last-taken">
+                            Last: {capsule.lastTaken || "—"}
+                          </span>
+                        </div>
+
+                        {/* MULTIPLE DOSES */}
+                        {doses.length >= 2 && !isSnoozed && !allTaken && (
+                          <div className="dose-buttons">
+                            {doses.map((dose) => (
+                              <button
+                                key={dose._id}
+                                className={`dose-btn ${dose.status === "taken" ? "taken" : ""}`}
+                                onClick={() => handleTakeDose(dose._id, capsule.name, dose.time)}
+                                disabled={dose.status === "taken"}
+                                style={
+                                  dose.status !== "taken"
+                                    ? { borderColor: currentColor, color: currentColor }
+                                    : {}
+                                }
+                              >
+                                <Icon
+                                  name={dose.status === "taken" ? "check" : "pill"}
+                                  size={14}
+                                />
+                                Dose: {dose.time}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* SINGLE DAILY DOSE */}
+                        {doses.length === 1 && !isSnoozed && !allTaken && (
+                          <button
+                            key={doses[0]._id}
+                            className="mark-taken-btn"
+                            onClick={() =>
+                              handleTakeDose(doses[0]._id, capsule.name, doses[0].time)
+                            }
+                            style={{ background: currentColor }}
+                          >
+                            <Icon name="check" size={16} />
+                            Mark as Taken
+                          </button>
+                        )}
+
+                        {/* SNOOZE BUTTON */}
+                        {!allTaken && (
+                          <button
+                            className="snooze-btn"
+                            onClick={() => handleSnoozeCapsule(medId)}
+                            disabled={isSnoozed}
+                            style={!isSnoozed ? { borderColor: "#ffaa00", color: "#ffaa00" } : {}}
+                          >
+                            <Icon
+                              name="bell"
+                              size={14}
+                              color={isSnoozed ? "#999" : "#ffaa00"}
+                            />
+                            {isSnoozed ? "Snoozed (10min)" : "Snooze"}
+                          </button>
+                        )}
+
+                        {/* COMPLETED UI */}
+                        {allTaken && (
+                          <div className="all-doses-taken">
+                            <Icon name="check" size={20} color="#00d26a" />
+                            <span>All doses taken today!</span>
                           </div>
                         )}
                       </div>
-                        {
-                          allDosesTaken(capsule._id, capsule.timeSlots, capsule.todaysDoses) ? (
-                            <div className={`capsule-status status-completed`}>
-                              <><Icon name="check" size={16} color="#00ff00" /> COMPLETED</>
-                            </div>
-                          ) : (
-                            <div className={`capsule-status status-active`}>
-                              <><Icon name="zap" size={16} color="#00ff00" /> ACTIVE</>
-                            </div>
-                          )}
+
+                      {/* RIGHT STATUS CHIP */}
+                      {allTaken ? (
+                        <div className="capsule-status status-completed">
+                          <Icon name="check" size={16} color="#00ff00" /> COMPLETED
+                        </div>
+                      ) : (
+                        <div className="capsule-status status-active">
+                          <Icon name="zap" size={16} color="#00ff00" /> ACTIVE
+                        </div>
+                      )}
                     </div>
                   );
                 })}
+
               </div>
-              <button className="view-all-btn" onClick={() => navigate('/capsules')}> { capsules.length > 0 ? "Manage Capsules →" : "Add Capsules to view →"}</button>
+              <button className="view-all-btn" onClick={() => navigate('/capsules')}> {capsules.length > 0 ? "Manage Capsules →" : "Add Capsules to view →"}</button>
             </div>
           </div>
         </div>
 
         {/* Right Column */}
         <div className="right-column">
-          
+
           {/* Upcoming Appointments */}
           <div className="dash-panel upcoming-appointments">
             <div className="panel-header">
@@ -462,7 +477,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
                   </div>
                 ))}
               </div>
-              <button className="view-all-btn" onClick={() => navigate('/appointments')}>{ upcomingAppointments.length > 0 ? "View All Appointments →" : "Add Appointment to view →"}</button>
+              <button className="view-all-btn" onClick={() => navigate('/appointments')}>{upcomingAppointments.length > 0 ? "View All Appointments →" : "Add Appointment to view →"}</button>
             </div>
           </div>
 
