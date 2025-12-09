@@ -13,6 +13,14 @@ export const addCapsule = async (req, res) => {
 
     const doses = generateDoses(capsule);
 
+    // ---- SAFETY CHECK ----
+    if (!doses || doses.length === 0) {
+      await capsule.deleteOne();  // rollback capsule creation
+      return res.status(400).json({
+        error: "Invalid dose schedule. No doses generated.",
+      });
+    }
+    
     // Save all doses
     await Dose.insertMany(doses);
 
