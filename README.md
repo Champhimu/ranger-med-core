@@ -1,86 +1,123 @@
-# Ranger Med-Core -- (Fullstack (MERN) + ML/AI)
-Ranger Med-Core: Command Center for Health &amp; Power. Full-stack healthcare &amp; AI app for Rangers, including capsule management, AI health assistant, dose prediction, and wellness dashboard.
+# **Ranger Med-Core**
+
+### **(Fullstack MERN + ML/AI Healthcare Command Center for Rangers)**
+
+Ranger Med-Core is a full-stack, AI-powered healthcare management system designed to assist Rangers with capsule tracking, symptom logging, dose prediction, and personalized medical insights.
+This project integrates **MERN stack**, **AI/ML models**, **push notifications**, and **real-time health dashboards** to deliver a complete medical companion suite.
 
 ---
 
-## **Functionalities**
+# **Project Overview**
 
-### **Basic Functionalities**
+Ranger Med-Core serves as a centralized health command system enabling Rangers to manage capsules, track health patterns, utilize AI-driven health recommendations, and receive dose reminders.
+The system includes **multi-role access**, **AI chatbot assistant**, **missed-dose prediction**, **calendar integration**, and a **wellness dashboard**.
 
-* **Ranger Power Capsule Management**
+---
 
-  * Add capsules, set dosage and frequency, schedule doses
-  * Mark doses as taken/missed and maintain full capsule history
+# **Problem Statement (11)**
 
+**PS Number: *11***
+
+Rangers require a unified health management system to track daily capsules, identify health patterns, predict missed doses, communicate with health professionals, and maintain operational efficiency even in high-pressure situations.
+Ranger Med-Core solves this by integrating real-time tracking, AI insights, and predictive modeling into a secure, user-friendly platform.
+
+---
+
+# **Features Implemented**
+
+## **Basic Functionalities**
+
+* **Power Capsule Management**
+  Add capsules, set dosage/frequency, track taken/missed capsules with full history.
 * **Dose Reminder Engine**
-
-  * Send alerts for upcoming and missed doses via Ranger Communicator
-  * Snooze support for reminders
-
-* **Health Dashboard (Health Morpher Panel)**
-
-  * View today’s capsules, adherence score, missed streaks, and symptom trends
-  * Overall wellness score display
-
+  Automated alerts, snooze options, and high-priority push notifications.
+* **Health Dashboard**
+  View today’s routine, adherence score, missed streaks, symptom trends, and wellness score.
 * **AI Chatbot Health Assistant**
-
-  * Provide medicine explanations and routine suggestions
-  * Symptom guidance and quick health query answers
-
+  Provides medicine explanations, symptom guidance, and health suggestions.
 * **Symptom Checker**
+  Record symptoms, predict possible conditions, assign urgency levels.
+* **Role-Based Access** (`Ranger`, `Doctor`, `Health Admin`)
+* **Calendar Integration** (doses + appointments)
 
-  * Record symptoms and predict possible conditions
-  * Assign urgency levels and log all entries
+## **Advanced Functionalities**
 
-* **Multi-Role Access**
-
-  * Support Ranger, Doctor, and optional Health Admin roles
-
-* **Calendar Integration**
-
-  * Sync doses and appointments with calendars
-  * Allow editing or cancellation
-
----
-
-### **Advanced Functionalities**
-
-* **Missed Dose Prediction Model**
-
-  * Analyze habits to forecast skipped doses
-  * Issue early alerts for likely missed capsules
-
+* **Missed Dose Prediction (ML Model)**
+  Predicts likelihood of skipped doses based on user patterns.
 * **Health Timeline**
+  Chronological display of capsules, symptoms, and appointments.
+* **AI Health Insights & Summaries**
+  Weekly insights, symptom-based risk analysis, lifestyle tips.
 
-  * Chronological display of capsules, symptoms, and appointments
+## **Brownie Points**
 
-* **AI-Generated Health Insights**
-
-  * Weekly summaries of health trends
-  * Symptom-based risk insights and personalized wellness tips
-
----
-
-### **Brownie Points**
-
-* **AI Enhancements**
-
-  * Generate capsule explanations automatically
-  * Estimate symptom severity
-  * Deliver personalized lifestyle and wellness recommendations
+* Automatic capsule explanation generation
+* Symptom severity estimation
+* Personalized wellness recommendations
 
 ---
 
+# **Tech Stack Used**
 
-## Repository Structure
-- `backend/` -> Node.js + Express + MongoDB + ML + OpenAI + FCM  
-- `frontend/` -> React.js + TailwindCSS + OpenStreetMap with Leaflet
-- `docs/`  -> Project documentation including architecture, API reference, DB schema, setup instructions, PR guide, and System Architecture.
+### **Frontend**
+
+* React.js
+* TailwindCSS
+* Leaflet + OpenStreetMap
+* Axios
+* Redux Toolkit
+
+### **Backend**
+
+* Node.js
+* Express.js
+* MongoDB + Mongoose
+* JWT Authentication
+* FCM Notifications
+* Gemini API
 
 ---
-# Setup Guide
 
-### 1. Clone the repository
+# **System Architecture / High-Level Design**
+
+### **1. Client (React)**
+
+* Manages UI, state, component workflows
+* Communicates with backend through REST APIs
+* Integrates maps, charts, AI chat interface
+
+### **2. Backend (Node.js + Express)**
+
+* Handles API routing, authentication, role-based access
+* Manages capsule schedules, symptoms, AI calls
+* Push notifications + cron scheduler for reminders
+
+### **3. Database (MongoDB)**
+
+* Stores user data, capsules, symptoms, chat logs, roles
+* Optimized schema for prediction tasks
+
+### **4. AI/ML Layer**
+
+* OpenAI for chatbot + insights
+* Custom logic for Weekly Insights
+
+### **5. Notification Layer**
+
+* FCM for push notifications
+
+---
+
+# **API Documentation (Short Overview)**
+
+Full API documentation is in:
+`/docs/API-SPECIFICATION.md`
+
+---
+
+# **Setup Instructions**
+
+## 1️⃣ **Clone the Repository**
 
 ```sh
 git clone https://github.com/<your-org>/ranger-med-core.git
@@ -89,63 +126,120 @@ cd ranger-med-core
 
 ---
 
-##  Backend Setup (`/backend`)
+## 2️⃣ **Backend Setup**
 
 ```sh
 cd backend
 npm install
-cp .env.example .env     # fill required environment variables
+cp .env.example .env
 npm run dev
 ```
 
-Backend runs on: **[http://localhost:5000](http://localhost:5000)**
-
-Ensure **MongoDB** is running
-
-Backend includes its own documentation inside **[/backend/README.md](./backend/README.md)**.
+Backend runs at: **[http://localhost:5000](http://localhost:5000)**
 
 ---
 
-## Frontend Setup (`/frontend`)
+## 3️⃣ **Frontend Setup**
 
 ```sh
 cd frontend
 npm install
-cp .env.example .env     # fill required environment variables
+cp .env.example .env
 npm run dev
 ```
 
-Frontend runs on: **[http://localhost:3000](http://localhost:3000)**
-
-Frontend includes its own documentation inside **[/frontend/README.md](./frontend/README.md)**.
+Frontend runs at: **[http://localhost:3000](http://localhost:3000)**
 
 ---
 
+# Deployment Link
 
-# Tech Stack
+**Live Deployment:**
+*[https://ranger-med-core.netlify.app]*
 
-### **Backend**
-
-* Node.js
-* Express.js
-* MongoDB (Mongoose)
-* JWT Authentication
-* OpenAI / LLM integration
-
-### **Frontend**
-
-* React.js
-* TailwindCSS
-* Axios
-* Redux
 ---
 
-## **Team Report**
+# **Screenshots / GIFs**
 
-| Name          | Role           | Contributions                                  |
-| ------------- | -------------- | ---------------------------------------------- |
-| Himanshu Thakur | Full Stack + AI/ML Lead  | Designed and developed full-stack architecture, integrated AI health assistant, implemented dose prediction and wellness dashboard, and created project documentation and README, and reviews/approves both frontend and backend work.  |
-| Yashwardhan Singh     | Backend Lead   | Built Node.js APIs, MongoDB schemas, implemented capsule management and symptom tracking.          |
-| Yusra Mirza     | Frontend Lead | Developed React UI for dashboard and capsule management, integrated AI responses, and implemented calendar and health visualization componentsl         |
+Add all UI screenshots located in:
+
+```
+/docs/ui/
+```
+
+### Ranger - Dashboard
+
+![Ranger Dashboard](docs/ui/ranger-dashboard.png)
+
+### Doctor - Dashboard
+
+![Doctor Dashboard](docs/ui/doctor-dashboard.png)
+
+### Zordan - Dashboard
+
+![Zordan Dashboard](docs/ui/zordan-dashboard.png)
+
+### Capsule Management
+
+![Capsule](docs/ui/ranger-capsule.png)
+
+### Symptom Management
+
+![Symptom](docs/ui/ranger-symptom.png)
+
+### Symptom Checker
+
+![Symptom Checker](docs/ui/ranger_symptomchecker.png)
+
+### Appointment
+
+![Appointment](docs/ui/ranger-appointment.png)
+
+
+### Ranger Bot AI
+
+![Ranger BotAI](docs/ui/ranger-botAI.png)
+
+### Timeine
+
+![Timeline](docs/ui/ranger-timeline.png)
+
+### Weekly Insights
+
+![Weekly Insights](docs/ui/ranger-weeklyInsights.png)
+
+### Ranger Profile
+
+![Ranger Profile](docs/ui/ranger-profile.png)
+---
+
+# **Error Handling & Reliability Considerations**
+
+* Centralized error middleware (Express)
+* MongoDB validation + schema constraints
+* Token refresh & expiry handling
+* Graceful backend shutdown
+
+---
+
+#  **Team Members and Responsibilities**
+
+| Name                  | Role                    | Contributions                                                                                      |
+| --------------------- | ----------------------- | -------------------------------------------------------------------------------------------------- |
+| **Himanshu Thakur**   | Full Stack + AI/ML Lead | Designed backend architecture, built Node.js APIs, MongoDB schemas, authentication, AI/ML integration, reminder engine, dose prediction model, and managed overall system logic. |
+| **Yashwardhan Singh** | Frontend Lead            | Developed major UI components, implemented capsule management UI, calendar integration, and frontend state management.                                           |
+| **Yusra Mirza**       | Frontend Lead           | Worked on UI/UX design, dashboard screens for ranger and doctor, symptoms mangament UI, health visualizations, and onnected APIs on the frontend           |
+
+---
+
+# **Future Improvements**
+
+* Offline mode with local DB sync
+* Doctor-to-Ranger live chat
+* Improved ML model using deep learning
+* Real-time vitals monitoring
+* Voice-based AI assistant
+* Emergency SOS module
+* Medical report PDF generator
 
 ---

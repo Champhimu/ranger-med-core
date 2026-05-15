@@ -1,0 +1,56 @@
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-messaging.js";
+
+// 1️⃣ Initialize Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyAx_1y9X_msIKaiTKFAtfbUXh9C0ufLffE",
+  authDomain: "ranger-med-core.firebaseapp.com",
+  projectId: "ranger-med-core",
+  storageBucket: "ranger-med-core.firebasestorage.app",
+  messagingSenderId: "598413046384",
+  appId: "1:598413046384:web:2160118695740943dc7ab5",
+  measurementId: "G-JXFK86GCJX"
+};
+
+const app = initializeApp(firebaseConfig);
+const messaging = getMessaging(app);
+
+// 2️⃣ Request permission and get FCM token
+async function requestToken() {
+  try {
+    console.log("Running Firebase....");
+    console.log(Notification.permission);
+    // 1️⃣ Register service worker first
+const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+console.log('Service Worker registered:', registration);
+
+// 2️⃣ Get FCM token with service worker
+const token = await getToken(messaging, { 
+  vapidKey: "BMoHShp6IOl-XMjT5xxT-Av6ZZg0zQ7DIdKrKDZstKPx9PG4l97pMWzaBH9grZhhula2rnydtHSYpWp2ocrKrPY",
+  serviceWorkerRegistration: registration
+});
+
+console.log("FCM Token:", token);
+
+    // const token = await getToken(messaging, { vapidKey: "BMoHShp6IOl-XMjT5xxT-Av6ZZg0zQ7DIdKrKDZstKPx9PG4l97pMWzaBH9grZhhula2rnydtHSYpWp2ocrKrPY" });
+    // console.log("FCM Token:", token);
+
+    // 3️⃣ Send token to your backend
+    await fetch("/api/user/save-fcm-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fcmToken: token })
+    });
+  } catch (err) {
+    console.log("Error getting FCM token:", err);
+  }
+}
+
+requestToken();
+
+// Optional: Listen to foreground messages
+onMessage(messaging, (payload) => {
+  console.log("Message received:", payload);
+});
+</script>
