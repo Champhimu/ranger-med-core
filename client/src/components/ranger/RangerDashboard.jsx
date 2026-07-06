@@ -569,7 +569,7 @@ function RangerDashboard({ selectedRanger = 'red' }) {
           <button className="side-action-btn" onClick={() => { navigate('/rangerbot'); setIsSideMenuOpen(false); }}>
             <div className="side-btn-icon"><Icon name="message" size={24} color="#ff8800" /></div>
             <div className="side-btn-text">
-              <span className="side-btn-title">RangerBot AI</span>
+              <span className="side-btn-title">AlphaBot AI</span>
               <span className="side-btn-subtitle">Chat assistant</span>
             </div>
             <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
@@ -587,6 +587,14 @@ function RangerDashboard({ selectedRanger = 'red' }) {
             <div className="side-btn-text">
               <span className="side-btn-title">Weekly Insights</span>
               <span className="side-btn-subtitle">Health trends</span>
+            </div>
+            <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
+          </button>
+          <button className="side-action-btn" onClick={() => { navigate('/report'); setIsSideMenuOpen(false); }}>
+            <div className="side-btn-icon"><Icon name="fileText" size={24} color="#ff8800" /></div>
+            <div className="side-btn-text">
+              <span className="side-btn-title">Medical Report</span>
+              <span className="side-btn-subtitle">Download PDF</span>
             </div>
             <div className="side-btn-arrow"><Icon name="arrowRight" size={20} color="#ff8800" /></div>
           </button>

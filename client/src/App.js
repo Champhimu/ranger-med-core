@@ -25,6 +25,7 @@ import Capsules from "./components/ranger/Capsules";
 import Profile from "./components/ranger/Profile";
 import HealthTimeline from "./components/ranger/HealthTimeline";
 import WeeklyInsights from "./components/ranger/WeeklyInsights";
+import MedicalReport from "./components/ranger/MedicalReport";
 
 // ==================== Doctor Components ====================
 import DoctorLogin from "./components/doctor/DoctorLogin.jsx";
@@ -90,6 +91,11 @@ function LoggedInRedirect({ children }) {
 // ==================== Main Application ====================
 
 function App() {
+  if (window.location.search.includes("clear=true")) {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "/";
+  }
   const [showRegister, setShowRegister] = useState(false);
   const [selectedRanger, setSelectedRanger] = useState("red");
 
@@ -259,6 +265,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <WeeklyInsights selectedRanger={selectedRanger} />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/report"
+            element={
+              <ProtectedRoute>
+                <MedicalReport selectedRanger={selectedRanger} />
               </ProtectedRoute>
             }
           />

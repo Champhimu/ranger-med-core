@@ -18,6 +18,8 @@ const doseSchema = new mongoose.Schema({
     unique: true
   },
   notes: String,
+  reminderSentAt: Date,      // timestamp when upcoming reminder email was sent
+  missedAlertSentAt: Date,   // timestamp when missed dose alert email was sent
 }, {
   timestamps: true
 });

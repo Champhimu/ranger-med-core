@@ -1,481 +1,345 @@
 /**
  * RangerBot - AI Health Assistant
- * Operation Overdrive Medical AI System
- * Personalized health guidance and support
+ * Powered by Google Gemini via Ranger Med-Core backend
  */
 
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './RangerBot.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchDoctorsThunk } from '../../store/doctorSlice';
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import "./RangerBot.css";
+import { sendMessage } from "../../api/ai";
 
+/* ------------------------------------------------------------------ */
+/*  Markdown-lite renderer (bold, bullets, numbered lists, line breaks) */
+/* ------------------------------------------------------------------ */
+function renderMarkdown(text) {
+  if (!text) return null;
+  const lines = text.split("\n");
+  const elements = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // Numbered list
+    if (/^\d+\.\s/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
+        items.push(lines[i].replace(/^\d+\.\s/, ""));
+        i++;
+      }
+      elements.push(
+        <ol key={`ol-${i}`}>
+          {items.map((item, j) => (
+            <li key={j} dangerouslySetInnerHTML={{ __html: inlineMd(item) }} />
+          ))}
+        </ol>
+      );
+      continue;
+    }
+
+    // Bullet list (-, *, +)
+    // eslint-disable-next-line no-useless-escape
+    if (/^[-*+]\s/.test(line)) {
+      const items = [];
+      // eslint-disable-next-line no-useless-escape
+      while (i < lines.length && /^[-*+]\s/.test(lines[i])) {
+        // eslint-disable-next-line no-useless-escape
+        items.push(lines[i].replace(/^[-*+]\s/, ""));
+        i++;
+      }
+      elements.push(
+        <ul key={`ul-${i}`}>
+          {items.map((item, j) => (
+            <li key={j} dangerouslySetInnerHTML={{ __html: inlineMd(item) }} />
+          ))}
+        </ul>
+      );
+      continue;
+    }
+
+    // Empty line = spacer
+    if (line.trim() === "") {
+      elements.push(<br key={`br-${i}`} />);
+      i++;
+      continue;
+    }
+
+    // Regular paragraph
+    elements.push(
+      <p
+        key={`p-${i}`}
+        dangerouslySetInnerHTML={{ __html: inlineMd(line) }}
+      />
+    );
+    i++;
+  }
+  return elements;
+}
+
+/** Inline markdown: **bold**, *italic*, `code` */
+function inlineMd(str) {
+  return str
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/`(.+?)`/g, "<code>$1</code>");
+}
+
+/* ------------------------------------------------------------------ */
+/*  Component                                                          */
+/* ------------------------------------------------------------------ */
 function RangerBot() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { doctors } = useSelector((state) => state.doctor);
-
-  useEffect(() => {
-    dispatch(fetchDoctorsThunk());
-  }, [dispatch]);
 
   const [messages, setMessages] = useState([
     {
-      id: 1,
-      type: 'bot',
-      text: "Greetings, Ranger! I'm RangerBot, your AI health assistant powered by Zordon's advanced medical algorithms. How can I assist you today?",
+      id: "welcome",
+      role: "bot",
+      text: "Greetings, Ranger. I am AlphaBot -- your AI health assistant.\n\nI have access to your medications, symptoms, and appointments. Ask me anything about your health, and I will give you personalised guidance.\n\nWhat can I help you with?",
       timestamp: new Date(),
-      category: 'greeting',
-      priority: 'normal',
-      metadata: {
-        source: 'Zordon Medical AI',
-        version: 'v2.5.0',
-        confidence: 100
-      }
-    }
+    },
   ]);
 
-  const [inputText, setInputText] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
+  const [inputText, setInputText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   const quickActions = [
-    { id: 'symptoms', icon: '🔬', text: 'Check Symptoms', action: 'symptoms' },
-    { id: 'appointment', icon: '📅', text: 'Book Appointment', action: 'appointment' },
-    { id: 'medications', icon: '💊', text: 'Medication Info', action: 'medications' },
-    { id: 'wellness', icon: '💪', text: 'Wellness Tips', action: 'wellness' }
+    { id: "meds", label: "My Medications", msg: "What medications am I currently taking and when should I take them?" },
+    { id: "symptoms", label: "Check Symptoms", msg: "I want to discuss some symptoms I have been experiencing." },
+    { id: "wellness", label: "Wellness Tips", msg: "Give me personalised wellness tips based on my health data." },
+    { id: "schedule", label: "My Schedule", msg: "What upcoming appointments and doses do I have?" },
   ];
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  /* ---- auto-scroll ---- */
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, scrollToBottom]);
 
-  const generateBotResponse = (userMessage) => {
-    const lowerMessage = userMessage.toLowerCase();
-    
-    // Symptom-related queries
-    if (lowerMessage.includes('symptom') || lowerMessage.includes('pain') || lowerMessage.includes('sick')) {
-      return {
-        text: "I can help you check your symptoms! Based on what you're experiencing, I recommend:\n\n" +
-              "1. Use our Symptom Checker for AI-powered analysis\n" +
-              "2. Log your symptoms in the Symptom Tracker\n" +
-              "3. Monitor for any changes over the next 24 hours\n\n" +
-              "Would you like me to open the Symptom Checker for you?",
-        suggestions: ['Open Symptom Checker', 'Log Symptoms', 'Tell me more'],
-        category: 'symptoms',
-        priority: 'high',
-        confidence: 92,
-        relatedTopics: ['symptom-checker', 'health-tracking', 'doctor-consultation']
-      };
-    }
-    
-    // Appointment queries
-    if (lowerMessage.includes('appointment') || lowerMessage.includes('doctor') || lowerMessage.includes('visit')) {
-       // Generate dynamic doctor list
-      const doctorList =
-        doctors.length > 0
-          ? doctors.map((d) => `• ${d.name} - ${d.specialty}`).join("\n")
-          : "• No doctors available right now.";
-      return {
-        text: "I can help you schedule an appointment! We have the following options:\n\n" +
-              doctorList +
-              "\n Which type of appointment would you like to schedule?",
-        suggestions: ['Schedule Now', 'View Availability', 'Emergency'],
-        category: 'appointments',
-        priority: 'medium',
-        confidence: 95,
-        relatedTopics: ['medical-staff', 'scheduling', 'availability']
-      };
-    }
-    
-    // Medication queries
-    if (lowerMessage.includes('medication') || lowerMessage.includes('capsule') || lowerMessage.includes('medicine')) {
-      return {
-        text: "Let me help you with your medications! I can:\n\n" +
-              "✓ Show your current medication schedule\n" +
-              "✓ Set up dosage reminders\n" +
-              "✓ Track medication history\n" +
-              "✓ Alert you about refills\n\n" +
-              "What would you like to know about your medications?",
-        suggestions: ['View Medications', 'Set Reminder', 'Refill Status'],
-        category: 'medications',
-        priority: 'high',
-        confidence: 98,
-        relatedTopics: ['capsules', 'dosage', 'reminders', 'refills']
-      };
-    }
-    
-    // Wellness and health tips
-    if (lowerMessage.includes('wellness') || lowerMessage.includes('health') || lowerMessage.includes('tip')) {
-      return {
-        text: "Here are some personalized wellness recommendations for you:\n\n" +
-              "💧 Hydration: Aim for 8 glasses of water daily, especially after morphing\n" +
-              "😴 Rest: Rangers need 7-9 hours of quality sleep\n" +
-              "🏃 Exercise: Balance combat training with recovery\n" +
-              "🧘 Mental Health: Practice meditation to manage mission stress\n\n" +
-              "Would you like more specific advice on any of these areas?",
-        suggestions: ['Sleep Tips', 'Nutrition Guide', 'Stress Management'],
-        category: 'wellness',
-        priority: 'normal',
-        confidence: 90,
-        relatedTopics: ['hydration', 'sleep', 'exercise', 'mental-health']
-      };
-    }
-    
-    if (lowerMessage.includes("availability") || lowerMessage.includes("available")) {
+  /* ---- build history for API ---- */
+  function buildHistory() {
+    return messages
+      .filter((m) => m.id !== "welcome")
+      .map((m) => ({ role: m.role, text: m.text }));
+  }
 
-      if (!doctors || doctors.length === 0) {
-        return {
-          text: "No doctor availability data found.",
-          suggestions: ["Book Appointment", "View Medications"],
-          category: "appointments",
-          priority: "medium"
-        };
-      }
+  /* ---- send message ---- */
+  const handleSend = async (overrideText) => {
+    const text = (overrideText || inputText).trim();
+    if (!text || isLoading) return;
 
-      const availabilityList = doctors
-        .map((doc) => {
-          const schedule = doc.weeklyAvailability
-            .map((slot) => `   • ${slot.day}: ${slot.startTime} - ${slot.endTime}`)
-            .join("\n");
+    setError(null);
 
-          return `👨‍⚕️ *${doc.name}* (${doc.specialty})\n${schedule}\n`;
-        })
-        .join("\n");
-
-      return {
-        text:
-          "Here is the weekly availability of our doctors:\n\n" +
-          availabilityList +
-          "\nWould you like to book an appointment?",
-        suggestions: ["Book Appointment", "Schedule Now", "Back"],
-        category: "appointments",
-        priority: "medium"
-      };
-    }
-
-    // Default response
-    return {
-      text: "I'm here to help with your health needs! I can assist you with:\n\n" +
-            "• Analyzing symptoms and suggesting conditions\n" +
-            "• Scheduling medical appointments\n" +
-            "• Managing your medications\n" +
-            "• Providing personalized wellness guidance\n" +
-            "• Answering health-related questions\n\n" +
-            "What can I help you with today?",
-      suggestions: ['Check Symptoms', 'Book Appointment', 'Medication Help', 'Wellness Tips'],
-      category: 'general',
-      priority: 'normal',
-      confidence: 85,
-      relatedTopics: ['symptoms', 'appointments', 'medications', 'wellness']
-    };
-  };
-
-  const handleSendMessage = () => {
-    if (!inputText.trim()) return;
-
-    // Add user message with detailed metadata
-    const userMessage = {
-      id: Date.now(),
-      type: 'user',
-      text: inputText,
+    // Add user message
+    const userMsg = {
+      id: Date.now().toString(),
+      role: "user",
+      text,
       timestamp: new Date(),
-      category: 'query',
-      priority: 'normal',
-      metadata: {
-        characterCount: inputText.length,
-        wordCount: inputText.trim().split(/\s+/).length,
-        containsEmergency: /emergency|urgent|critical|help/i.test(inputText)
-      }
     };
-    
-    setMessages(prev => [...prev, userMessage].sort((a, b) => a.timestamp - b.timestamp));
-    setInputText('');
-    setIsTyping(true);
+    setMessages((prev) => [...prev, userMsg]);
+    setInputText("");
+    setIsLoading(true);
 
-    // Simulate bot typing and response
-    setTimeout(() => {
-      const response = generateBotResponse(inputText);
-      const botMessage = {
-        id: Date.now() + 1,
-        type: 'bot',
-        text: response.text,
-        suggestions: response.suggestions,
+    try {
+      const history = buildHistory();
+      const res = await sendMessage(text, history);
+      const { reply, metadata } = res.data;
+
+      const botMsg = {
+        id: (Date.now() + 1).toString(),
+        role: "bot",
+        text: reply,
         timestamp: new Date(),
-        category: response.category || 'response',
-        priority: response.priority || 'normal',
-        metadata: {
-          source: 'Zordon Medical AI',
-          confidence: response.confidence || 95,
-          responseTime: '1.2s',
-          relatedTopics: response.relatedTopics || []
-        }
+        metadata,
       };
-      
-      setMessages(prev => [...prev, botMessage].sort((a, b) => a.timestamp - b.timestamp));
-      setIsTyping(false);
-    }, 1500);
-  };
-
-  const handleQuickAction = (action) => {
-    let message = '';
-    switch(action) {
-      case 'symptoms':
-        message = 'I need help checking my symptoms';
-        break;
-      case 'appointment':
-        message = 'I want to book an appointment';
-        break;
-      case 'medications':
-        message = 'Tell me about my medications';
-        break;
-      case 'wellness':
-        message = 'Give me wellness tips';
-        break;
-      default:
-        message = 'Help me';
+      setMessages((prev) => [...prev, botMsg]);
+    } catch (err) {
+      console.error("RangerBot error:", err);
+      setError("Failed to reach the AI service. Check your connection and try again.");
+      const errorMsg = {
+        id: (Date.now() + 1).toString(),
+        role: "bot",
+        text: "I could not process your request right now. Please try again in a moment.",
+        timestamp: new Date(),
+        isError: true,
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    } finally {
+      setIsLoading(false);
+      inputRef.current?.focus();
     }
-    setInputText(message);
   };
 
-  const handleSuggestionClick = (suggestion) => {
-
-    if (suggestion === "Open Symptom Checker") {
-      navigate("/symptom-checker");
-    }else if(suggestion === "Log Symptoms") {
-      navigate("/symptoms");
-    }else if(suggestion === "Book Appointment" || suggestion === "Schedule Now") {
-      navigate("/appointments")
-    }else if(suggestion === "View Medications") {
-      navigate("/capsules")
-    }
-
-    setInputText(suggestion);
-    handleSendMessage();
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      handleSend();
     }
   };
 
+  const handleQuickAction = (msg) => {
+    if (isLoading) return;
+    handleSend(msg);
+  };
+
+  /* ---- navigate helpers (detect suggestion keywords) ---- */
+  const handleSuggestionNav = (text) => {
+    const lower = text.toLowerCase();
+    if (lower.includes("symptom checker")) navigate("/symptom-checker");
+    else if (lower.includes("log symptoms") || lower.includes("symptom tracker")) navigate("/symptoms");
+    else if (lower.includes("book appointment") || lower.includes("schedule appointment")) navigate("/appointments");
+    else if (lower.includes("view medications") || lower.includes("my capsules")) navigate("/capsules");
+    else if (lower.includes("calendar")) navigate("/calendar");
+    else if (lower.includes("timeline")) navigate("/timeline");
+    else handleSend(text);
+  };
+
+  /* ---- render ---- */
   return (
-    <div className="rangerbot-page">
-      {/* Background */}
-      <div className="space-background"></div>
-      <div className="stars"></div>
-      <div className="stars2"></div>
-      <div className="stars3"></div>
+    <div className="rb-page">
+      {/* Background layers */}
+      <div className="rb-bg">
+        <div className="rb-bg-grid" />
+        <div className="rb-bg-scanline" />
+        <div className="rb-bg-glow" />
+      </div>
 
       {/* Header */}
-      <div className="rangerbot-header">
-        <button className="back-btn" onClick={() => navigate('/dashboard')}>
-          ← Back to Dashboard
+      <header className="rb-header">
+        <button className="rb-back" onClick={() => navigate("/dashboard")}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Dashboard
         </button>
-        <div className="header-content">
-          <h1>🤖 RANGERBOT AI ASSISTANT</h1>
-          <p>OPERATION OVERDRIVE - MEDICAL AI SYSTEM</p>
+        <div className="rb-title-group">
+          <h1 className="rb-title">ALPHABOT</h1>
+          <span className="rb-subtitle">AI HEALTH ASSISTANT</span>
         </div>
-        <div className="bot-status">
-          <span className="status-indicator online"></span>
-          <span>AI Online</span>
+        <div className="rb-status">
+          <span className={`rb-status-dot ${isLoading ? "processing" : "online"}`} />
+          <span className="rb-status-label">{isLoading ? "Processing" : "Online"}</span>
         </div>
-      </div>
+      </header>
 
-      <div className="rangerbot-container">
-        {/* Chat Area */}
-        <div className="chat-section">
-          <div className="messages-container">
-            {messages.map(message => (
-              <div key={message.id} className={`message ${message.type}`}>
-                <div className="message-avatar">
-                  {message.type === 'bot' ? '🤖' : '👤'}
-                </div>
-                <div className="message-content">
-                  <div className="message-bubble">
-                    <div className="message-text">{message.text}</div>
-                    {message.metadata && (
-                      <div className="message-metadata">
-                        {message.type === 'bot' && (
-                          <>
-                            <span className="metadata-item" title="AI Confidence">
-                              📊 Confidence: {message.metadata.confidence}%
-                            </span>
-                            <span className="metadata-item" title="Response Source">
-                              🔮 {message.metadata.source}
-                            </span>
-                            {message.metadata.responseTime && (
-                              <span className="metadata-item" title="Response Time">
-                                ⚡ {message.metadata.responseTime}
-                              </span>
-                            )}
-                          </>
-                        )}
-                        {message.type === 'user' && (
-                          <>
-                            <span className="metadata-item" title="Word Count">
-                              📝 {message.metadata.wordCount} words
-                            </span>
-                            {message.metadata.containsEmergency && (
-                              <span className="metadata-item urgent" title="Emergency Detected">
-                                🚨 Priority Query
-                              </span>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    )}
-                    <div className="message-footer">
-                      <div className="message-time">
-                        {message.timestamp.toLocaleDateString([], { month: 'short', day: 'numeric' })} • {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </div>
-                      {message.category && (
-                        <span className={`message-category ${message.category}`}>
-                          {message.category.charAt(0).toUpperCase() + message.category.slice(1)}
-                        </span>
-                      )}
-                      {message.priority && message.priority !== 'normal' && (
-                        <span className={`message-priority ${message.priority}`}>
-                          {message.priority === 'high' ? '⚡ High' : message.priority === 'medium' ? '📌 Medium' : '🔔 Critical'}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  {message.suggestions && (
-                    <div className="message-suggestions">
-                      {message.suggestions.map((suggestion, idx) => (
-                        <button
-                          key={idx}
-                          className="suggestion-btn"
-                          onClick={() => handleSuggestionClick(suggestion)}
-                        >
-                          {suggestion}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-            
-            {isTyping && (
-              <div className="message bot">
-                <div className="message-avatar">🤖</div>
-                <div className="message-content">
-                  <div className="message-bubble typing">
-                    <div className="typing-indicator">
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input Area */}
-          <div className="input-section">
-            <div className="quick-actions">
-              {quickActions.map(action => (
-                <button
-                  key={action.id}
-                  className="quick-action-btn"
-                  onClick={() => handleQuickAction(action.action)}
-                  title={action.text}
-                >
-                  <span className="action-icon">{action.icon}</span>
-                  <span className="action-text">{action.text}</span>
-                </button>
-              ))}
-            </div>
-            <div className="input-container">
-              <textarea
-                className="message-input"
-                placeholder="Ask me anything about your health..."
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyPress={handleKeyPress}
-                rows="1"
-              />
-              <button 
-                className="send-btn"
-                onClick={handleSendMessage}
-                disabled={!inputText.trim()}
-              >
-                <span className="send-icon">📤</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Info Panel */}
-        <div className="info-panel">
-          <div className="panel-section">
-            <h3>🎯 What I Can Do</h3>
-            <ul className="capabilities-list">
-              <li>
-                <span className="capability-icon">🔬</span>
-                <span>Analyze symptoms and suggest conditions</span>
-              </li>
-              <li>
-                <span className="capability-icon">📅</span>
-                <span>Help schedule appointments</span>
-              </li>
-              <li>
-                <span className="capability-icon">💊</span>
-                <span>Manage medication schedules</span>
-              </li>
-              <li>
-                <span className="capability-icon">💪</span>
-                <span>Provide wellness recommendations</span>
-              </li>
-              <li>
-                <span className="capability-icon">📊</span>
-                <span>Track health progress</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="panel-section">
-            <h3>💡 Quick Tips</h3>
-            <div className="tips-list">
-              <div className="tip-card">
-                <span className="tip-icon">💧</span>
-                <p>Stay hydrated during missions</p>
-              </div>
-              <div className="tip-card">
-                <span className="tip-icon">😴</span>
-                <p>Get 7-9 hours of sleep</p>
-              </div>
-              <div className="tip-card">
-                <span className="tip-icon">🏃</span>
-                <p>Balance training & recovery</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="panel-section">
-            <h3>⚠️ Emergency</h3>
-            <button 
-              className="emergency-btn"
-              onClick={() => navigate('/appointments')}
+      {/* Main chat area */}
+      <main className="rb-main">
+        {/* Quick actions bar */}
+        <div className="rb-quick-bar">
+          {quickActions.map((a) => (
+            <button
+              key={a.id}
+              className="rb-quick-btn"
+              onClick={() => handleQuickAction(a.msg)}
+              disabled={isLoading}
             >
-              🚨 Get Immediate Help
+              {a.label}
             </button>
-          </div>
+          ))}
         </div>
-      </div>
 
-      {/* Cockpit Frame */}
-      <div className="cockpit-frame"></div>
+        {/* Messages */}
+        <div className="rb-messages">
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`rb-msg ${msg.role} ${msg.isError ? "error" : ""}`}
+            >
+              <div className="rb-msg-indicator">
+                {msg.role === "bot" ? (
+                  <div className="rb-avatar-bot">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="4"/><line x1="8" y1="16" x2="8" y2="16.01"/><line x1="16" y1="16" x2="16" y2="16.01"/></svg>
+                  </div>
+                ) : (
+                  <div className="rb-avatar-user">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  </div>
+                )}
+              </div>
+              <div className="rb-msg-body">
+                <div className="rb-msg-label">
+                  {msg.role === "bot" ? "AlphaBot" : "You"}
+                  <time className="rb-msg-time">
+                    {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </time>
+                </div>
+                <div className="rb-msg-content">
+                  {msg.role === "bot" ? renderMarkdown(msg.text) : <p>{msg.text}</p>}
+                </div>
+                {msg.metadata && (
+                  <div className="rb-msg-meta">
+                    <span>{msg.metadata.model}</span>
+                    <span>{msg.metadata.processingTime}ms</span>
+                    {msg.metadata.tokensUsed && <span>{msg.metadata.tokensUsed} tokens</span>}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {/* Typing indicator */}
+          {isLoading && (
+            <div className="rb-msg bot">
+              <div className="rb-msg-indicator">
+                <div className="rb-avatar-bot pulsing">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="4"/><line x1="8" y1="16" x2="8" y2="16.01"/><line x1="16" y1="16" x2="16" y2="16.01"/></svg>
+                </div>
+              </div>
+              <div className="rb-msg-body">
+                <div className="rb-msg-label">AlphaBot</div>
+                <div className="rb-typing">
+                  <span /><span /><span />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Error banner */}
+          {error && !isLoading && (
+            <div className="rb-error-banner">
+              {error}
+              <button onClick={() => setError(null)}>Dismiss</button>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Suggestion chips for navigation */}
+        <div className="rb-nav-chips">
+          {["Symptom Checker", "Log Symptoms", "Book Appointment", "View Medications", "Calendar"].map((s) => (
+            <button key={s} className="rb-chip" onClick={() => handleSuggestionNav(s)}>
+              {s}
+            </button>
+          ))}
+        </div>
+
+        {/* Input area */}
+        <div className="rb-input-area">
+          <textarea
+            ref={inputRef}
+            className="rb-input"
+            placeholder="Ask me anything about your health..."
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            rows="1"
+            disabled={isLoading}
+          />
+          <button
+            className="rb-send"
+            onClick={() => handleSend()}
+            disabled={!inputText.trim() || isLoading}
+            aria-label="Send message"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </main>
     </div>
   );
 }

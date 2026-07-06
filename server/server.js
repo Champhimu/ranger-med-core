@@ -17,12 +17,13 @@ import appointmentRoutes from "./src/routes/appointement.routes.js";
 import symptomAnalysisRoutes from "./src/routes/symptomAnalysis.routes.js";
 import weeklyInsightRoutes from "./src/routes/weeklyInsight.routes.js";
 import calendarRoutes from "./src/routes/calendar.routes.js";
-// import aiRoutes from "./src/routes/ai.routes.js";
+import aiRoutes from "./src/routes/ai.routes.js";
+import reportRoutes from "./src/routes/report.routes.js";
 
 const app = express();
 
-// Load environment variables first
-dotenv.config();
+// Load environment variables first (override system env so .env always wins)
+dotenv.config({ override: true });
 
 // CORS Configuration - Allow requests from React app
 const corsOptions = {
@@ -49,7 +50,8 @@ app.use('/api/appointments', appointmentRoutes);
 app.use("/api/symptom-analysis", symptomAnalysisRoutes);
 app.use("/api/weekly-insights", weeklyInsightRoutes);
 app.use("/api/calendar", calendarRoutes);
-// app.use("/api/ai", aiRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/report", reportRoutes);
 
 // Health Check
 app.get("/api/health", (req, res) => {
@@ -62,10 +64,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message });
 });
 
-// Cron Job - every minute
-// cron.schedule("* * * * *", () => {
-//   processDoseReminders();
-// });
+// Cron Job - every minute (dose reminders + missed dose detection)
+cron.schedule("* * * * *", () => {
+  processDoseReminders();
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
